@@ -6,6 +6,7 @@ class Usuarios(AbstractUser):
     TIPO_USUARIO_CHOICES = (
         ('admisionista', 'Admisionista'),
         ('doctor', 'Doctor'),
+        ('administrador', 'Administrador'),
     )
     especialidad_choices = (
         ('medico_general', 'Médico General'), #si se inserta con guión bajo es por esto e igual 

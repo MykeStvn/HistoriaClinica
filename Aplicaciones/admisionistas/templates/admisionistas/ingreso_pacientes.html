@@ -14,7 +14,6 @@ GESTIÓN PACIENTES
         <table id="tabla_pacientes" class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Apellido Paterno</th>
                     <th>Apellido Materno</th>
                     <th>Nombres</th>
@@ -37,7 +36,6 @@ GESTIÓN PACIENTES
                 {% for pacienteTemporal in pacientes %}
                 <!-- Aquí van los datos de la tabla, ya sea de la base de datos o en forma estática -->
                 <tr>
-                    <td>{{ pacienteTemporal.id_pacientes}}</td>
                     <td>{{ pacienteTemporal.apellido_paterno_pacientes}}</td>
                     <td>{{ pacienteTemporal.apellido_materno_pacientes}}</td>
                     <td>{{ pacienteTemporal.nombres_pacientes}}</td>
@@ -62,51 +60,90 @@ GESTIÓN PACIENTES
             </tbody>
         </table>
     </div>
-    <!-- Modal para agregar una nuevo paciente -->
-    <div class="modal fade" id="addIngresoPacientesModal" tabindex="-1" aria-labelledby="addIngresoPacientesLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addIngresoPacienteslLabel">Nuevo Paciente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Formulario para agregar un paciente -->
-                    <form action="{% comment %}{% url 'agregar_ciudad' %}{% endcomment %}" method="POST"> 
-                        {% comment %}{% csrf_token %}{% endcomment %}
+    <!-- Modal para agregar un nuevo paciente -->
+<div class="modal fade" id="addIngresoPacientesModal" tabindex="-1" aria-labelledby="addIngresoPacientesLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addIngresoPacientesLabel">Nuevo Paciente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para agregar un paciente -->
+                <form id="formAddPaciente" method="POST" action="{% url 'admisionistas:agregar_paciente' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="apellido_paterno_pacientes" class="form-label">Apellido Paterno</label>
+                        <input type="text" class="form-control" id="apellido_paterno_pacientes" name="apellido_paterno_pacientes" required>
+
+                        <label for="apellido_materno_pacientes" class="form-label">Apellido Materno</label>
+                        <input type="text" class="form-control" id="apellido_materno_pacientes" name="apellido_materno_pacientes" required>
+
+                        <label for="nombres_pacientes" class="form-label">Nombres</label>
+                        <input type="text" class="form-control" id="nombres_pacientes" name="nombres_pacientes" required>
+
+                        <label for="cedula_pacientes" class="form-label">Cédula</label>
+                        <input type="text" class="form-control" id="cedula_pacientes" name="cedula_pacientes" required>
+
+                        <label for="fecha_nacimiento_pacientes" class="form-label">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" id="fecha_nacimiento_pacientes" name="fecha_nacimiento_pacientes" required>
+
+                        <label for="direccion_pacientes" class="form-label">Dirección</label>
+                        <textarea class="form-control" id="direccion_pacientes" name="direccion_pacientes" required rows="3" style="resize: none;"></textarea>
+
+                        <label for="email_pacientes" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email_pacientes" name="email_pacientes" required>
+
                         <div class="mb-3">
-                            <label for="apellido_paterno_pacientes" class="form-label">Apellido Paterno</label>
-                            <input type="text" class="form-control" id="apellido_paterno_pacientes" name="apellido_paterno_pacientes" required>
-                            <label for="apellido_materno_pacientes" class="form-label">Apellido Materno</label>
-                            <input type="text" class="form-control" id="apellido_materno_pacientes" name="apellido_materno_pacientes" required>
-                            <label for="nombres_pacientes" class="form-label">Nombres</label>
-                            <input type="text" class="form-control" id="nombres_pacientes" name="nombres_pacientes" required>
-                            <label for="cedula_pacientes" class="form-label">Cédula</label>
-                            <input type="text" class="form-control" id="cedula_pacientes" name="cedula_pacientes" required>
-                            <label for="fecha_nacimiento_pacientes" class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="fecha_nacimiento_pacientes" name="fecha_nacimiento_pacientes" required>
-                            <label for="direccion_pacientes" class="form-label">Dirección</label>
-                            <input type="text" class="form-control" id="direccion_pacientes" name="direccion_pacientes" required>
-                            <label for="email_pacientes" class="form-label">Email</label>
-                            <input type="text" class="form-control" id="email_pacientes" name="email_pacientes" required>
                             <label for="genero_pacientes" class="form-label">Género</label>
-                            <input type="text" class="form-control" id="genero_pacientes" name="genero_pacientes" required>
-                            <label for="telefono_pacientes" class="form-label">Teléfono</label>
-                            <input type="text" class="form-control" id="telefono_pacientes" name="telefono_pacientes" required>
-                            <label for="emergencia_informar_pacientes" class="form-label">En caso de emergencia informar a</label>
-                            <input type="text" class="form-control" id="emergencia_informar_pacientes" name="emergencia_informar_pacientes" required>
-                            <label for="contacto_emergencia_pacientes" class="form-label">Contacto de emergencia</label>
-                            <input type="text" class="form-control" id="contacto_emergencia_pacientes" name="contacto_emergencia_pacientes" required>
-                            <label for="seguro_pacientes" class="form-label">Seguro médico</label>
-                            <input type="text" class="form-control" id="seguro_pacientes" name="seguro_pacientes" required>
-                            <label for="fk_id_admisionista" class="form-label">Admisionista</label>
-                            <input type="text" class="form-control" id="fk_id_admisionista" name="fk_id_admisionista" required>
+                            <select class="form-select" id="genero_pacientes_select" name="genero_pacientes" required onchange="toggleGeneroInput(this.value)">
+                                <option value="" disabled selected>Seleccione una opción</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                                <option value="Otro">Otro</option>
+                            </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Agregar</button>
-                    </form>
-                </div>
+
+                        <div class="mb-3" id="genero_otro_div" style="display: none;">
+                            <label for="genero_otro" class="form-label">Especifique el género</label>
+                            <input type="text" class="form-control" id="genero_otro" name="genero_otro">
+                        </div>
+
+                        <label for="telefono_pacientes" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="telefono_pacientes" name="telefono_pacientes" required>
+
+                        <label for="emergencia_informar_pacientes" class="form-label">En caso de emergencia informar a</label>
+                        <input type="text" class="form-control" id="emergencia_informar_pacientes" name="emergencia_informar_pacientes" required>
+
+                        <label for="contacto_emergencia_pacientes" class="form-label">Contacto de emergencia</label>
+                        <input type="text" class="form-control" id="contacto_emergencia_pacientes" name="contacto_emergencia_pacientes" required>
+
+                        <div class="mb-3">
+                            <label for="seguro_pacientes" class="form-label">Seguro médico</label>
+                            <select class="form-select" id="seguro_pacientes_select" name="seguro_pacientes" required onchange="toggleSeguroInput(this.value)">
+                                <option value="" disabled selected>Seleccione una opción</option>
+                                <option value="IESS">IESS</option>
+                                <option value="ISSPOL">ISSPOL</option>
+                                <option value="ISSFA">ISSFA</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="seguro_otro_div" style="display: none;">
+                            <label for="seguro_otro" class="form-label">Especifique el seguro</label>
+                            <input type="text" class="form-control" id="seguro_otro" name="seguro_otro">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fk_id_admisionista" class="form-label">Admisionista</label>
+                            <input type="text" class="form-control" id="fk_id_admisionista" name="fk_id_admisionista" value="{{ user.username }}" readonly>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Agregar</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
-
