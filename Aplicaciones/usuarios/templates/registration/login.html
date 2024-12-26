@@ -1,18 +1,27 @@
 {% extends 'plantilla2.html' %}
-
+{% load static %}
 {% block title %}
 Iniciar Sesión
 {% endblock %}
 
 {% block content %}
-    <h2 class="text text-center">Iniciar Sesión</h2>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">  <!-- Incluye el archivo CSS -->
+    <h2 class="text text-center">Inicio de Sesión</h2>
+    <h2 class="text text-center">Centro Médico Renacer</h2>
+    <img id="logo_login" src="{% static 'plantilla/medilab/assets/img/logo.png' %}" alt="">
     <form method="POST">
         {% csrf_token %}
-        <input type="text" name="username" placeholder="Usuario" required>
-        <input type="password" name="password" placeholder="Contraseña" required>
+        <b><label for="username">Usuario</label></b>
+        <input type="text" name="username" placeholder="Ingrese su usuario" required>
+        <b><label for="password">Contraseña</label></b>
+        <input type="password" name="password" placeholder="Ingrese su contraseña" required>
+        {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        <a id="olvidar_contraseña" href="#">¿Olvidaste tu contraseña?</a>
+        <br>
+        <br>
         <button type="submit">Ingresar</button>
     </form>
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+    
 {% endblock %}

@@ -1,6 +1,6 @@
 
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 
 from django.shortcuts import render, redirect
@@ -36,3 +36,7 @@ def welcome_view(request):
         return render(request, 'welcome.html', {'redirect_url': redirect_url})  # Pasa la URL a la plantilla
     else:
         return redirect('usuarios:login')  # Redirigir a la página de inicio de sesión si no está autenticado
+
+def logout_view(request):
+    logout(request)  # Cierra la sesión del usuario
+    return redirect('usuarios:login')  # Redirige a la página de inicio de sesión

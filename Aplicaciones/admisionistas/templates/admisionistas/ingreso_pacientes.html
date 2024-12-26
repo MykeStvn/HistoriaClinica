@@ -1,5 +1,5 @@
 {% extends "plantilla.html" %}
-
+{% load static %}
 {% block title %}
 GESTIÓN PACIENTES
 {% endblock %}
@@ -8,7 +8,7 @@ GESTIÓN PACIENTES
     <h1 class="text text-center">Gestión de Pacientes</h1>
     <br>
     <div class="text-end">
-        <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addIngresoPacientesModal">Ingresar</a>
+        <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addIngresoPacientesModal"><i class="bi bi-person-plus-fill"></i>  Nuevo Paciente</a>
     </div>
     <div class="table-responsive">
         <table id="tabla_pacientes" class="table table-striped">
