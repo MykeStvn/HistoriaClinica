@@ -192,7 +192,7 @@ GESTIÓN PACIENTES
 
                         <div class="mb-3" id="edit_genero_otro_div" style="display: {% if paciente.genero_pacientes == 'Otro' %}block{% else %}none{% endif %};">
                             <label for="edit_genero_otro" class="form-label">Especifique el género</label>
-                            <input type="text" class="form-control" id="edit_genero_otro" name="genero_otro" value="{{ paciente.genero_otro }}">
+                            <input type="text" class="form-control" id="edit_genero_otro" name="genero_otro" value="{{ paciente.genero_pacientes }}">
                         </div>
 
                         <label for="edit_telefono_pacientes" class="form-label">Teléfono</label>
@@ -215,7 +215,7 @@ GESTIÓN PACIENTES
 
                         <div class="mb-3" id="edit_seguro_otro_div" style="display: {% if paciente.seguro_pacientes == 'Otro' %}block{% else %}none{% endif %};">
                             <label for="edit_seguro_otro" class="form-label">Especifique el seguro</label>
-                            <input type="text" class="form-control" id="edit_seguro_otro" name="seguro_otro" value="{{ paciente.seguro_otro }}">
+                            <input type="text" class="form-control" id="edit_seguro_otro" name="seguro_otro" value="{{ paciente.seguro_pacientes }}">
                         </div>
 
                         <label for="edit_fk_id_admisionista" class="form-label">Admisionista</label>

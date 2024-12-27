@@ -48,59 +48,7 @@ $(document).ready(function () {
         },
       });
       
-
-  // Lógica para mostrar/ocultar el campo "Otro" en el formulario de género
-  $("#genero_pacientes_select, #edit_genero_pacientes_select").on(
-    "change",
-    function () {
-      const value = $(this).val();
-      const generoOtroDiv =
-        $(this).attr("id") === "genero_pacientes_select"
-          ? $("#genero_otro_div")
-          : $("#edit_genero_otro_div");
-      const generoOtroInput =
-        $(this).attr("id") === "genero_pacientes_select"
-          ? $("#genero_otro")
-          : $("#edit_genero_otro");
-
-      if (value === "Otro") {
-        generoOtroDiv.show();
-        generoOtroInput.prop("required", true);
-      } else {
-        generoOtroDiv.hide();
-        generoOtroInput.val(""); // Limpia el valor si no es "Otro"
-        generoOtroInput.prop("required", false);
-      }
-    }
-  );
-
-  // Lógica para mostrar/ocultar el campo "Otro" en el formulario de seguro
-  $("#seguro_pacientes_select, #edit_seguro_pacientes_select").on(
-    "change",
-    function () {
-      const value = $(this).val();
-      const seguroOtroDiv =
-        $(this).attr("id") === "seguro_pacientes_select"
-          ? $("#seguro_otro_div")
-          : $("#edit_seguro_otro_div");
-      const seguroOtroInput =
-        $(this).attr("id") === "seguro_pacientes_select"
-          ? $("#seguro_otro")
-          : $("#edit_seguro_otro");
-
-      if (value === "Otro") {
-        seguroOtroDiv.show();
-        seguroOtroInput.prop("required", true);
-      } else {
-        seguroOtroDiv.hide();
-        seguroOtroInput.val(""); // Limpia el valor si no es "Otro"
-        seguroOtroInput.prop("required", false);
-      }
-    }
-  );
-
-
-  // Evento de clic en el botón de eliminar (delegación de eventos)
+  // Evento de clic en el botón de eliminar (delegación de eventos)  OK
 $(document).on("click", ".btn-delete", function () {
     var pacienteId = $(this).data("id"); // Obtén el ID del paciente a eliminar
     var fila = $(this).closest("tr"); // Almacena la fila donde se encuentra el botón
@@ -132,7 +80,7 @@ $(document).on("click", ".btn-delete", function () {
     }
   });
   
-// Función para agregar paciente mediante AJAX
+// Función para agregar paciente mediante AJAX OK
 $("#formAddPaciente").on("submit", function (event) {
   event.preventDefault();
 
@@ -186,6 +134,8 @@ $("#formAddPaciente").on("submit", function (event) {
 
   // Función para cargar datos de un paciente en el modal de edición
   function editarPaciente(pacienteId) {
+    // Cierra el modal si está abierto
+  $("#editIngresoPacientesModal").modal("hide");
     $.ajax({
       url: "/admisionistas/obtener_paciente/" + pacienteId + "/",
       method: "GET",
@@ -250,95 +200,228 @@ $("#formAddPaciente").on("submit", function (event) {
     });
   }
 
-  // Enviar el formulario de actualización mediante AJAX
-  $(document).on("submit", "#formEditPaciente", function (e) {
-    e.preventDefault();
-    var formData = $(this).serialize();
-    $.ajax({
-      url: "/admisionistas/actualizar_paciente/",
-      method: "POST",
-      data: formData,
-      success: function (response) {
-        if (response.status === "success") {
-          alert("Paciente actualizado correctamente");        
-           // Actualizar la fila en la tabla
-           var pacienteId = response.paciente.id_pacientes; // Obtener el ID del paciente
-           var fila = $("#tabla_pacientes tbody tr").filter(function() {
-               return $(this).find("td").eq(0).text() == pacienteId; // Filtrar por ID
-           });
 
-           // Actualizar los datos de la fila
-           fila.find("td").eq(1).text(response.paciente.apellido_paterno); // Apellido Paterno
-           fila.find("td").eq(2).text(response.paciente.apellido_materno); // Apellido Materno
-           fila.find("td").eq(3).text(response.paciente.nombres); // Nombres
-           fila.find("td").eq(4).text(response.paciente.cedula); // Cédula
-           fila.find("td").eq(5).text(response.paciente.fecha_nacimiento); // Fecha de Nacimiento
-        //    fila.find("td").eq(6).text(response.paciente.edad); // Edad
-           fila.find("td").eq(6).text(response.paciente.direccion); // Dirección
-           fila.find("td").eq(7).text(response.paciente.email); // Email
-           fila.find("td").eq(8).text(response.paciente.genero); // Género
-           fila.find("td").eq(9).text(response.paciente.telefono); // Teléfono
-           fila.find("td").eq(10).text(response.paciente.emergencia_informar); // Emergencia Informar
-           fila.find("td").eq(11).text(response.paciente.contacto_emergencia); // Contacto Emergencia
-           fila.find("td").eq(12).text(response.paciente.seguro); // Seguro Médico
-           fila.find("td").eq(13).text(response.paciente.admisionista); // Admisionista
+  // Lógica para mostrar/ocultar el campo "Otro" en el formulario de género
+  $("#genero_pacientes_select, #edit_genero_pacientes_select").on(
+    "change",
+    function () {
+      const value = $(this).val();
+      const generoOtroDiv =
+        $(this).attr("id") === "genero_pacientes_select"
+          ? $("#genero_otro_div")
+          : $("#edit_genero_otro_div");
+      const generoOtroInput =
+        $(this).attr("id") === "genero_pacientes_select"
+          ? $("#genero_otro")
+          : $("#edit_genero_otro");
 
-            // actualizarTablaPacientes();
+      if (value === "Otro") {
+        generoOtroDiv.show();
+        generoOtroInput.prop("required", true);
+      } else {
+        generoOtroDiv.hide();
+        generoOtroInput.val(""); // Limpia el valor si no es "Otro"
+        generoOtroInput.prop("required", false);
+      }
+    }
+  );
 
-          $("#editIngresoPacientesModal").modal("hide");
-          $(".modal-backdrop").remove();
-          $("body").removeClass("modal-open");
-        } else {
-          alert("Error al actualizar el paciente: " + response.message);
-        }
-      },
-      error: function () {
-        alert("Hubo un problema al actualizar el paciente.");
-      },
-    });
-  });
+  // Lógica para mostrar/ocultar el campo "Otro" en el formulario de seguro
+  $("#seguro_pacientes_select, #edit_seguro_pacientes_select").on(
+    "change",
+    function () {
+      const value = $(this).val();
+      const seguroOtroDiv =
+        $(this).attr("id") === "seguro_pacientes_select"
+          ? $("#seguro_otro_div")
+          : $("#edit_seguro_otro_div");
+      const seguroOtroInput =
+        $(this).attr("id") === "seguro_pacientes_select"
+          ? $("#seguro_otro")
+          : $("#edit_seguro_otro");
+
+      if (value === "Otro") {
+        seguroOtroDiv.show();
+        seguroOtroInput.prop("required", true);
+      } else {
+        seguroOtroDiv.hide();
+        seguroOtroInput.val(""); // Limpia el valor si no es "Otro"
+        seguroOtroInput.prop("required", false);
+      }
+    }
+  );
 
   $(document).on("click", ".edit-btn", function () {
     var pacienteId = $(this).data("id");
     editarPaciente(pacienteId);
   });
 
-  // Función para actualizar la tabla con los datos más recientes
-  function actualizarTablaPacientes() {
-    $.ajax({
-      url: "/admisionistas/obtener_pacientes/",
-      method: "GET",
-      success: function (data) {
-        var table = $("#tabla_pacientes").DataTable();
-        table.clear();
-        $.each(data.pacientes, function (index, paciente) {
-          table.row.add([
-            paciente.id_pacientes,
-            paciente.apellido_paterno,
-            paciente.apellido_materno,
-            paciente.nombres,
-            paciente.cedula,
-            paciente.fecha_nacimiento,
-            paciente.edad,
-            paciente.direccion,
-            paciente.email,
-            paciente.genero,
-            paciente.telefono,
-            paciente.emergencia_informar,
-            paciente.contacto_emergencia,
-            paciente.seguro,
-            paciente.admisionista,
-            `<a href="#" class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoPacientesModal" data-id="${paciente.id_pacientes}">Editar</a>
-               <a href="#" class="btn btn-danger btn-delete" data-id="${paciente.id_pacientes}">Eliminar</a>`,
-          ]);
+// Enviar el formulario de actualización mediante AJAX
+$(document).on("submit", "#formEditPaciente", function (e) {
+  e.preventDefault();
+  var formData = $(this).serialize();
+  $.ajax({
+    url: "/admisionistas/actualizar_paciente/",
+    method: "POST",
+    data: formData,
+    success: function (response) {
+      if (response.status === "success") {
+        alert("Paciente actualizado correctamente");
+        
+        // Obtener el ID del paciente actualizado
+        var pacienteId = response.paciente.id_pacientes;
+
+        // Filtrar la fila correspondiente en la tabla
+        var fila = $("#tabla_pacientes").DataTable().rows().nodes().to$().filter(function() {
+          return $(this).find("td").eq(0).text() == pacienteId; // Filtrar por ID
         });
-        table.draw();
-        console.log(data.pacientes);
-      },
-      error: function () {
-        alert("Error al cargar los pacientes.");
-      },
-    });
-  }
+
+        // Actualizar los datos de la fila
+        fila.find("td").eq(1).text(response.paciente.apellido_paterno); // Apellido Paterno
+        fila.find("td").eq(2).text(response.paciente.apellido_materno); // Apellido Materno
+        fila.find("td").eq(3).text(response.paciente.nombres); // Nombres
+        fila.find("td").eq(4).text(response.paciente.cedula); // Cédula
+        fila.find("td").eq(5).text(response.paciente.fecha_nacimiento); // Fecha de Nacimiento
+        fila.find("td").eq(6).text(response.paciente.direccion); // Dirección
+        fila.find("td").eq(7).text(response.paciente.email); // Email
+        fila.find("td").eq(9).text(response.paciente.telefono); // Teléfono
+        fila.find("td").eq(10).text(response.paciente.emergencia_informar); // Emergencia Informar
+        fila.find("td").eq(11).text(response.paciente.contacto_emergencia); // Contacto Emergencia
+        fila.find("td").eq(13).text(response.paciente.admisionista); // Admisionista
+
+        // Actualizar el campo de "Género"
+        if (response.paciente.genero === "Otro") {
+          fila.find("td").eq(8).text(response.paciente.genero_otro || "Otro");
+        } else {
+          fila.find("td").eq(8).text(response.paciente.genero); // Género estándar
+        }
+
+        // Actualizar el campo de "Seguro"
+        if (response.paciente.seguro === "Otro") {
+          fila.find("td").eq(12).text(response.paciente.seguro_otro || "Otro");
+        } else {
+          fila.find("td").eq(12).text(response.paciente.seguro); // Seguro estándar
+        }
+
+        // Cerrar el modal de edición
+        $("#editIngresoPacientesModal").modal("hide");
+        $(".modal-backdrop").remove();
+        $("body").removeClass("modal-open");
+
+        
+      } else {
+        alert("Error al actualizar el paciente: " + response.message);
+      }
+    },
+    error: function () {
+      alert("Hubo un problema al actualizar el paciente.");
+    },
+  });
+});
+// // Enviar el formulario de actualización mediante AJAX
+// $(document).on("submit", "#formEditPaciente", function (e) {
+//   e.preventDefault();
+//   var formData = $(this).serialize();
+//   $.ajax({
+//     url: "/admisionistas/actualizar_paciente/",
+//     method: "POST",
+//     data: formData,
+//     success: function (response) {
+//       if (response.status === "success") {
+//         alert("Paciente actualizado correctamente");
+        
+        
+//         // Obtener el ID del paciente actualizado
+//         var pacienteId = response.paciente.id_pacientes;
+
+//         // Filtrar la fila correspondiente en la tabla
+//         var fila = $("#tabla_pacientes tbody tr").filter(function() {
+//           return $(this).find("td").eq(0).text() == pacienteId; // Filtrar por ID
+//         });
+
+//         // Actualizar los datos de la fila
+//         fila.find("td").eq(1).text(response.paciente.apellido_paterno); // Apellido Paterno
+//         fila.find("td").eq(2).text(response.paciente.apellido_materno); // Apellido Materno
+//         fila.find("td").eq(3).text(response.paciente.nombres); // Nombres
+//         fila.find("td").eq(4).text(response.paciente.cedula); // Cédula
+//         fila.find("td").eq(5).text(response.paciente.fecha_nacimiento); // Fecha de Nacimiento
+//         fila.find("td").eq(6).text(response.paciente.direccion); // Dirección
+//         fila.find("td").eq(7).text(response.paciente.email); // Email
+//         fila.find("td").eq(9).text(response.paciente.telefono); // Teléfono
+//         fila.find("td").eq(10).text(response.paciente.emergencia_informar); // Emergencia Informar
+//         fila.find("td").eq(11).text(response.paciente.contacto_emergencia); // Contacto Emergencia
+//         fila.find("td").eq(13).text(response.paciente.admisionista); // Admisionista
+
+//         // Actualizar el campo de "Género"
+//         if (response.paciente.genero === "Otro") {
+//           fila.find("td").eq(8).text(response.paciente.genero_otro || "Otro");
+//         } else {
+//           fila.find("td").eq(8).text(response.paciente.genero); // Género estándar
+//         }
+
+//         // Actualizar el campo de "Seguro"
+//         if (response.paciente.seguro === "Otro") {
+//           fila.find("td").eq(12).text(response.paciente.seguro_otro || "Otro");
+//         } else {
+//           fila.find("td").eq(12).text(response.paciente.seguro); // Seguro estándar
+//         }
+
+//         // Cerrar el modal de edición
+//         $("#editIngresoPacientesModal").modal("hide");
+//         $(".modal-backdrop").remove();
+//         $("body").removeClass("modal-open");
+//         // Forzar la actualización de la tabla
+//         if ($.fn.DataTable.isDataTable("#tabla_pacientes")) {
+//           $("#tabla_pacientes").DataTable().ajax.reload(null, false); // Recargar datos sin cambiar la página
+//         } else {
+//           $("#tabla_pacientes").trigger("update");
+//         }
+//       } else {
+//         alert("Error al actualizar el paciente: " + response.message);
+//       }
+//     },
+//     error: function () {
+//       alert("Hubo un problema al actualizar el paciente.");
+//     },
+//   });
+// });
+  
+  // Función para actualizar la tabla con los datos más recientes
+  // function actualizarTablaPacientes() {
+  //   $.ajax({
+  //     url: "/admisionistas/obtener_pacientes/",
+  //     method: "GET",
+  //     success: function (data) {
+  //       var table = $("#tabla_pacientes").DataTable();
+  //       table.clear();
+  //       $.each(data.pacientes, function (index, paciente) {
+  //         table.row.add([
+  //           paciente.id_pacientes,
+  //           paciente.apellido_paterno,
+  //           paciente.apellido_materno,
+  //           paciente.nombres,
+  //           paciente.cedula,
+  //           paciente.fecha_nacimiento,
+  //           paciente.edad,
+  //           paciente.direccion,
+  //           paciente.email,
+  //           paciente.genero,
+  //           paciente.telefono,
+  //           paciente.emergencia_informar,
+  //           paciente.contacto_emergencia,
+  //           paciente.seguro,
+  //           paciente.admisionista,
+  //           `<a href="#" class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoPacientesModal" data-id="${paciente.id_pacientes}">Editar</a>
+  //              <a href="#" class="btn btn-danger btn-delete" data-id="${paciente.id_pacientes}">Eliminar</a>`,
+  //         ]);
+  //       });
+  //       table.draw();
+  //       console.log(data.pacientes);
+  //     },
+  //     error: function () {
+  //       alert("Error al cargar los pacientes.");
+  //     },
+  //   });
+  // }
 });
   
