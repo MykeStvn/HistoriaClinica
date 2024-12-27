@@ -27,7 +27,7 @@ def obtener_pacientes(request):
     )
     return JsonResponse({'pacientes': list(pacientes)})
 
-# Vista para ingresar pacientes
+# Vista para ingresar pacientes OK
 @login_required
 def ingreso_pacientes(request):
     if request.user.tipo_usuario != 'admisionista':
@@ -42,7 +42,7 @@ def ingreso_pacientes(request):
     return render(request, 'admisionistas/ingreso_pacientes.html', {'pacientes': pacientesBdd, 'usuarios': admisionistas})
 
 
-# Vista para agregar un nuevo paciente
+# Vista para agregar un nuevo paciente OK
 @login_required
 def agregar_paciente(request):
     if request.method == 'POST':
@@ -154,14 +154,20 @@ def actualizar_paciente(request):
             paciente.direccion_pacientes = request.POST.get('direccion_pacientes')
             paciente.email_pacientes = request.POST.get('email_pacientes')
 
-            # Género
-            genero = request.POST.get('genero_pacientes')
-            paciente.genero_pacientes = genero
-            if genero == 'Otro':
-                paciente.genero_otro = request.POST.get('genero_otro')  # Guardar el valor si se seleccionó 'Otro'
-            else:
-                paciente.genero_otro = None  # Limpiar el campo 'Otro' si no se seleccionó
 
+            # Manejo del campo 'genero_pacientes'
+            genero = request.POST.get('genero_pacientes')
+            # Si el género es "Otro", se toma el valor que el usuario escribió en el campo 'genero_otro'
+            if genero == 'Otro':
+                genero_otro = request.POST.get('genero_otro', '').strip()  # Tomamos el valor que el usuario escribió
+                if genero_otro:  # Si el usuario escribió algo, lo asignamos a 'genero_pacientes'
+                    paciente.genero_pacientes = genero_otro
+                else:  # Si no escribió nada, se asigna el valor "Otro"
+                    paciente.genero_pacientes = "Otro"
+            else:
+                # Si el género no es "Otro", simplemente lo asignamos
+                paciente.genero_pacientes = genero
+            
             paciente.telefono_pacientes = request.POST.get('telefono_pacientes')
             paciente.emergencia_informar_pacientes = request.POST.get('emergencia_informar_pacientes')
             paciente.contacto_emergencia_pacientes = request.POST.get('contacto_emergencia_pacientes')
@@ -173,6 +179,19 @@ def actualizar_paciente(request):
                 paciente.seguro_otro = request.POST.get('seguro_otro')  # Guardar el valor si se seleccionó 'Otro'
             else:
                 paciente.seguro_otro = None  # Limpiar el campo 'Otro' si no se seleccionó
+
+            # Manejo del campo 'genero_pacientes'
+            seguro = request.POST.get('seguro_pacientes')
+            # Si el género es "Otro", se toma el valor que el usuario escribió en el campo 'genero_otro'
+            if seguro == 'Otro':
+                seguro_otro = request.POST.get('seguro_otro', '').strip()  # Tomamos el valor que el usuario escribió
+                if seguro_otro:  # Si el usuario escribió algo, lo asignamos a 'genero_pacientes'
+                    paciente.seguro_pacientes = seguro_otro
+                else:  # Si no escribió nada, se asigna el valor "Otro"
+                    paciente.seguro_pacientes = "Otro"
+            else:
+                # Si el género no es "Otro", simplemente lo asignamos
+                paciente.seguro_pacientes = seguro
 
             # Guardar los cambios en la base de datos
             paciente.save()
