@@ -59,25 +59,46 @@ $(document).on("click", ".btn-delete", function () {
     var nombres = fila.find("td").eq(2).text(); // Nombres
   
     // Preguntar al usuario si está seguro de eliminar
-    if (confirm("¿Estás seguro de eliminar a " + apellidoPaterno + " " + apellidoMaterno + " " + nombres + "?")) {
-      $.ajax({
-        url: "/admisionistas/eliminar_paciente/" + pacienteId + "/",
-        method: "DELETE", // O el método adecuado según tu backend
-        success: function (response) {
-          if (response.status === "success") {
-            // Aquí eliminamos la fila de la tabla sin recargar la página
-            var table = $("#tabla_pacientes").DataTable();
-            table.row(fila).remove().draw(); // Elimina la fila de la tabla
-            alert("Paciente eliminado correctamente.");            
-          } else {
-            alert("Hubo un error al eliminar el paciente.");
-          }
-        },
-        error: function () {
-          alert("Error al eliminar el paciente.");
-        },
-      });
-    }
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Eliminarás a " + apellidoPaterno + " " + apellidoMaterno + " " + nombres,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Ejecutar la petición AJAX para eliminar al paciente
+        $.ajax({
+          url: "/admisionistas/eliminar_paciente/" + pacienteId + "/",
+          method: "DELETE", // O el método adecuado según tu backend
+          success: function (response) {
+            if (response.status === "success") {
+              var table = $("#tabla_pacientes").DataTable();
+              table.row(fila).remove().draw(); // Elimina la fila de la tabla
+              
+              // Mostrar Toastify al eliminar
+              Toastify({
+                text: "Paciente eliminado correctamente.",
+                duration: 3000,
+                close: false,
+                gravity: "top",
+                position: "center",
+                backgroundColor: "linear-gradient(to right,rgb(253, 42, 42),rgb(253, 42, 42))",
+              }).showToast();
+            } else {
+              Swal.fire("Error", "Hubo un error al eliminar el paciente.", "error");
+            }
+          },
+          error: function () {
+            Swal.fire("Error", "Error al eliminar el paciente.", "error");
+          },
+        });
+      }
+    });
+    
   });
   
 // Función para agregar paciente mediante AJAX OK
@@ -112,8 +133,16 @@ $("#formAddPaciente").on("submit", function (event) {
           acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
                      <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
         }).draw(false);
-
-        alert("Paciente agregado correctamente");
+        
+        // Mostrar el mensaje de éxito con Toastify
+        Toastify({
+          text: "Paciente guardado correctamente",
+          duration: 5000, // Duración en milisegundos
+          close: true, // Agrega el botón de cerrar
+          gravity: "bottom", // Ubicación: "top" para arriba, "bottom" para abajo
+          position: "right", // Ubicación: "left", "center", "right"
+          backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)", // Color de fondo
+        }).showToast();
 
         // Limpiar el formulario y cerrar el modal
         $("#formAddPaciente")[0].reset();
@@ -266,7 +295,7 @@ $(document).on("submit", "#formEditPaciente", function (e) {
     data: formData,
     success: function (response) {
       if (response.status === "success") {
-        alert("Paciente actualizado correctamente");
+        // alert("Paciente actualizado correctamente");
         
         // Obtener el ID del paciente actualizado
         var pacienteId = response.paciente.id_pacientes;
@@ -302,6 +331,16 @@ $(document).on("submit", "#formEditPaciente", function (e) {
         } else {
           fila.find("td").eq(12).text(response.paciente.seguro); // Seguro estándar
         }
+
+        // Mostrar el mensaje de éxito con Toastify
+        Toastify({
+          text: "Paciente actualizado correctamente",
+          duration: 5000, // Duración en milisegundos
+          close: true, // Agrega el botón de cerrar
+          gravity: "top", // Ubicación: "top" para arriba, "bottom" para abajo
+          position: "center", // Ubicación: "left", "center", "right"
+          backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)", // Color de fondo
+        }).showToast();
 
         // Cerrar el modal de edición
         $("#editIngresoPacientesModal").modal("hide");
