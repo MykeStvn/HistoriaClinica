@@ -6,6 +6,27 @@ from Aplicaciones.admisionistas.models import Pacientes
 from Aplicaciones.usuarios.models import Usuarios
 from django.views.decorators.csrf import csrf_exempt
 
+# Vista para obtener todos los datos del paciente
+
+def obtener_pacientes(request):
+    pacientes = Pacientes.objects.all().values(
+        'id_pacientes',  # Asegúrate de incluir el id
+        'apellido_paterno_pacientes',
+        'apellido_materno_pacientes', 
+        'nombres_pacientes', 
+        'cedula_pacientes', 
+        'fecha_nacimiento_pacientes', 
+        'direccion_pacientes', 
+        'email_pacientes', 
+        'genero_pacientes',
+        'telefono_pacientes', 
+        'emergencia_informar_pacientes',
+        'contacto_emergencia_pacientes',
+        'seguro_pacientes',
+        'fk_id_admisionista__username'  # Relación de admisionista
+    )
+    return JsonResponse({'pacientes': list(pacientes)})
+
 # Vista para ingresar pacientes
 @login_required
 def ingreso_pacientes(request):
@@ -89,6 +110,7 @@ def agregar_paciente(request):
 @login_required
 def obtener_paciente(request, paciente_id):
     try:
+        print(f"Buscando paciente con id: {paciente_id}") 
         paciente = Pacientes.objects.get(id_pacientes=paciente_id)
         # Si existe el paciente, enviar los datos en formato JSON
         return JsonResponse({
