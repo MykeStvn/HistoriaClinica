@@ -90,6 +90,7 @@ def agregar_paciente(request):
 
         # Enviar la respuesta con los datos del paciente y la edad calculada
         return JsonResponse({'status': 'success', 'message': 'Paciente agregado correctamente', 'paciente': {
+            'id_pacientes': paciente.id_pacientes,
             'apellido_paterno': paciente.apellido_paterno_pacientes,
             'apellido_materno': paciente.apellido_materno_pacientes,
             'nombres': paciente.nombres_pacientes,
@@ -106,6 +107,7 @@ def agregar_paciente(request):
             'admisionista': paciente.fk_id_admisionista.username,  # Mostrar el nombre del admisionista
         }})
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
+
 # Vista para obtener los datos del paciente (para el modal)
 @login_required
 def obtener_paciente(request, paciente_id):

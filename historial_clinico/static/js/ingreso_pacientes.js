@@ -1,5 +1,8 @@
 $(document).ready(function () {
     var table = $("#tabla_pacientes").DataTable({
+      columnDefs: [
+        { targets: 0, visible: false }, // Ocultar la primera columna (ID)
+      ],
         "columns": [
           { "data": "id_pacientes", "visible": false },  // Columna ID oculta
           { "data": "apellido_paterno_pacientes" }, // Apellido Paterno
@@ -18,6 +21,7 @@ $(document).ready(function () {
           { "data": "fk_id_admisionista__username" }, // Admisionista
           { "data": "acciones" }  // Acciones
         ],
+        
         language: {
           decimal: "",
           emptyTable: "No hay datos disponibles en la tabla",
@@ -128,54 +132,57 @@ $(document).on("click", ".btn-delete", function () {
     }
   });
   
+// Función para agregar paciente mediante AJAX
+$("#formAddPaciente").on("submit", function (event) {
+  event.preventDefault();
 
-  // Función para agregar paciente mediante AJAX
-  $("#formAddPaciente").on("submit", function (event) {
-    event.preventDefault(); // Previene el envío del formulario para usar AJAX
+  $.ajax({
+    url: $(this).attr("action"),
+    method: "POST",
+    data: $(this).serialize(),
+    success: function (response) {
+      if (response.status === "success") {
+        var table = $("#tabla_pacientes").DataTable();
 
-    $.ajax({
-      url: $(this).attr("action"),
-      method: "POST",
-      data: $(this).serialize(),
-      success: function (response) {
-        if (response.status === "success") {
-          var newRow = [
-            response.paciente.apellido_paterno,
-            response.paciente.apellido_materno,
-            response.paciente.nombres,
-            response.paciente.cedula,
-            response.paciente.fecha_nacimiento,
-            response.paciente.edad,
-            response.paciente.direccion,
-            response.paciente.email,
-            response.paciente.genero,
-            response.paciente.telefono,
-            response.paciente.emergencia_informar,
-            response.paciente.contacto_emergencia,
-            response.paciente.seguro,
-            response.paciente.admisionista,
-            `<a href="#" class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoPacientesModal" data-id="${response.paciente.id_pacientes}">Editar</a>
-               <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`,
-          ];
+        // Agregar la nueva fila con las claves correctas
+        table.row.add({
+          id_pacientes: response.paciente.id_pacientes, // ID oculto
+          apellido_paterno_pacientes: response.paciente.apellido_paterno,
+          apellido_materno_pacientes: response.paciente.apellido_materno,
+          nombres_pacientes: response.paciente.nombres,
+          cedula_pacientes: response.paciente.cedula,
+          fecha_nacimiento_pacientes: response.paciente.fecha_nacimiento,
+          edad: response.paciente.edad,
+          direccion_pacientes: response.paciente.direccion,
+          email_pacientes: response.paciente.email,
+          genero_pacientes: response.paciente.genero,
+          telefono_pacientes: response.paciente.telefono,
+          emergencia_informar_pacientes: response.paciente.emergencia_informar,
+          contacto_emergencia_pacientes: response.paciente.contacto_emergencia,
+          seguro_pacientes: response.paciente.seguro,
+          fk_id_admisionista__username: response.paciente.admisionista,
+          acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
+                     <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
+        }).draw(false);
 
-          var table = $("#tabla_pacientes").DataTable();
-          table.row.add(newRow).draw(true); // Agrega la fila y actualiza la tabla
+        alert("Paciente agregado correctamente");
 
-          alert("Paciente agregado correctamente");
-
-          $("#formAddPaciente")[0].reset(); // Limpiar formulario
-          $("#addIngresoPacientesModal").modal("hide"); // Cerrar modal
-          $(".modal-backdrop").remove(); // Eliminar capa de fondo
-          $("body").removeClass("modal-open");
-        } else {
-          alert("Hubo un error al agregar el paciente");
-        }
-      },
-      error: function () {
-        alert("Hubo un error al agregar el paciente");
-      },
-    });
+        // Limpiar el formulario y cerrar el modal
+        $("#formAddPaciente")[0].reset();
+        $("#addIngresoPacientesModal").modal("hide");
+        $(".modal-backdrop").remove();
+        $("body").removeClass("modal-open");
+      } else {
+        alert("Error al agregar el paciente");
+      }
+    },
+    error: function () {
+      alert("Error al procesar la solicitud");
+    },
   });
+});
+
+  
 
   // Función para cargar datos de un paciente en el modal de edición
   function editarPaciente(pacienteId) {
