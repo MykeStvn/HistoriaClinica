@@ -1,55 +1,54 @@
 $(document).ready(function () {
-    var table = $("#tabla_pacientes").DataTable({
-      columnDefs: [
-        { targets: 0, visible: false }, // Ocultar la primera columna (ID)
-      ],
-        "columns": [
-          { "data": "id_pacientes", "visible": false },  // Columna ID oculta
-          { "data": "apellido_paterno_pacientes" }, // Apellido Paterno
-          { "data": "apellido_materno_pacientes" }, // Apellido Materno
-          { "data": "nombres_pacientes" }, // Nombres
-          { "data": "cedula_pacientes" }, // Cédula
-          { "data": "fecha_nacimiento_pacientes" }, // Fecha de Nacimiento
-          { "data": "edad" }, // Edad
-          { "data": "direccion_pacientes" }, // Dirección
-          { "data": "email_pacientes" }, // Email
-          { "data": "genero_pacientes" }, // Género
-          { "data": "telefono_pacientes" }, // Teléfono
-          { "data": "emergencia_informar_pacientes" }, // En caso de emergencia informar a
-          { "data": "contacto_emergencia_pacientes" }, // Contacto de emergencia
-          { "data": "seguro_pacientes" }, // Seguro Médico
-          { "data": "fk_id_admisionista__username" }, // Admisionista
-          { "data": "acciones" }  // Acciones
-        ],
-        
-        language: {
-          decimal: "",
-          emptyTable: "No hay datos disponibles en la tabla",
-          info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
-          infoEmpty: "Mostrando 0 a 0 de 0 entradas",
-          infoFiltered: "(filtrado de _MAX_ entradas totales)",
-          infoPostFix: "",
-          thousands: ",",
-          lengthMenu: "Mostrar _MENU_ entradas",
-          loadingRecords: "Cargando...",
-          processing: "Procesando...",
-          search: "Buscar:",
-          zeroRecords: "No se han encontrado resultados",
-          paginate: {
-            first: "Primero",
-            last: "Último",
-            next: "Siguiente",
-            previous: "Anterior",
-          },
-          aria: {
-            sortAscending: ": activar para ordenar la columna de manera ascendente",
-            sortDescending: ": activar para ordenar la columna de manera descendente",
-          },
-        },
-      });
-      
+  var table = $("#tabla_pacientes").DataTable({
+    columnDefs: [
+      { targets: 0, visible: false }, // Ocultar la primera columna (ID)
+    ],
+    "columns": [
+      { "data": "id_pacientes", "visible": false },  // Columna ID oculta
+      { "data": "apellido_paterno_pacientes" }, // Apellido Paterno
+      { "data": "apellido_materno_pacientes" }, // Apellido Materno
+      { "data": "nombres_pacientes" }, // Nombres
+      { "data": "cedula_pacientes" }, // Cédula
+      { "data": "fecha_nacimiento_pacientes" }, // Fecha de Nacimiento
+      { "data": "edad" }, // Edad
+      { "data": "direccion_pacientes" }, // Dirección
+      { "data": "email_pacientes" }, // Email
+      { "data": "genero_pacientes" }, // Género
+      { "data": "telefono_pacientes" }, // Teléfono
+      { "data": "emergencia_informar_pacientes" }, // En caso de emergencia informar a
+      { "data": "contacto_emergencia_pacientes" }, // Contacto de emergencia
+      { "data": "seguro_pacientes" }, // Seguro Médico
+      { "data": "fk_id_admisionista__username" }, // Admisionista
+      { "data": "acciones" }  // Acciones
+    ],
+    language: {
+      decimal: "",
+      emptyTable: "No hay datos disponibles en la tabla",
+      info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+      infoEmpty: "Mostrando 0 a 0 de 0 entradas",
+      infoFiltered: "(filtrado de _MAX_ entradas totales)",
+      infoPostFix: "",
+      thousands: ",",
+      lengthMenu: "Mostrar _MENU_ entradas",
+      loadingRecords: "Cargando...",
+      processing: "Procesando...",
+      search: "Buscar:",
+      zeroRecords: "No se han encontrado resultados",
+      paginate: {
+        first: "Primero",
+        last: "Último",
+        next: "Siguiente",
+        previous: "Anterior",
+      },
+      aria: {
+        sortAscending: ": activar para ordenar la columna de manera ascendente",
+        sortDescending: ": activar para ordenar la columna de manera descendente",
+      },
+    },
+  });
+
   // Evento de clic en el botón de eliminar (delegación de eventos)  OK
-$(document).on("click", ".btn-delete", function () {
+  $(document).on("click", ".btn-delete", function () {
     var pacienteId = $(this).data("id"); // Obtén el ID del paciente a eliminar
     var fila = $(this).closest("tr"); // Almacena la fila donde se encuentra el botón
 
@@ -57,7 +56,7 @@ $(document).on("click", ".btn-delete", function () {
     var apellidoPaterno = fila.find("td").eq(0).text(); // Apellido Paterno
     var apellidoMaterno = fila.find("td").eq(1).text(); // Apellido Materno
     var nombres = fila.find("td").eq(2).text(); // Nombres
-  
+
     // Preguntar al usuario si está seguro de eliminar
     Swal.fire({
       title: "¿Estás seguro?",
@@ -78,7 +77,7 @@ $(document).on("click", ".btn-delete", function () {
             if (response.status === "success") {
               var table = $("#tabla_pacientes").DataTable();
               table.row(fila).remove().draw(); // Elimina la fila de la tabla
-              
+
               // Mostrar Toastify al eliminar
               Toastify({
                 text: "Paciente eliminado correctamente.",
@@ -98,73 +97,77 @@ $(document).on("click", ".btn-delete", function () {
         });
       }
     });
-    
+
   });
-  
-// Función para agregar paciente mediante AJAX OK
-$("#formAddPaciente").on("submit", function (event) {
-  event.preventDefault();
 
-  $.ajax({
-    url: $(this).attr("action"),
-    method: "POST",
-    data: $(this).serialize(),
-    success: function (response) {
-      if (response.status === "success") {
-        var table = $("#tabla_pacientes").DataTable();
+  // Función para agregar paciente mediante AJAX OK
+  $("#formAddPaciente").on("submit", function (event) {
+    event.preventDefault();
 
-        // Agregar la nueva fila con las claves correctas
-        table.row.add({
-          id_pacientes: response.paciente.id_pacientes, // ID oculto
-          apellido_paterno_pacientes: response.paciente.apellido_paterno,
-          apellido_materno_pacientes: response.paciente.apellido_materno,
-          nombres_pacientes: response.paciente.nombres,
-          cedula_pacientes: response.paciente.cedula,
-          fecha_nacimiento_pacientes: response.paciente.fecha_nacimiento,
-          edad: response.paciente.edad,
-          direccion_pacientes: response.paciente.direccion,
-          email_pacientes: response.paciente.email,
-          genero_pacientes: response.paciente.genero,
-          telefono_pacientes: response.paciente.telefono,
-          emergencia_informar_pacientes: response.paciente.emergencia_informar,
-          contacto_emergencia_pacientes: response.paciente.contacto_emergencia,
-          seguro_pacientes: response.paciente.seguro,
-          fk_id_admisionista__username: response.paciente.admisionista,
-          acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
-                     <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
-        }).draw(false);
-        
-        // Mostrar el mensaje de éxito con Toastify
-        Toastify({
-          text: "Paciente guardado correctamente",
-          duration: 5000, // Duración en milisegundos
-          close: true, // Agrega el botón de cerrar
-          gravity: "bottom", // Ubicación: "top" para arriba, "bottom" para abajo
-          position: "right", // Ubicación: "left", "center", "right"
-          backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)", // Color de fondo
-        }).showToast();
+    $.ajax({
+      url: $(this).attr("action"),
+      method: "POST",
+      data: $(this).serialize(),
+      success: function (response) {
+        if (response.status === "success") {
+          var table = $("#tabla_pacientes").DataTable();
+          // ***FORMATEO DE LA FECHA CON MOMENT.JS***
+          let fechaFormateada = ""; // Valor por defecto
+          if (response.paciente.fecha_nacimiento) {
+              fechaFormateada = moment(response.paciente.fecha_nacimiento).locale('es').format('DD [de] MMMM [de] YYYY');
+          }
+          // Agregar la nueva fila con las claves correctas
+          table.row.add({
+            id_pacientes: response.paciente.id_pacientes, // ID oculto
+            apellido_paterno_pacientes: response.paciente.apellido_paterno,
+            apellido_materno_pacientes: response.paciente.apellido_materno,
+            nombres_pacientes: response.paciente.nombres,
+            cedula_pacientes: response.paciente.cedula,
+            fecha_nacimiento_pacientes: fechaFormateada,
+            edad: response.paciente.edad,
+            direccion_pacientes: response.paciente.direccion,
+            email_pacientes: response.paciente.email,
+            genero_pacientes: response.paciente.genero,
+            telefono_pacientes: response.paciente.telefono,
+            emergencia_informar_pacientes: response.paciente.emergencia_informar,
+            contacto_emergencia_pacientes: response.paciente.contacto_emergencia,
+            seguro_pacientes: response.paciente.seguro,
+            fk_id_admisionista__username: response.paciente.admisionista,
+            acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
+                      <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
+          }).draw(false);
 
-        // Limpiar el formulario y cerrar el modal
-        $("#formAddPaciente")[0].reset();
-        $("#addIngresoPacientesModal").modal("hide");
-        $(".modal-backdrop").remove();
-        $("body").removeClass("modal-open");
-      } else {
-        alert("Error al agregar el paciente");
-      }
-    },
-    error: function () {
-      alert("Error al procesar la solicitud");
-    },
+          // Mostrar el mensaje de éxito con Toastify
+          Toastify({
+            text: "Paciente guardado correctamente",
+            duration: 5000, // Duración en milisegundos
+            close: true, // Agrega el botón de cerrar
+            gravity: "bottom", // Ubicación: "top" para arriba, "bottom" para abajo
+            position: "right", // Ubicación: "left", "center", "right"
+            backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)", // Color de fondo
+          }).showToast();
+
+          // Limpiar el formulario y cerrar el modal
+          $("#formAddPaciente")[0].reset();
+          $("#addIngresoPacientesModal").modal("hide");
+          $(".modal-backdrop").remove();
+          $("body").removeClass("modal-open");
+        } else {
+          alert("Error al agregar el paciente");
+        }
+      },
+      error: function () {
+        alert("Error al procesar la solicitud");
+      },
+    });
   });
-});
 
-  
+
 
   // Función para cargar datos de un paciente en el modal de edición
   function editarPaciente(pacienteId) {
     // Cierra el modal si está abierto
-  $("#editIngresoPacientesModal").modal("hide");
+    $("#editIngresoPacientesModal").modal("hide");
     $.ajax({
       url: "/admisionistas/obtener_paciente/" + pacienteId + "/",
       method: "GET",
@@ -284,79 +287,101 @@ $("#formAddPaciente").on("submit", function (event) {
     var pacienteId = $(this).data("id");
     editarPaciente(pacienteId);
   });
+  //actualizar
+  $(document).on("submit", "#formEditPaciente", function (e) {
+    e.preventDefault();
+    var formData = $(this).serialize();
 
-// Enviar el formulario de actualización mediante AJAX
-$(document).on("submit", "#formEditPaciente", function (e) {
-  e.preventDefault();
-  var formData = $(this).serialize();
-  $.ajax({
-    url: "/admisionistas/actualizar_paciente/",
-    method: "POST",
-    data: formData,
-    success: function (response) {
-      if (response.status === "success") {
-        // alert("Paciente actualizado correctamente");
-        
-        // Obtener el ID del paciente actualizado
-        var pacienteId = response.paciente.id_pacientes;
+    $.ajax({
+      url: "/admisionistas/actualizar_paciente/", // URL de tu endpoint de actualización
+      method: "POST",
+      data: formData,
+      dataType: 'json', // ¡ESENCIAL!
+      success: function (response) {
+        if (response.status === "success") {
+          var pacienteId = response.paciente.id_pacientes;
+          var table = $("#tabla_pacientes").DataTable();
 
-        // Filtrar la fila correspondiente en la tabla
-        var fila = $("#tabla_pacientes").DataTable().rows().nodes().to$().filter(function() {
-          return $(this).find("td").eq(0).text() == pacienteId; // Filtrar por ID
-        });
+          // Buscar la fila usando la API de DataTables (con manejo de errores)
+          var row = table.row(function (idx, data, node) {
+            if (data && data.id_pacientes !== undefined) {
+              return data.id_pacientes == pacienteId;
+            }
+            return false;
+          });
 
-        // Actualizar los datos de la fila
-        fila.find("td").eq(1).text(response.paciente.apellido_paterno); // Apellido Paterno
-        fila.find("td").eq(2).text(response.paciente.apellido_materno); // Apellido Materno
-        fila.find("td").eq(3).text(response.paciente.nombres); // Nombres
-        fila.find("td").eq(4).text(response.paciente.cedula); // Cédula
-        fila.find("td").eq(5).text(response.paciente.fecha_nacimiento); // Fecha de Nacimiento
-        fila.find("td").eq(6).text(response.paciente.direccion); // Dirección
-        fila.find("td").eq(7).text(response.paciente.email); // Email
-        fila.find("td").eq(9).text(response.paciente.telefono); // Teléfono
-        fila.find("td").eq(10).text(response.paciente.emergencia_informar); // Emergencia Informar
-        fila.find("td").eq(11).text(response.paciente.contacto_emergencia); // Contacto Emergencia
-        fila.find("td").eq(13).text(response.paciente.admisionista); // Admisionista
+          if (row.length) {
+            var rowData = row.data();
 
-        // Actualizar el campo de "Género"
-        if (response.paciente.genero === "Otro") {
-          fila.find("td").eq(8).text(response.paciente.genero_otro || "Otro");
+            // ***FORMATEO DE LA FECHA CON MOMENT.JS***
+            let fechaFormateada = "";
+            if (response.paciente.fecha_nacimiento) {
+                fechaFormateada = moment(response.paciente.fecha_nacimiento).locale('es').format('DD [de] MMMM [de] YYYY');
+            }
+            // ***CALCULAR LA EDAD EN JAVASCRIPT***
+            let edadCalculada = "";
+            if (response.paciente.fecha_nacimiento) {
+                const fechaNacimiento = moment(response.paciente.fecha_nacimiento);
+                edadCalculada = moment().diff(fechaNacimiento, 'years');
+            } 
+
+            // Actualizar los datos (con manejo de undefined y usando las mismas claves que en la inicialización de DataTables)
+            rowData.apellido_paterno_pacientes = response.paciente.apellido_paterno || "";
+            rowData.apellido_materno_pacientes = response.paciente.apellido_materno || "";
+            rowData.nombres_pacientes = response.paciente.nombres || "";
+            rowData.cedula_pacientes = response.paciente.cedula || "";
+            rowData.fecha_nacimiento_pacientes = fechaFormateada; // Asigna la fecha formateada 
+            rowData.edad = edadCalculada; // Asigna la edad calculada en JS           
+            rowData.direccion_pacientes = response.paciente.direccion || "";
+            rowData.email_pacientes = response.paciente.email || "";
+            rowData.genero_pacientes = response.paciente.genero || "";
+            rowData.telefono_pacientes = response.paciente.telefono || "";
+            rowData.emergencia_informar_pacientes = response.paciente.emergencia_informar || "";
+            rowData.contacto_emergencia_pacientes = response.paciente.contacto_emergencia || "";
+            rowData.seguro_pacientes = response.paciente.seguro || "";
+            rowData.fk_id_admisionista__username = response.paciente.admisionista || "";
+            // No necesitas actualizar las acciones a menos que cambien dinámicamente
+
+            row.data(rowData).draw(false); // Redibujar la fila (sin recalcular la paginación)
+
+            Toastify({
+              text: "Paciente actualizado correctamente",
+              duration: 5000,
+              close: true,
+              gravity: "bottom", // Misma ubicación que en el agregar
+              position: "right", // Misma ubicación que en el agregar
+              backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
+            }).showToast();
+
+            $("#editIngresoPacientesModal").modal("hide");
+            $(".modal-backdrop").remove();
+            $("body").removeClass("modal-open");
+
+          } else {
+            console.error("No se encontró la fila con ID: " + pacienteId);
+            alert("Error: No se encontró el paciente en la tabla.");
+          }
         } else {
-          fila.find("td").eq(8).text(response.paciente.genero); // Género estándar
+          console.error("Error del servidor:", response);
+          alert("Error al actualizar el paciente: " + (response.message || "Error desconocido"));
         }
-
-        // Actualizar el campo de "Seguro"
-        if (response.paciente.seguro === "Otro") {
-          fila.find("td").eq(12).text(response.paciente.seguro_otro || "Otro");
-        } else {
-          fila.find("td").eq(12).text(response.paciente.seguro); // Seguro estándar
-        }
-
-        // Mostrar el mensaje de éxito con Toastify
-        Toastify({
-          text: "Paciente actualizado correctamente",
-          duration: 5000, // Duración en milisegundos
-          close: true, // Agrega el botón de cerrar
-          gravity: "top", // Ubicación: "top" para arriba, "bottom" para abajo
-          position: "center", // Ubicación: "left", "center", "right"
-          backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)", // Color de fondo
-        }).showToast();
-
-        // Cerrar el modal de edición
-        $("#editIngresoPacientesModal").modal("hide");
-        $(".modal-backdrop").remove();
-        $("body").removeClass("modal-open");
-
-        
-      } else {
-        alert("Error al actualizar el paciente: " + response.message);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error en la petición AJAX:", status, error, xhr.responseText);
+        alert("Hubo un problema al actualizar el paciente. Revisa la consola.");
       }
-    },
-    error: function () {
-      alert("Hubo un problema al actualizar el paciente.");
-    },
+    });
   });
+
 });
+
+
+
+
+
+
+
+
 // // Enviar el formulario de actualización mediante AJAX
 // $(document).on("submit", "#formEditPaciente", function (e) {
 //   e.preventDefault();
@@ -368,8 +393,8 @@ $(document).on("submit", "#formEditPaciente", function (e) {
 //     success: function (response) {
 //       if (response.status === "success") {
 //         alert("Paciente actualizado correctamente");
-        
-        
+
+
 //         // Obtener el ID del paciente actualizado
 //         var pacienteId = response.paciente.id_pacientes;
 
@@ -424,7 +449,7 @@ $(document).on("submit", "#formEditPaciente", function (e) {
 //     },
 //   });
 // });
-  
+
   // Función para actualizar la tabla con los datos más recientes
   // function actualizarTablaPacientes() {
   //   $.ajax({
@@ -462,5 +487,3 @@ $(document).on("submit", "#formEditPaciente", function (e) {
   //     },
   //   });
   // }
-});
-  

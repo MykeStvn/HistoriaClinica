@@ -137,7 +137,7 @@ def obtener_paciente(request, paciente_id):
         })
     except Pacientes.DoesNotExist:
         return JsonResponse({'error': 'Paciente no encontrado'}, status=404)
-# Vista para actualizar los datos de un paciente
+#Actualizar
 @login_required
 def actualizar_paciente(request):
     if request.method == 'POST':
@@ -145,76 +145,77 @@ def actualizar_paciente(request):
         try:
             paciente = Pacientes.objects.get(id_pacientes=paciente_id)
 
-            # Recoger los datos enviados desde el formulario
+            # Actualizar los campos (excepto la fecha por ahora)
             paciente.apellido_paterno_pacientes = request.POST.get('apellido_paterno_pacientes')
             paciente.apellido_materno_pacientes = request.POST.get('apellido_materno_pacientes')
             paciente.nombres_pacientes = request.POST.get('nombres_pacientes')
             paciente.cedula_pacientes = request.POST.get('cedula_pacientes')
-            paciente.fecha_nacimiento_pacientes = request.POST.get('fecha_nacimiento_pacientes')
             paciente.direccion_pacientes = request.POST.get('direccion_pacientes')
             paciente.email_pacientes = request.POST.get('email_pacientes')
 
-
-            # Manejo del campo 'genero_pacientes'
+            # Manejo del género
             genero = request.POST.get('genero_pacientes')
-            # Si el género es "Otro", se toma el valor que el usuario escribió en el campo 'genero_otro'
-            if genero == 'Otro':
-                genero_otro = request.POST.get('genero_otro', '').strip()  # Tomamos el valor que el usuario escribió
-                if genero_otro:  # Si el usuario escribió algo, lo asignamos a 'genero_pacientes'
-                    paciente.genero_pacientes = genero_otro
-                else:  # Si no escribió nada, se asigna el valor "Otro"
-                    paciente.genero_pacientes = "Otro"
-            else:
-                # Si el género no es "Otro", simplemente lo asignamos
-                paciente.genero_pacientes = genero
-            
+            paciente.genero_pacientes = request.POST.get('genero_otro') if genero == 'Otro' else genero
+
             paciente.telefono_pacientes = request.POST.get('telefono_pacientes')
             paciente.emergencia_informar_pacientes = request.POST.get('emergencia_informar_pacientes')
             paciente.contacto_emergencia_pacientes = request.POST.get('contacto_emergencia_pacientes')
 
-            # Seguro
+            # Manejo del seguro
             seguro = request.POST.get('seguro_pacientes')
-            paciente.seguro_pacientes = seguro
-            if seguro == 'Otro':
-                paciente.seguro_otro = request.POST.get('seguro_otro')  # Guardar el valor si se seleccionó 'Otro'
+            paciente.seguro_pacientes = request.POST.get('seguro_otro') if seguro == 'Otro' else seguro
+
+
+            #MANEJO DE LA FECHA DE NACIMIENTO IMPORTANTE
+            fecha_nacimiento_str = request.POST.get('fecha_nacimiento_pacientes')
+            if fecha_nacimiento_str:  # Verifica que la cadena no esté vacía
+                try:
+                    paciente.fecha_nacimiento_pacientes = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d').date()
+                except ValueError:  # Intenta otro formato si falla el primero
+                    try:
+                        paciente.fecha_nacimiento_pacientes = datetime.strptime(fecha_nacimiento_str, '%d/%m/%Y').date()
+                    except ValueError:
+                        return JsonResponse({'status': 'error', 'message': 'Formato de fecha inválido. Use AAAA-MM-DD o DD/MM/AAAA'})
             else:
-                paciente.seguro_otro = None  # Limpiar el campo 'Otro' si no se seleccionó
+                paciente.fecha_nacimiento_pacientes = None  # Maneja el caso de fecha vacía
 
-            # Manejo del campo 'genero_pacientes'
-            seguro = request.POST.get('seguro_pacientes')
-            # Si el género es "Otro", se toma el valor que el usuario escribió en el campo 'genero_otro'
-            if seguro == 'Otro':
-                seguro_otro = request.POST.get('seguro_otro', '').strip()  # Tomamos el valor que el usuario escribió
-                if seguro_otro:  # Si el usuario escribió algo, lo asignamos a 'genero_pacientes'
-                    paciente.seguro_pacientes = seguro_otro
-                else:  # Si no escribió nada, se asigna el valor "Otro"
-                    paciente.seguro_pacientes = "Otro"
-            else:
-                # Si el género no es "Otro", simplemente lo asignamos
-                paciente.seguro_pacientes = seguro
+            paciente.save()  # Guarda el paciente *después* de procesar la fecha
 
-            # Guardar los cambios en la base de datos
-            paciente.save()
+            # Calcular la edad *solo si hay fecha de nacimiento*
+            edad = calculate_age(paciente.fecha_nacimiento_pacientes) if paciente.fecha_nacimiento_pacientes else None
 
-            # Enviar la respuesta con los datos actualizados
-            return JsonResponse({'status': 'success', 'message': 'Paciente actualizado correctamente', 'paciente': {
-                'apellido_paterno': paciente.apellido_paterno_pacientes,
-                'apellido_materno': paciente.apellido_materno_pacientes,
-                'nombres': paciente.nombres_pacientes,
-                'cedula': paciente.cedula_pacientes,
-                'fecha_nacimiento': paciente.fecha_nacimiento_pacientes,
-                'direccion': paciente.direccion_pacientes,
-                'email': paciente.email_pacientes,
-                'genero': paciente.genero_pacientes,
-                'telefono': paciente.telefono_pacientes,
-                'emergencia_informar': paciente.emergencia_informar_pacientes,
-                'contacto_emergencia': paciente.contacto_emergencia_pacientes,
-                'seguro': paciente.seguro_pacientes,
-                'admisionista': paciente.fk_id_admisionista.username,
-            }})
+            # Construir la respuesta JSON
+            response_data = {
+                'status': 'success',
+                'message': 'Paciente actualizado correctamente',
+                'paciente': {
+                    'id_pacientes': paciente.id_pacientes,
+                    'apellido_paterno': paciente.apellido_paterno_pacientes,
+                    'apellido_materno': paciente.apellido_materno_pacientes,
+                    'nombres': paciente.nombres_pacientes,
+                    'cedula': paciente.cedula_pacientes,
+                    'fecha_nacimiento': paciente.fecha_nacimiento_pacientes.strftime('%Y-%m-%d') if paciente.fecha_nacimiento_pacientes else None,  # Formato para JavaScript
+                    'edad': edad,
+                    'direccion': paciente.direccion_pacientes,
+                    'email': paciente.email_pacientes,
+                    'genero': paciente.genero_pacientes,
+                    'telefono': paciente.telefono_pacientes,
+                    'emergencia_informar': paciente.emergencia_informar_pacientes,
+                    'contacto_emergencia': paciente.contacto_emergencia_pacientes,
+                    'seguro': paciente.seguro_pacientes,
+                    'admisionista': paciente.fk_id_admisionista.username,
+                }
+            }
+            return JsonResponse(response_data)
+
         except Pacientes.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Paciente no encontrado'})
+        except Exception as e:
+            import traceback #Para ver el error completo
+            traceback.print_exc()
+            return JsonResponse({'status': 'error', 'message': f'Error al actualizar: {str(e)}'}) #Devuelve el error
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
+
 
 
 
