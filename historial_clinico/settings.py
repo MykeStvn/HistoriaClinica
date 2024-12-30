@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'Aplicaciones.usuarios',
     'Aplicaciones.admisionistas',
     'Aplicaciones.gestion_pacientes',
-    'Aplicaciones.informativa'
+    'Aplicaciones.informativa',
+    'Aplicaciones.administradores',
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuarios'

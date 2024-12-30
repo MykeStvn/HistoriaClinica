@@ -29,7 +29,7 @@ def welcome_view(request):
         elif request.user.tipo_usuario == 'admisionista':
             redirect_url = 'admisionistas:ingreso_pacientes'
         elif request.user.tipo_usuario == 'administrador':
-            redirect_url = 'usuarios:login'  #REDIRECCIONAR A LA PARTE DE ADMINISTRADOR POR EL MOMENTO MANEJAMOS AL LOGIN
+            redirect_url = 'administradores:inicio_administrador'  #REDIRECCIONAR A LA PARTE DE ADMINISTRADOR POR EL MOMENTO MANEJAMOS AL LOGIN
         else:
             redirect_url = '/'  # Redirigir a la página de inicio si no es doctor ni admisionista
 

@@ -44,10 +44,10 @@
                 </div>
                 <div class="sidebar-menu">
                     <ul class="menu">
-                        <li class="sidebar-title">Menú Principal Doctores</li>
+                        <li class="sidebar-title">Menú Principal ADMINISTRADOR</li>
                                     
                         <li class="sidebar-item  ">
-                            <a href="{% url 'gestion_pacientes:inicio_doctor' %}" class='sidebar-link'>
+                            <a href="{% url 'administradores:inicio_administrador' %}" class='sidebar-link'>
                                 <i class="bi bi-house-fill" style="font-size: 20px;"></i>
                                 <span>Inicio</span>
                             </a>
@@ -56,7 +56,7 @@
                             <a href="#" class='sidebar-link'>
                                 <!-- <i class="fas fa-book-medical"></i> -->
                                 <i class="bi bi-journal-medical" style="font-size: 20px;"></i>
-                                <span>Gestión de Historias Clínicas</span>
+                                <span>Gestión General</span>
                             </a>
                             <ul class="submenu active">
                                 <li class="submenu-item ">
@@ -67,6 +67,11 @@
                                 <li class="submenu-item ">
                                     <a href="#" style="display: inline-flex; align-items: center; text-decoration: none;">
                                         <i class="bi bi-file-medical-fill" style="font-size: 1rem; margin-right: 8px;"></i>Historias Clínicas
+                                    </a>                                    
+                                </li>    
+                                <li class="submenu-item ">
+                                    <a href="{% url 'administradores:gestion_usuarios' %}" style="display: inline-flex; align-items: center; text-decoration: none;">
+                                        <i class="bi bi-person-badge-fill" style="font-size: 1rem; margin-right: 8px;"></i>Usuarios
                                     </a>                                    
                                 </li>                    
                                             
