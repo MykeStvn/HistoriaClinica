@@ -133,8 +133,8 @@ $(document).ready(function () {
             contacto_emergencia_pacientes: response.paciente.contacto_emergencia,
             seguro_pacientes: response.paciente.seguro,
             fk_id_admisionista__username: response.paciente.admisionista,
-            acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
-                      <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
+            acciones: `<a href="#" class="btn-sm rounded-pill btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
+                      <a href="#" class="btn-sm rounded-pill btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
           }).draw(false);
 
           // Mostrar el mensaje de éxito con Toastify
@@ -142,8 +142,8 @@ $(document).ready(function () {
             text: "Paciente guardado correctamente",
             duration: 5000, // Duración en milisegundos
             close: true, // Agrega el botón de cerrar
-            gravity: "bottom", // Ubicación: "top" para arriba, "bottom" para abajo
-            position: "right", // Ubicación: "left", "center", "right"
+            gravity: "top", // Ubicación: "top" para arriba, "bottom" para abajo
+            position: "center", // Ubicación: "left", "center", "right"
             backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)", // Color de fondo
           }).showToast();
 
@@ -348,8 +348,8 @@ $(document).ready(function () {
               text: "Paciente actualizado correctamente",
               duration: 5000,
               close: true,
-              gravity: "bottom", // Misma ubicación que en el agregar
-              position: "right", // Misma ubicación que en el agregar
+              gravity: "top", // Misma ubicación que en el agregar
+              position: "center", // Misma ubicación que en el agregar
               backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
             }).showToast();
 

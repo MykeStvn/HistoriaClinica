@@ -25,7 +25,7 @@ def welcome_view(request):
     if request.user.is_authenticated:  # Asegúrate de que el usuario esté autenticado
         # Determina la URL de redirección según el tipo de usuario
         if request.user.tipo_usuario == 'doctor':
-            redirect_url = 'gestion_pacientes:manejo_pacientes'
+            redirect_url = 'gestion_pacientes:inicio_doctor'
         elif request.user.tipo_usuario == 'admisionista':
             redirect_url = 'admisionistas:ingreso_pacientes'
         elif request.user.tipo_usuario == 'administrador':
