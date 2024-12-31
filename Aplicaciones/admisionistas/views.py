@@ -216,9 +216,6 @@ def actualizar_paciente(request):
             return JsonResponse({'status': 'error', 'message': f'Error al actualizar: {str(e)}'}) #Devuelve el error
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
 
-
-
-
 #Eliminar
 @csrf_exempt  # Si tu configuración de CSRF está causando problemas (asegúrate de que se maneje correctamente)
 @login_required
@@ -231,6 +228,39 @@ def eliminar_paciente(request, paciente_id):
         except Pacientes.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Paciente no encontrado'})
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
+#verifico cédula INGRESAR
+@login_required
+def verificar_cedula(request):
+    if request.method == 'POST':
+        cedula = request.POST.get('cedula_pacientes')  # Campo esperado del formulario
+        # Verificar si la cédula existe en la base de datos
+        exists = Pacientes.objects.filter(cedula_pacientes=cedula).exists()
+        return JsonResponse({'exists': exists})
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
+#verifico cedula ACTUALIZAR
+@login_required
+def verificar_cedula_actualizar(request):
+    if request.method == "POST":
+        paciente_id = request.POST.get('id_pacientes')  # Usar 'id_pacientes' en lugar de 'paciente_id'
+        cedula = request.POST.get('cedula_pacientes')  # Usar 'cedula_pacientes' en lugar de 'cedula'
+
+        # Validar que paciente_id y cedula no estén vacíos
+        if not paciente_id or not cedula:
+            return JsonResponse({'status': 'error', 'message': 'Faltan datos importantes.'}, status=400)
+
+        try:
+            paciente_id = int(paciente_id)  # Convertir el id del paciente a entero
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'ID de paciente no válido.'}, status=400)
+
+        # Verificar si ya existe otro paciente con la misma cédula pero con un id diferente
+        existe = Pacientes.objects.filter(cedula_pacientes=cedula).exclude(id_pacientes=paciente_id).exists()
+
+        if existe:
+            return JsonResponse({'status': 'error', 'message': 'Ya existe un paciente con esta cédula.'}, status=400)
+
+        return JsonResponse({'status': 'success', 'message': 'Cédula disponible.'})
+
 
 # Función para calcular la edad
 def calculate_age(birth_date):
