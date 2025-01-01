@@ -52,8 +52,8 @@ GESTIÓN PACIENTES
                     <td>{{ pacienteTemporal.seguro_pacientes}}</td>
                     <td>{{ pacienteTemporal.fk_id_admisionista.username}}</td>                    
                     <td>
-                        <a href="#" class="btn-sm rounded-pill btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoPacientesModal" data-id="{{ pacienteTemporal.id_pacientes }}">Editar</a>
-                        <a href="#" class="btn-sm rounded-pill btn-danger btn-delete" data-id="{{ pacienteTemporal.id_pacientes }}">Eliminar</a>                    
+                        <a href="#" class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoPacientesModal" data-id="{{ pacienteTemporal.id_pacientes }}">Editar</a>
+                        <a href="#" class="btn btn-danger btn-delete" data-id="{{ pacienteTemporal.id_pacientes }}">Eliminar</a>                    
                     </td>
                 </tr>
                 {% endfor %}
