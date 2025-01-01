@@ -262,8 +262,8 @@ $(document).ready(function () {
                 contacto_emergencia_pacientes: response.paciente.contacto_emergencia,
                 seguro_pacientes: response.paciente.seguro,
                 fk_id_admisionista__username: response.paciente.admisionista,
-                acciones: `<a href="#" class="btn-sm rounded-pill btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
-                                      <a href="#" class="btn-sm rounded-pill btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
+                acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
+                                      <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
               }).draw(false);
 
               Toastify({
