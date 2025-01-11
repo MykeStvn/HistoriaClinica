@@ -11,6 +11,7 @@ class Usuarios(AbstractUser):
     especialidad_choices = (
         ('medico_general', 'Médico General'), #si se inserta con guión bajo es por esto e igual 
         ('admisionista', 'Admisionista'), #en minúscula, puedo cambiar pero estoy probando
+        ('administrador', 'Administrador'), #en minúscula, puedo cambiar pero estoy probando
     )
     
     tipo_usuario = models.CharField(

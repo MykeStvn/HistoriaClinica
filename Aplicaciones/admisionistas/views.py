@@ -27,6 +27,19 @@ def obtener_pacientes(request):
     )
     return JsonResponse({'pacientes': list(pacientes)})
 
+# Vista para buscar pacientes por cédula (BUSCADOR)
+def buscar_pacientes(request):
+    pacientes = []  # Inicializa como lista vacía
+    query = request.GET.get('cedula_pacientes')  # Obtén el parámetro de búsqueda desde la solicitud
+
+    if query:  # Si hay una búsqueda
+        pacientes = Pacientes.objects.filter(cedula_pacientes__icontains=query)  # Realiza la búsqueda
+
+    for paciente in pacientes:
+        paciente.edad = calculate_age(paciente.fecha_nacimiento_pacientes)
+
+    return render(request, 'admisionistas/ingreso_pacientes.html', {'pacientes': pacientes})
+
 # Vista para ingresar pacientes OK
 @login_required
 def ingreso_pacientes(request):

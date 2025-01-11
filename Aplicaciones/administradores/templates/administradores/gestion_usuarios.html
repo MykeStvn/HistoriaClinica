@@ -5,6 +5,145 @@ GESTIÓN USUARIOS
 {% endblock %}
 {% block content %}
     <h1 class="text text-center">Gestión de Usuarios</h1>
+    <div class="text-end">
+        <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addIngresoUsuariosModal"><i class="bi bi-person-plus-fill"></i> Nuevo Usuario</a>
+    </div>
+
+    <!--TABLA DE USUARIOS-->
+
+    <div class="table-responsive">
+        <table id="tabla_usuarios" class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="display: none;">ID (oculto)</th> <!-- Columna oculta -->
+                    <th>Nombre</th>
+                    <th>Apellido</th>                    
+                    <th>SuperUser</th>
+                    <th>Nombre de Usuario</th>
+                    <th>Tipo de Usuario</th>                    
+                    <th>Especialidad</th>
+                    <th>Fecha de Creación</th>
+                    <th>Último Acceso</th>                                   
+                    <th>IS_STAFF</th>
+                    <th>Estado</th>                    
+                    <th>Email</th>                    
+                    <th style="display:none;">Contraseña</th>                         
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuarioTemporal in usuarios %}
+                <!-- Aquí van los datos de la tabla, ya sea de la base de datos o en forma estática -->
+                <tr>
+                    <td style="display:none;">{{ usuarioTemporal.id}}</td> <!-- Aquí se incluye el id oculto -->
+                    <td>{{ usuarioTemporal.first_name}}</td>
+                    <td>{{ usuarioTemporal.last_name }}</td>                    
+                    <td>{{ usuarioTemporal.is_superuser}}</td>
+                    <td>{{ usuarioTemporal.username}}</td>
+                    <td>{{ usuarioTemporal.tipo_usuario}}</td>
+                    <td>{{ usuarioTemporal.especialidad}}</td>
+                    <td>{{ usuarioTemporal.date_joined}}</td>
+                    <td>{{ usuarioTemporal.last_login}}</td>                                        
+                    <td>{{ usuarioTemporal.is_staff}}</td>
+                    <td>{{ usuarioTemporal.is_active}}</td>                    
+                    <td>{{ usuarioTemporal.email}}</td>
+                    <td style="display:none;">{{ usuarioTemporal.password}}</td>                                                           
+                    <td>
+                        <a href="#" class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoUsuariosModal" data-id="{{ usuarioTemporal.id }}">Editar</a>
+                        <a href="#" class="btn btn-danger btn-delete" data-id="{{ usuarioTemporal.id }}">Eliminar</a>                    
+                    </td>
+                </tr>
+                {% endfor %}
+                <!-- Más filas aquí... -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para agregar un nuevo usuario -->
+    <div class="modal fade" id="addIngresoUsuariosModal" tabindex="-1" aria-labelledby="addIngresoUsuariosLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addIngresoUsuariosLabel">Nuevo Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario para agregar un paciente -->
+                    <form id="formAddUsuario" method="POST" action="{% url 'administradores:agregar_usuario' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <!-- Nombre -->
+                            <label for="first_name" class="form-label">Nombre: </label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            
+                            <!-- Apellido -->
+                            <label for="last_name" class="form-label">Apellido: </label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            
+                            <!-- Nombre de Usuario -->
+                            <label for="username" class="form-label">Nombre de usuario: </label>
+                            <input type="text" class="form-control" id="username" name="username" required>                                                                                 
+                                
+                            <!-- Tipo de Usuario -->
+                            <div class="mb-3">
+                                <label for="tipo_usuario" class="form-label">Tipo de Usuario:</label>
+                                <select class="form-select" id="tipo_usuario" name="tipo_usuario" required> 
+                                    <option value="" disabled selected>Seleccione un tipo</option>
+                                    <option value="admisionista">Admisionista</option>
+                                    <option value="doctor">Doctor</option>
+                                    <option value="administrador">Administrador</option>
+                                </select>
+                            </div>
+                        
+                            <!-- Especialidad -->
+                            <div class="mb-3">
+                                <label for="especialidad" class="form-label">Especialidad:</label>
+                                <select class="form-select" id="especialidad" name="especialidad" required>
+                                    <option value="" disabled selected>Seleccione una especialidad</option>
+                                    <option value="medico_general">Médico General</option>
+                                    <option value="admisionista">Admisionista</option>
+                                    <option value="administrador">Administrador</option>
+                                </select>
+                            </div>
+
+                            <!-- SuperUser -->
+                            <label for="is_superuser" class="form-label">SuperUsuario:</label>
+                            <input type="hidden" name="is_superuser" value="false"> <!-- Campo oculto -->
+                            <input type="checkbox" class="form-check-input" id="is_superuser" name="is_superuser" value="True">
+
+                            <br>
+                            <!-- Staff -->
+                            <label for="is_staff" class="form-label">Staff:</label>
+                            <input type="hidden" name="is_staff" value="false"> <!-- Campo oculto -->
+                            <input type="checkbox" class="form-check-input" id="is_staff" name="is_staff" value="True">
+                            
+                            <br>
+                            <!-- Estado -->
+                            <label for="is_active" class="form-label">Activo:</label>
+                            <input type="hidden" name="is_active" value="false"> <!-- Campo oculto -->
+                            <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="True">
+                            <br>
+
+                            <!-- Email -->
+                            <label for="email" class="form-label">Email: </label>
+                            <input type="email" class="form-control" id="email" name="email" required>                                                        
+                            
+                        
+                            <!-- Password -->
+                            <label for="password" class="form-label">Password: </label>
+                            <input type="password" class="form-control" id="password" name="password" required>    
+                            
+                            
+                        </div>
+                        
+
+                        <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <br><br><br><br><br>
+
         
 {% endblock %}
