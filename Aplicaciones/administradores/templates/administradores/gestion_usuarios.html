@@ -73,20 +73,20 @@ GESTIÓN USUARIOS
                         {% csrf_token %}
                         <div class="mb-3">
                             <!-- Nombre -->
-                            <label for="first_name" class="form-label">Nombre: </label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            <b><label for="first_name" class="form-label">Nombre: </label></b>
+                            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Escriba el nombre del usuario (Ej.: Juan)" required>
                             
                             <!-- Apellido -->
-                            <label for="last_name" class="form-label">Apellido: </label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            <b><label for="last_name" class="form-label">Apellido: </label></b>                            
+                            <input type="text" class="form-control" id="last_name" name="last_name"placeholder="Escriba el apellido del usuario (Ej.: Ramirez)" required>
                             
                             <!-- Nombre de Usuario -->
-                            <label for="username" class="form-label">Nombre de usuario: </label>
-                            <input type="text" class="form-control" id="username" name="username" required>                                                                                 
+                            <b><label for="username" class="form-label">Nombre de usuario: </label></b>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Escriba el nickname usuario (Ej.: juanram3)"required>                                                                                 
                                 
                             <!-- Tipo de Usuario -->
                             <div class="mb-3">
-                                <label for="tipo_usuario" class="form-label">Tipo de Usuario:</label>
+                                <b><label for="tipo_usuario" class="form-label">Tipo de Usuario:</label></b>
                                 <select class="form-select" id="tipo_usuario" name="tipo_usuario" required> 
                                     <option value="" disabled selected>Seleccione un tipo</option>
                                     <option value="admisionista">Admisionista</option>
@@ -97,7 +97,7 @@ GESTIÓN USUARIOS
                         
                             <!-- Especialidad -->
                             <div class="mb-3">
-                                <label for="especialidad" class="form-label">Especialidad:</label>
+                                <b><label for="especialidad" class="form-label">Especialidad:</label></b>
                                 <select class="form-select" id="especialidad" name="especialidad" required>
                                     <option value="" disabled selected>Seleccione una especialidad</option>
                                     <option value="medico_general">Médico General</option>
@@ -107,32 +107,45 @@ GESTIÓN USUARIOS
                             </div>
 
                             <!-- SuperUser -->
-                            <label for="is_superuser" class="form-label">SuperUsuario:</label>
+                            <b><label for="is_superuser" class="form-label">SuperUsuario:</label></b>
                             <input type="hidden" name="is_superuser" value="false"> <!-- Campo oculto -->
                             <input type="checkbox" class="form-check-input" id="is_superuser" name="is_superuser" value="True">
 
                             <br>
                             <!-- Staff -->
-                            <label for="is_staff" class="form-label">Staff:</label>
+                            <b><label for="is_staff" class="form-label">Staff:</label></b>
                             <input type="hidden" name="is_staff" value="false"> <!-- Campo oculto -->
                             <input type="checkbox" class="form-check-input" id="is_staff" name="is_staff" value="True">
                             
                             <br>
                             <!-- Estado -->
-                            <label for="is_active" class="form-label">Activo:</label>
+                            <b><label for="is_active" class="form-label">Activo:</label></b>
                             <input type="hidden" name="is_active" value="false"> <!-- Campo oculto -->
                             <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="True">
                             <br>
 
                             <!-- Email -->
-                            <label for="email" class="form-label">Email: </label>
-                            <input type="email" class="form-control" id="email" name="email" required>                                                        
+                            <b><label for="email" class="form-label">Email: </label></b>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Escriba el email del usuario (Ej.: juanram3@gmail.com)"required>                                                        
                             
                         
-                            <!-- Password -->
-                            <label for="password" class="form-label">Password: </label>
-                            <input type="password" class="form-control" id="password" name="password" required>    
-                            
+                            <!-- Contraseña -->
+                             <!-- Password -->
+                            <b><label for="password" class="form-label">Contraseña: </label></b>
+                            <div class="input-group mb-3">
+                                <input type="password" class="form-control" id="password" name="password"
+                                    placeholder="Escriba una contraseña segura" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">Mostrar</button>
+                            </div>
+
+                            <!-- Confirm Password
+                            <label for="confirm_password" class="form-label">Confirmar Password: </label>
+                            <div class="input-group mb-3">
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                                    placeholder="Confirme la contraseña" required>
+                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">Mostrar</button>
+                            </div> -->
+
                             
                         </div>
                         

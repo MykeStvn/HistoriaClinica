@@ -77,7 +77,23 @@ button:hover {
 
 #olvidar_contraseña {
     color: #fd5093;
-    text-decoration: none;
+    text-decoration: none;    
+}
 
-    
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.input-group .form-control {
+    flex: 1;
+}
+
+.input-group .input-group-text {
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
 }
