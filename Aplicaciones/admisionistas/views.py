@@ -6,26 +6,7 @@ from Aplicaciones.admisionistas.models import Pacientes
 from Aplicaciones.usuarios.models import Usuarios
 from django.views.decorators.csrf import csrf_exempt
 
-# Vista para obtener todos los datos del paciente
 
-def obtener_pacientes(request):
-    pacientes = Pacientes.objects.all().values(
-        'id_pacientes',  # Asegúrate de incluir el id
-        'apellido_paterno_pacientes',
-        'apellido_materno_pacientes', 
-        'nombres_pacientes', 
-        'cedula_pacientes', 
-        'fecha_nacimiento_pacientes', 
-        'direccion_pacientes', 
-        'email_pacientes', 
-        'genero_pacientes',
-        'telefono_pacientes', 
-        'emergencia_informar_pacientes',
-        'contacto_emergencia_pacientes',
-        'seguro_pacientes',
-        'fk_id_admisionista__username'  # Relación de admisionista
-    )
-    return JsonResponse({'pacientes': list(pacientes)})
 
 # Vista para buscar pacientes por cédula (BUSCADOR)
 def buscar_pacientes(request):
@@ -67,6 +48,7 @@ def agregar_paciente(request):
         fecha_nacimiento_pacientes = request.POST.get('fecha_nacimiento_pacientes')
         direccion_pacientes = request.POST.get('direccion_pacientes')
         email_pacientes = request.POST.get('email_pacientes')
+        estado_civil_pacientes = request.POST.get('estado_civil_pacientes')
         genero_pacientes = request.POST.get('genero_pacientes')
         # Si el género es "Otro", usa el valor ingresado por el usuario
         if genero_pacientes == 'Otro':
@@ -93,6 +75,7 @@ def agregar_paciente(request):
             fecha_nacimiento_pacientes=fecha_nacimiento_pacientes,
             direccion_pacientes=direccion_pacientes,
             email_pacientes=email_pacientes,
+            estado_civil_pacientes = estado_civil_pacientes,
             genero_pacientes=genero_pacientes,
             telefono_pacientes=telefono_pacientes,
             emergencia_informar_pacientes=emergencia_informar_pacientes,
@@ -112,6 +95,7 @@ def agregar_paciente(request):
             'edad': edad_paciente,
             'direccion': paciente.direccion_pacientes,
             'email': paciente.email_pacientes,
+            'estado_civil': paciente.estado_civil_pacientes,
             'genero': paciente.genero_pacientes,
             'telefono': paciente.telefono_pacientes,
             'emergencia_informar': paciente.emergencia_informar_pacientes,
@@ -138,6 +122,7 @@ def obtener_paciente(request, paciente_id):
                 'fecha_nacimiento': paciente.fecha_nacimiento_pacientes,
                 'direccion': paciente.direccion_pacientes,
                 'email': paciente.email_pacientes,
+                'estado_civil': paciente.estado_civil_pacientes,
                 'genero': paciente.genero_pacientes,
                 'telefono': paciente.telefono_pacientes,
                 'emergencia_informar': paciente.emergencia_informar_pacientes,
@@ -165,6 +150,7 @@ def actualizar_paciente(request):
             paciente.cedula_pacientes = request.POST.get('cedula_pacientes')
             paciente.direccion_pacientes = request.POST.get('direccion_pacientes')
             paciente.email_pacientes = request.POST.get('email_pacientes')
+            paciente.estado_civil_pacientes = request.POST.get('estado_civil_pacientes')
 
             # Manejo del género
             genero = request.POST.get('genero_pacientes')
@@ -211,6 +197,7 @@ def actualizar_paciente(request):
                     'edad': edad,
                     'direccion': paciente.direccion_pacientes,
                     'email': paciente.email_pacientes,
+                    'estado_civil': paciente.estado_civil_pacientes,
                     'genero': paciente.genero_pacientes,
                     'telefono': paciente.telefono_pacientes,
                     'emergencia_informar': paciente.emergencia_informar_pacientes,
@@ -241,11 +228,53 @@ def eliminar_paciente(request, paciente_id):
         except Pacientes.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Paciente no encontrado'})
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
+
+
+#validación cédula ECUATORIANA
+# Función para validar el dígito verificador de la cédula
+def validar_cedula(cedula):
+    # Validar longitud
+    if len(cedula) != 10:
+        return False
+    
+    # Validar los dos primeros dígitos (provincia) [01-24]
+    provincia = int(cedula[:2])
+    if provincia < 1 or provincia > 24:
+        return False
+    
+    # Validar el tercer dígito [0-5]
+    tercer_digito = int(cedula[2])
+    if tercer_digito < 0 or tercer_digito > 5:
+        return False
+
+    # Coeficientes para el cálculo del dígito verificador
+    coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]
+    suma = 0
+
+    # Multiplicar cada dígito de la cédula por su coeficiente y ajustar si es mayor o igual a 10
+    for i in range(9):
+        resultado = int(cedula[i]) * coeficientes[i]
+        if resultado >= 10:
+            resultado -= 9
+        suma += resultado
+
+    # Calcular la decena superior de la suma
+    decena_superior = (suma // 10 + 1) * 10
+
+    # Calcular el dígito verificador
+    digito_verificador = decena_superior - suma
+
+    # Verificar si el dígito verificador coincide con el décimo dígito
+    return digito_verificador == int(cedula[9])
+
 #verifico cédula INGRESAR
 @login_required
 def verificar_cedula(request):
     if request.method == 'POST':
         cedula = request.POST.get('cedula_pacientes')  # Campo esperado del formulario
+        # Validación de la cédula
+        if not validar_cedula(cedula):
+            return JsonResponse({'exists': True, 'valid': False, 'message': 'Cédula inválida'})
         # Verificar si la cédula existe en la base de datos
         exists = Pacientes.objects.filter(cedula_pacientes=cedula).exists()
         return JsonResponse({'exists': exists})

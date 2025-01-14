@@ -21,6 +21,7 @@ class Pacientes(models.Model):
     fecha_nacimiento_pacientes = models.DateField()
     direccion_pacientes = models.TextField()
     email_pacientes = models.EmailField(max_length=254)
+    estado_civil_pacientes = models.TextField(max_length=254,null=True,blank=True)
     genero_pacientes = models.CharField(max_length=255)
     telefono_pacientes = models.CharField(max_length=15)
     emergencia_informar_pacientes = models.CharField(max_length=255)

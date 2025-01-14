@@ -55,7 +55,7 @@ $(document).ready(function () {
 
     // Preguntar al usuario si está seguro de eliminar
     Swal.fire({
-      title: "¿Estás seguro de eliminar este paciente?",      
+      title: "¿Estás seguro de eliminar este paciente?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -69,7 +69,7 @@ $(document).ready(function () {
           url: "/admisionistas/eliminar_paciente/" + pacienteId + "/",
           method: "DELETE", // O el método adecuado según tu backend
           success: function (response) {
-            if (response.status === "success") {              
+            if (response.status === "success") {
               // Mostrar Toastify al eliminar
               Toastify({
                 text: "Paciente eliminado correctamente.",
@@ -139,6 +139,9 @@ $(document).ready(function () {
           required: true,
           email: true
         },
+        estado_civil_pacientes: {
+          required: true,
+        },
         telefono_pacientes: {
           required: true,
           minlength: 10,
@@ -179,7 +182,7 @@ $(document).ready(function () {
           required: "Por favor, ingrese la cédula.",
           minlength: "La cédula debe tener al menos 10 caracteres.",
           maxlength: "La cédula no puede exceder los 10 caracteres.",
-          remote: "Esta cédula ya está registrada en el sistema."
+          remote: "Esta cédula ya está registrada en el sistema o no es ecuatoriana."
         },
         fecha_nacimiento_pacientes: {
           required: "Por favor, ingrese la fecha de nacimiento.",
@@ -192,6 +195,9 @@ $(document).ready(function () {
         email_pacientes: {
           required: "Por favor, ingrese el correo electrónico.",
           email: "Por favor, ingrese un correo electrónico válido."
+        },
+        estado_civil_pacientes:{
+          required: "Por favor, selecciona el estado civíl"
         },
         telefono_pacientes: {
           required: "Por favor, ingrese el teléfono.",
@@ -248,14 +254,16 @@ $(document).ready(function () {
                 edad: response.paciente.edad,
                 direccion_pacientes: response.paciente.direccion,
                 email_pacientes: response.paciente.email,
+                estado_civil_pacientes: response.paciente.estado_civil,
                 genero_pacientes: response.paciente.genero,
                 telefono_pacientes: response.paciente.telefono,
                 emergencia_informar_pacientes: response.paciente.emergencia_informar,
                 contacto_emergencia_pacientes: response.paciente.contacto_emergencia,
                 seguro_pacientes: response.paciente.seguro,
                 fk_id_admisionista__username: response.paciente.admisionista,
-                acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
-                                      <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
+                acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Ver Detalles</a>
+                          <a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
+                          <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
               }).draw(false);
 
               Toastify({
@@ -283,13 +291,91 @@ $(document).ready(function () {
     });
   });
 
+  //EL BOTON EDIT ESTABA AQUI 
+
+  //cargar los datos en el botón ver detalles
+  $(document).on("click", ".view-btn", function () {
+    var pacienteId = $(this).data("id"); // Obtener el ID del paciente desde el atributo data-id
+    verPaciente(pacienteId);
+  });
+  // Hacer una solicitud AJAX a tu vista en Django
+  function verPaciente(pacienteId) {
+    //Cierre de moda si esta abierto
+    $("viewPacienteModal").modal("hide");
+    $.ajax({
+      url: "/admisionistas/obtener_paciente/" + pacienteId + "/",
+      method: "GET",
+      success: function (data) {
+        $("#view_pacienteId").val(data.paciente.id_pacientes);
+        $("#view_apellido_paterno_pacientes").val(
+          data.paciente.apellido_paterno
+        );
+        $("#view_apellido_materno_pacientes").val(
+          data.paciente.apellido_materno
+        );
+        $("#view_nombres_pacientes").val(data.paciente.nombres);
+        $("#view_cedula_pacientes").val(data.paciente.cedula);
+        $("#view_fecha_nacimiento_pacientes").val(
+          data.paciente.fecha_nacimiento
+        );
+        $("#view_direccion_pacientes").val(data.paciente.direccion);
+        $("#view_email_pacientes").val(data.paciente.email);
+        $("#view_estado_civil_pacientes").val(data.paciente.estado_civil);
+        $("#view_telefono_pacientes").val(data.paciente.telefono);
+        $("#view_emergencia_informar_pacientes").val(
+          data.paciente.emergencia_informar
+        );
+        $("#view_contacto_emergencia_pacientes").val(
+          data.paciente.contacto_emergencia
+        );
+        $("#view_fk_id_admisionista").val(data.paciente.admisionista);
+
+        // Género
+        if (
+          data.paciente.genero !== "Masculino" &&
+          data.paciente.genero !== "Femenino"
+        ) {
+          $("#view_genero_otro_div").show();
+          $("#view_genero_otro").val(data.paciente.genero);
+          $("#view_genero_pacientes").val("Otro");
+        } else {
+          $("#view_genero_otro_div").hide();
+          $("#view_genero_otro").val("");
+          $("#view_genero_pacientes").val(data.paciente.genero);
+        }
+
+        // Seguro
+        if (
+          data.paciente.seguro !== "IESS" &&
+          data.paciente.seguro !== "ISSPOL" &&
+          data.paciente.seguro !== "ISSFA"
+        ) {
+          $("#view_seguro_otro_div").show();
+          $("#view_seguro_otro").val(data.paciente.seguro);
+          $("#view_seguro_pacientes_select").val("Otro");
+        } else {
+          $("#view_seguro_otro_div").hide();
+          $("#view_seguro_otro").val("");
+          $("#view_seguro_pacientes").val(data.paciente.seguro);
+        }
+
+        $("#viewIngresoPacientesModal").modal("show");
+      },
+      error: function () {
+        alert("Error al obtener los datos del paciente.");
+      },
+    });
+  }
+  
+
   // FUNCION PARA MOSTRAR MODAL CON DATOS AL DAR CLICK EN EL BOTON DE EDITAR
 
   $(document).on("click", ".edit-btn", function () {
     var pacienteId = $(this).data("id");
     editarPaciente(pacienteId);
   });
-  
+
+
   // Función para cargar datos de un paciente en el modal de edición
   function editarPaciente(pacienteId) {
     // Cierra el modal si está abierto
@@ -312,6 +398,7 @@ $(document).ready(function () {
         );
         $("#edit_direccion_pacientes").val(data.paciente.direccion);
         $("#edit_email_pacientes").val(data.paciente.email);
+        $("#edit_estado_civil_pacientes").val(data.paciente.estado_civil);
         $("#edit_telefono_pacientes").val(data.paciente.telefono);
         $("#edit_emergencia_informar_pacientes").val(
           data.paciente.emergencia_informar
@@ -358,125 +445,59 @@ $(document).ready(function () {
     });
   }
 
-
-  $(document).on("click", ".view-btn", function () {
-    var pacienteId = $(this).data("id");
-    verPaciente(pacienteId);
-  });
-  // Función para cargar datos de un paciente en el modal de visualización
-  function verPaciente(pacienteId) {
-    // Cierra el modal si está abierto
-    $("#editVerPacientesModal").modal("hide");
-    $.ajax({
-      url: "/admisionistas/obtener_paciente/" + pacienteId + "/",
-      method: "GET",
-      success: function (data) {
-        $("#edit_pacienteId").val(data.paciente.id_pacientes);
-        $("#edit_apellido_paterno_pacientes").val(
-          data.paciente.apellido_paterno
-        );
-        $("#edit_apellido_materno_pacientes").val(
-          data.paciente.apellido_materno
-        );
-        $("#edit_nombres_pacientes").val(data.paciente.nombres);
-        $("#edit_cedula_pacientes").val(data.paciente.cedula);
-        $("#edit_fecha_nacimiento_pacientes").val(
-          data.paciente.fecha_nacimiento
-        );
-        $("#edit_direccion_pacientes").val(data.paciente.direccion);
-        $("#edit_email_pacientes").val(data.paciente.email);
-        $("#edit_telefono_pacientes").val(data.paciente.telefono);
-        $("#edit_emergencia_informar_pacientes").val(
-          data.paciente.emergencia_informar
-        );
-        $("#edit_contacto_emergencia_pacientes").val(
-          data.paciente.contacto_emergencia
-        );
-        $("#edit_fk_id_admisionista").val(data.paciente.admisionista);
-
-        // Género
-        if (
-          data.paciente.genero !== "Masculino" &&
-          data.paciente.genero !== "Femenino"
-        ) {
-          $("#edit_genero_otro_div").show();
-          $("#edit_genero_otro").val(data.paciente.genero);
-          $("#edit_genero_pacientes_select").val("Otro");
-        } else {
-          $("#edit_genero_otro_div").hide();
-          $("#edit_genero_otro").val("");
-          $("#edit_genero_pacientes_select").val(data.paciente.genero);
-        }
-
-        // Seguro
-        if (
-          data.paciente.seguro !== "IESS" &&
-          data.paciente.seguro !== "ISSPOL" &&
-          data.paciente.seguro !== "ISSFA"
-        ) {
-          $("#edit_seguro_otro_div").show();
-          $("#edit_seguro_otro").val(data.paciente.seguro);
-          $("#edit_seguro_pacientes_select").val("Otro");
-        } else {
-          $("#edit_seguro_otro_div").hide();
-          $("#edit_seguro_otro").val("");
-          $("#edit_seguro_pacientes_select").val(data.paciente.seguro);
-        }
-
-        $("#editVerPacientesModal").modal("show");
-      },
-      error: function () {
-        alert("Error al obtener los datos del paciente.");
-      },
-    });
-  }
-
-
   // Lógica para mostrar/ocultar el campo "Otro" en el formulario de género
-  $("#genero_pacientes_select, #edit_genero_pacientes_select").on(
+  $("#genero_pacientes_select, #edit_genero_pacientes_select, #view_genero_pacientes").on(
     "change",
     function () {
       const value = $(this).val();
-      const generoOtroDiv =
-        $(this).attr("id") === "genero_pacientes_select"
-          ? $("#genero_otro_div")
-          : $("#edit_genero_otro_div");
-      const generoOtroInput =
-        $(this).attr("id") === "genero_pacientes_select"
-          ? $("#genero_otro")
-          : $("#edit_genero_otro");
+      let generoOtroDiv, generoOtroInput;
+
+      if ($(this).attr("id") === "genero_pacientes_select") {
+        generoOtroDiv = $("#genero_otro_div");
+        generoOtroInput = $("#genero_otro");
+      } else if ($(this).attr("id") === "edit_genero_pacientes_select") {
+        generoOtroDiv = $("#edit_genero_otro_div");
+        generoOtroInput = $("#edit_genero_otro");
+      } else if ($(this).attr("id") === "view_genero_pacientes") {
+        generoOtroDiv = $("#view_genero_otro_div");
+        generoOtroInput = $("#view_genero_otro");
+      }
 
       if (value === "Otro") {
         generoOtroDiv.show();
         generoOtroInput.prop("required", true);
       } else {
         generoOtroDiv.hide();
-        generoOtroInput.val(""); // Limpia el valor si no es "Otro"
+        generoOtroInput.val("");
         generoOtroInput.prop("required", false);
       }
     }
   );
 
   // Lógica para mostrar/ocultar el campo "Otro" en el formulario de seguro
-  $("#seguro_pacientes_select, #edit_seguro_pacientes_select").on(
+  $("#seguro_pacientes_select, #edit_seguro_pacientes_select, #view_seguro_pacientes").on(
     "change",
     function () {
       const value = $(this).val();
-      const seguroOtroDiv =
-        $(this).attr("id") === "seguro_pacientes_select"
-          ? $("#seguro_otro_div")
-          : $("#edit_seguro_otro_div");
-      const seguroOtroInput =
-        $(this).attr("id") === "seguro_pacientes_select"
-          ? $("#seguro_otro")
-          : $("#edit_seguro_otro");
+      let seguroOtroDiv, seguroOtroInput;
+
+      if ($(this).attr("id") === "seguro_pacientes_select") {
+        seguroOtroDiv = $("#seguro_otro_div");
+        seguroOtroInput = $("#seguro_otro");
+      } else if ($(this).attr("id") === "edit_seguro_pacientes_select") {
+        seguroOtroDiv = $("#edit_seguro_otro_div");
+        seguroOtroInput = $("#edit_seguro_otro");
+      } else if ($(this).attr("id") === "view_seguro_pacientes") {
+        seguroOtroDiv = $("#view_seguro_otro_div");
+        seguroOtroInput = $("#view_seguro_otro");
+      }
 
       if (value === "Otro") {
         seguroOtroDiv.show();
         seguroOtroInput.prop("required", true);
       } else {
         seguroOtroDiv.hide();
-        seguroOtroInput.val(""); // Limpia el valor si no es "Otro"
+        seguroOtroInput.val("");
         seguroOtroInput.prop("required", false);
       }
     }
@@ -486,163 +507,169 @@ $(document).ready(function () {
   $(document).ready(function () {
     // Validación del formulario de editar paciente
     $("#formEditPaciente").validate({
-        rules: {
-            apellido_paterno_pacientes: {
-                required: true,
-                maxlength: 50
-            },
-            apellido_materno_pacientes: {
-                required: true,
-                maxlength: 50
-            },
-            nombres_pacientes: {
-                required: true,
-                maxlength: 100
-            },
-            cedula_pacientes: {
-                required: true,
-                minlength: 10,
-                maxlength: 10
-            },
-            fecha_nacimiento_pacientes: {
-                required: true,
-                date: true
-            },
-            direccion_pacientes: {
-                required: true,
-                maxlength: 200
-            },
-            email_pacientes: {
-                required: true,
-                email: true
-            },
-            telefono_pacientes: {
-                required: true,
-                minlength: 10,
-                maxlength: 15
-            },
-            emergencia_informar_pacientes: {
-                required: true,
-                maxlength: 100
-            },
-            contacto_emergencia_pacientes: {
-                required: true,
-                maxlength: 100
-            },
-            genero_pacientes: {
-                required: true
-            },
-            seguro_pacientes: {
-                required: true
-            },
-            fk_id_admisionista: {
-                required: true
-            }
+      rules: {
+        apellido_paterno_pacientes: {
+          required: true,
+          maxlength: 50
         },
-        messages: {
-            apellido_paterno_pacientes: {
-                required: "Por favor, ingrese el apellido paterno.",
-                maxlength: "El apellido paterno no puede exceder los 50 caracteres."
-            },
-            apellido_materno_pacientes: {
-                required: "Por favor, ingrese el apellido materno.",
-                maxlength: "El apellido materno no puede exceder los 50 caracteres."
-            },
-            nombres_pacientes: {
-                required: "Por favor, ingrese los nombres.",
-                maxlength: "El nombre no puede exceder los 100 caracteres."
-            },
-            cedula_pacientes: {
-                required: "Por favor, ingrese la cédula.",
-                minlength: "La cédula debe tener al menos 10 caracteres.",
-                maxlength: "La cédula no puede exceder los 10 caracteres."
-            },
-            fecha_nacimiento_pacientes: {
-                required: "Por favor, ingrese la fecha de nacimiento.",
-                date: "Por favor, ingrese una fecha válida."
-            },
-            direccion_pacientes: {
-                required: "Por favor, ingrese la dirección.",
-                maxlength: "La dirección no puede exceder los 200 caracteres."
-            },
-            email_pacientes: {
-                required: "Por favor, ingrese el correo electrónico.",
-                email: "Por favor, ingrese un correo electrónico válido."
-            },
-            telefono_pacientes: {
-                required: "Por favor, ingrese el teléfono.",
-                minlength: "El teléfono debe tener al menos 10 caracteres.",
-                maxlength: "El teléfono no puede exceder los 15 caracteres."
-            },
-            emergencia_informar_pacientes: {
-                required: "Por favor, ingrese el nombre de la persona a la que se debe informar en caso de emergencia.",
-                maxlength: "El nombre de la persona no puede exceder los 100 caracteres."
-            },
-            contacto_emergencia_pacientes: {
-                required: "Por favor, ingrese el contacto de emergencia.",
-                maxlength: "El contacto de emergencia no puede exceder los 100 caracteres."
-            },
-            genero_pacientes: {
-                required: "Por favor, seleccione el género."
-            },
-            seguro_pacientes: {
-                required: "Por favor, seleccione el seguro médico."
-            },
-            fk_id_admisionista: {
-                required: "Este campo es obligatorio."
-            }
+        apellido_materno_pacientes: {
+          required: true,
+          maxlength: 50
         },
-        errorClass: "invalid",
-        validClass: "valid",
-        errorPlacement: function (error, element) {
-            error.addClass("invalid-feedback");
-            element.closest('.mb-3').append(error);
+        nombres_pacientes: {
+          required: true,
+          maxlength: 100
         },
-        highlight: function (element) {
-            $(element).addClass("is-invalid").removeClass("is-valid");
+        cedula_pacientes: {
+          required: true,
+          minlength: 10,
+          maxlength: 10
         },
-        unhighlight: function (element) {
-            $(element).removeClass("is-invalid").addClass("is-valid");
+        fecha_nacimiento_pacientes: {
+          required: true,
+          date: true
         },
-        submitHandler: function (form) {
-            var formData = $(form).serialize();
-            $.ajax({
-                url: "/admisionistas/actualizar_paciente/", // URL de tu endpoint de actualización
-                method: "POST",
-                data: formData,
-                dataType: 'json',
-                success: function (response) {
-                    if (response.status === "success") {
-                        Toastify({
-                            text: "Paciente actualizado correctamente",
-                            duration: 5000,
-                            close: true,
-                            gravity: "bottom",
-                            position: "right",
-                            backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
-                        }).showToast();
-
-                        $("#editIngresoPacientesModal").modal("hide");
-                        $(".modal-backdrop").remove();
-                        $("body").removeClass("modal-open");
-                    } else {
-                        Toastify({
-                            text: "Cédula duplicada, imposible actualizar.",
-                            duration: 5000,
-                            close: true,
-                            gravity: "bottom",
-                            position: "right",
-                            backgroundColor: "linear-gradient(to right, #FF3B30, #FF5C5C)",
-                        }).showToast();
-                        console.error("Error del servidor:", response);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error en la petición AJAX:", status, error, xhr.responseText);
-                    alert("Hubo un problema al actualizar el paciente. Revisa la consola.");
-                }
-            });
+        direccion_pacientes: {
+          required: true,
+          maxlength: 200
+        },
+        email_pacientes: {
+          required: true,
+          email: true
+        },
+        estado_civil: {
+          required: true
+        },
+        telefono_pacientes: {
+          required: true,
+          minlength: 10,
+          maxlength: 15
+        },
+        emergencia_informar_pacientes: {
+          required: true,
+          maxlength: 100
+        },
+        contacto_emergencia_pacientes: {
+          required: true,
+          maxlength: 100
+        },
+        genero_pacientes: {
+          required: true
+        },
+        seguro_pacientes: {
+          required: true
+        },
+        fk_id_admisionista: {
+          required: true
         }
+      },
+      messages: {
+        apellido_paterno_pacientes: {
+          required: "Por favor, ingrese el apellido paterno.",
+          maxlength: "El apellido paterno no puede exceder los 50 caracteres."
+        },
+        apellido_materno_pacientes: {
+          required: "Por favor, ingrese el apellido materno.",
+          maxlength: "El apellido materno no puede exceder los 50 caracteres."
+        },
+        nombres_pacientes: {
+          required: "Por favor, ingrese los nombres.",
+          maxlength: "El nombre no puede exceder los 100 caracteres."
+        },
+        cedula_pacientes: {
+          required: "Por favor, ingrese la cédula.",
+          minlength: "La cédula debe tener al menos 10 caracteres.",
+          maxlength: "La cédula no puede exceder los 10 caracteres."
+        },
+        fecha_nacimiento_pacientes: {
+          required: "Por favor, ingrese la fecha de nacimiento.",
+          date: "Por favor, ingrese una fecha válida."
+        },
+        direccion_pacientes: {
+          required: "Por favor, ingrese la dirección.",
+          maxlength: "La dirección no puede exceder los 200 caracteres."
+        },
+        email_pacientes: {
+          required: "Por favor, ingrese el correo electrónico.",
+          email: "Por favor, ingrese un correo electrónico válido."
+        },
+        estado_civil:{
+          required: "Por favor, selecciona el estado civíl."
+        },
+        telefono_pacientes: {
+          required: "Por favor, ingrese el teléfono.",
+          minlength: "El teléfono debe tener al menos 10 caracteres.",
+          maxlength: "El teléfono no puede exceder los 15 caracteres."
+        },
+        emergencia_informar_pacientes: {
+          required: "Por favor, ingrese el nombre de la persona a la que se debe informar en caso de emergencia.",
+          maxlength: "El nombre de la persona no puede exceder los 100 caracteres."
+        },
+        contacto_emergencia_pacientes: {
+          required: "Por favor, ingrese el contacto de emergencia.",
+          maxlength: "El contacto de emergencia no puede exceder los 100 caracteres."
+        },
+        genero_pacientes: {
+          required: "Por favor, seleccione el género."
+        },
+        seguro_pacientes: {
+          required: "Por favor, seleccione el seguro médico."
+        },
+        fk_id_admisionista: {
+          required: "Este campo es obligatorio."
+        }
+      },
+      errorClass: "invalid",
+      validClass: "valid",
+      errorPlacement: function (error, element) {
+        error.addClass("invalid-feedback");
+        element.closest('.mb-3').append(error);
+      },
+      highlight: function (element) {
+        $(element).addClass("is-invalid").removeClass("is-valid");
+      },
+      unhighlight: function (element) {
+        $(element).removeClass("is-invalid").addClass("is-valid");
+      },
+      submitHandler: function (form) {
+        var formData = $(form).serialize();
+        $.ajax({
+          url: "/admisionistas/actualizar_paciente/", // URL de tu endpoint de actualización
+          method: "POST",
+          data: formData,
+          dataType: 'json',
+          success: function (response) {
+            if (response.status === "success") {
+              Toastify({
+                text: "Paciente actualizado correctamente",
+                duration: 5000,
+                close: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
+              }).showToast();
+
+              $("#editIngresoPacientesModal").modal("hide");
+              $(".modal-backdrop").remove();
+              $("body").removeClass("modal-open");
+            } else {
+              Toastify({
+                text: "Cédula duplicada, imposible actualizar.",
+                duration: 5000,
+                close: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #FF3B30, #FF5C5C)",
+              }).showToast();
+              console.error("Error del servidor:", response);
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error("Error en la petición AJAX:", status, error, xhr.responseText);
+            alert("Hubo un problema al actualizar el paciente. Revisa la consola.");
+          }
+        });
+      }
     });
-});  
+  });
 });
