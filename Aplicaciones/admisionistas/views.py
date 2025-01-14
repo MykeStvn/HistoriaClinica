@@ -8,32 +8,37 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 
-# Vista para buscar pacientes por cédula (BUSCADOR)
+
+# Vista para buscar pacientes por cédula OK
 def buscar_pacientes(request):
-    pacientes = []  # Inicializa como lista vacía
+    fecha_maxima = date.today()  # Fecha máxima actual (o ajusta según tus necesidades) 
+    pacientes = None  # Inicializa como None para distinguir el estado inicial
     query = request.GET.get('cedula_pacientes')  # Obtén el parámetro de búsqueda desde la solicitud
 
+    #SI HAY UNA BUSQUEDA POR CÉDULA SE MUESTRA SOLO ESE REGISTRO 
     if query:  # Si hay una búsqueda
-        pacientes = Pacientes.objects.filter(cedula_pacientes__icontains=query)  # Realiza la búsqueda
+        pacientes = Pacientes.objects.filter(cedula_pacientes=query)
+        for paciente in pacientes:
+            paciente.edad = calculate_age(paciente.fecha_nacimiento_pacientes)
 
-    for paciente in pacientes:
-        paciente.edad = calculate_age(paciente.fecha_nacimiento_pacientes)
+    return render(request, 'admisionistas/ingreso_pacientes.html', {'pacientes': pacientes, 'fecha_maxima': fecha_maxima})
 
-    return render(request, 'admisionistas/ingreso_pacientes.html', {'pacientes': pacientes})
-
-# Vista para ingresar pacientes OK
+# Vista para ingresar a la pagina de pacientes OK
 @login_required
 def ingreso_pacientes(request):
     if request.user.tipo_usuario != 'admisionista':
         return redirect('usuarios:login')  # Redirige a la página de login si el usuario no es admisionista
     
-    pacientesBdd = Pacientes.objects.all()
-    for paciente in pacientesBdd:
-        paciente.edad = calculate_age(paciente.fecha_nacimiento_pacientes)
+    #LINEAS COMENTADAS YA QUE AL RENDERIZAR LA PAGINA NO NECESITAMOS QUE CARGUE TODOS LOS OBJETOS DE PACIENTES
+    # pacientesBdd = Pacientes.objects.all()
+    # for paciente in pacientesBdd:
+    #     paciente.edad = calculate_age(paciente.fecha_nacimiento_pacientes)
     
     admisionistas = Usuarios.objects.filter(tipo_usuario='admisionista')
-    
-    return render(request, 'admisionistas/ingreso_pacientes.html', {'pacientes': pacientesBdd, 'usuarios': admisionistas})
+    fecha_maxima = date.today().strftime('%Y-%m-%d')  # Fecha actual en formato YYYY-MM-DD
+    #return render(request, 'admisionistas/ingreso_pacientes.html', {'pacientes': pacientesBdd, 'usuarios': admisionistas})    
+    return render(request, 'admisionistas/ingreso_pacientes.html', {'usuarios': admisionistas, 'fecha_maxima': fecha_maxima})
+
 
 
 # Vista para agregar un nuevo paciente OK
@@ -135,7 +140,8 @@ def obtener_paciente(request, paciente_id):
         })
     except Pacientes.DoesNotExist:
         return JsonResponse({'error': 'Paciente no encontrado'}, status=404)
-#Actualizar
+    
+#Vista para actualizar un paciente
 @login_required
 def actualizar_paciente(request):
     if request.method == 'POST':
@@ -216,7 +222,7 @@ def actualizar_paciente(request):
             return JsonResponse({'status': 'error', 'message': f'Error al actualizar: {str(e)}'}) #Devuelve el error
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
 
-#Eliminar
+#Vista para Eliminar un paciente
 @csrf_exempt  # Si tu configuración de CSRF está causando problemas (asegúrate de que se maneje correctamente)
 @login_required
 def eliminar_paciente(request, paciente_id):

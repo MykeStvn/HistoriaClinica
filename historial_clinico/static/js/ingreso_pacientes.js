@@ -49,6 +49,25 @@ $(document).ready(function () {
     },
   });
 
+
+  // CALCULAR FECHA ACTUAL PARA CONFIGURACION DEL CALENDARIO
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputFecha = document.getElementById("fecha_nacimiento_pacientes");
+
+    // Calcular la fecha de hoy
+    const hoy = new Date();
+    const dia = hoy.getDate().toString().padStart(2, "0");
+    const mes = (hoy.getMonth() + 1).toString().padStart(2, "0"); // Enero es 0
+    const anio = hoy.getFullYear();
+
+    // Establecer un rango
+    inputFecha.setAttribute("max", `${anio}-${mes}-${dia}`); // No permite fechas futuras
+    inputFecha.setAttribute("min", "1900-01-01"); // Fecha mínima fija
+  });
+
+
+
   // Evento de clic en el botón de eliminar (delegación de eventos)  OK
   $(document).on("click", ".btn-delete", function () {
     var pacienteId = $(this).data("id"); // Obtén el ID del paciente a eliminar    
@@ -94,50 +113,89 @@ $(document).ready(function () {
   //ingresar paciente
   $(document).ready(function () {
     // Validación del formulario de agregar paciente
+    $.validator.addMethod(
+      "lettersOnly",
+      function (value, element) {
+        return (
+          this.optional(element) || /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)
+        );
+      },
+      "Por favor, ingrese solo letras."
+    );
+    // Validación personalizada para números
+    $.validator.addMethod(
+      "numbersOnly",
+      function (value, element) {
+        return this.optional(element) || /^[0-9]+$/.test(value);
+      },
+      "Por favor, ingrese solo números."
+    );
+    $.validator.addMethod(
+      "validDateRange",
+      function (value, element) {
+        const fechaSeleccionada = new Date(value);
+        const hoy = new Date();
+        const fechaMinima = new Date("1900-01-01");
+
+        return (
+          this.optional(element) ||
+          (fechaSeleccionada >= fechaMinima && fechaSeleccionada <= hoy)
+        );
+      },
+      "Por favor, seleccione una fecha válida dentro del rango permitido."
+    );
+  
+
     $("#formAddPaciente").validate({
       rules: {
         apellido_paterno_pacientes: {
           required: true,
-          maxlength: 50
+          maxlength: 50,
+          lettersOnly: true,
         },
         apellido_materno_pacientes: {
           required: true,
-          maxlength: 50
+          maxlength: 50,
+          lettersOnly: true,
         },
         nombres_pacientes: {
           required: true,
-          maxlength: 100
+          maxlength: 100,
+          lettersOnly: true,
         },
         cedula_pacientes: {
           required: true,
           minlength: 10,
           maxlength: 10,
-          remote: { // Validación remota para la cédula
+          numbersOnly: true,
+          remote: {
+            // Validación remota para la cédula
             url: "/admisionistas/verificar_cedula/", // Cambia la ruta si es necesario
             type: "post",
             data: {
               cedula_pacientes: function () {
                 return $("#cedula_pacientes").val(); // Obtiene el valor de la cédula
               },
-              csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+              csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(),
             },
             dataFilter: function (response) {
               const data = JSON.parse(response);
               return !data.exists; // Retorna true si no existe
-            }
-          }
+            },
+          },
         },
         fecha_nacimiento_pacientes: {
           required: true,
-          date: true
+          date: true,
+          validDateRange: true,
         },
         direccion_pacientes: {
           required: true,
-          maxlength: 200
+          maxlength: 200,
         },
         email_pacientes: {
           required: true,
-          email: true
+          email: true,
         },
         estado_civil_pacientes: {
           required: true,
@@ -145,88 +203,103 @@ $(document).ready(function () {
         telefono_pacientes: {
           required: true,
           minlength: 10,
-          maxlength: 15
+          maxlength: 15,
+          numbersOnly: true,
         },
         emergencia_informar_pacientes: {
           required: true,
-          maxlength: 100
+          maxlength: 100,
+          lettersOnly: true,
         },
         contacto_emergencia_pacientes: {
           required: true,
-          maxlength: 100
+          maxlength: 100,
+          numbersOnly: true,
         },
         genero_pacientes: {
-          required: true
+          required: true,
         },
         seguro_pacientes: {
-          required: true
+          required: true,
         },
         fk_id_admisionista: {
-          required: true
-        }
+          required: true,
+        },
       },
       messages: {
         apellido_paterno_pacientes: {
           required: "Por favor, ingrese el apellido paterno.",
-          maxlength: "El apellido paterno no puede exceder los 50 caracteres."
+          maxlength: "El apellido paterno no puede exceder los 50 caracteres.",
         },
         apellido_materno_pacientes: {
           required: "Por favor, ingrese el apellido materno.",
-          maxlength: "El apellido materno no puede exceder los 50 caracteres."
+          maxlength: "El apellido materno no puede exceder los 50 caracteres.",
         },
         nombres_pacientes: {
           required: "Por favor, ingrese los nombres.",
-          maxlength: "El nombre no puede exceder los 100 caracteres."
+          maxlength: "El nombre no puede exceder los 100 caracteres.",
+          lettersOnly: "Por favor, ingrese solo letras.",
         },
         cedula_pacientes: {
           required: "Por favor, ingrese la cédula.",
+          numbersOnly: "Por favor, ingrese solo números.",
           minlength: "La cédula debe tener al menos 10 caracteres.",
           maxlength: "La cédula no puede exceder los 10 caracteres.",
-          remote: "Esta cédula ya está registrada en el sistema o no es ecuatoriana."
+          
+          remote:
+            "Esta cédula ya está registrada en el sistema o no es ecuatoriana.",
         },
         fecha_nacimiento_pacientes: {
           required: "Por favor, ingrese la fecha de nacimiento.",
-          date: "Por favor, ingrese una fecha válida."
+          date: "Por favor, ingrese una fecha válida.",
+          validDateRange: "Por favor, seleccione una fecha válida dentro del rango permitido.",
         },
         direccion_pacientes: {
           required: "Por favor, ingrese la dirección.",
-          maxlength: "La dirección no puede exceder los 200 caracteres."
+          maxlength: "La dirección no puede exceder los 200 caracteres.",
+          lettersOnly: "Por favor, ingrese solo letras.",
         },
         email_pacientes: {
           required: "Por favor, ingrese el correo electrónico.",
-          email: "Por favor, ingrese un correo electrónico válido."
+          email: "Por favor, ingrese un correo electrónico válido.",
         },
-        estado_civil_pacientes:{
-          required: "Por favor, selecciona el estado civíl"
+        estado_civil_pacientes: {
+          required: "Por favor, selecciona el estado civíl",
         },
         telefono_pacientes: {
           required: "Por favor, ingrese el teléfono.",
           minlength: "El teléfono debe tener al menos 10 caracteres.",
-          maxlength: "El teléfono no puede exceder los 15 caracteres."
+          maxlength: "El teléfono no puede exceder los 15 caracteres.",
+          numbersOnly: "Por favor, ingrese solo números.",
         },
         emergencia_informar_pacientes: {
-          required: "Por favor, ingrese el nombre de la persona a la que se debe informar en caso de emergencia.",
-          maxlength: "El nombre de la persona no puede exceder los 100 caracteres."
+          required:
+            "Por favor, ingrese el nombre de la persona a la que se debe informar en caso de emergencia.",
+          maxlength:
+            "El nombre de la persona no puede exceder los 100 caracteres.",
+          lettersOnly: "Por favor, ingrese solo letras.",
         },
         contacto_emergencia_pacientes: {
-          required: "Por favor, ingrese el contacto de emergencia.",
-          maxlength: "El contacto de emergencia no puede exceder los 100 caracteres."
+          required: "Por favor, ingrese el número de contacto de emergencia.",
+          minlength: "El número de contacto debe tener al menos 10 caracteres.",
+          maxlength:
+            "El contacto de emergencia no puede exceder los 100 caracteres.",
         },
         genero_pacientes: {
-          required: "Por favor, seleccione el género."
+          required: "Por favor, seleccione el género.",
         },
         seguro_pacientes: {
-          required: "Por favor, seleccione el seguro médico."
+          required: "Por favor, seleccione el seguro médico.",
         },
         fk_id_admisionista: {
-          required: "Este campo es obligatorio."
-        }
+          required: "Este campo es obligatorio.",
+        },
       },
       errorClass: "invalid",
       validClass: "valid",
       errorPlacement: function (error, element) {
         error.addClass("invalid-feedback");
-        element.closest('.mb-3').append(error);
+        element.after(error); // Colocar el mensaje de error después del campo
       },
       highlight: function (element, errorClass, validClass) {
         $(element).addClass("is-invalid").removeClass("is-valid");
@@ -243,28 +316,36 @@ $(document).ready(function () {
           success: function (response) {
             if (response.status === "success") {
               var table = $("#tabla_pacientes").DataTable();
-              let fechaFormateada = moment(response.paciente.fecha_nacimiento).locale('es').format('DD [de] MMMM [de] YYYY');
-              table.row.add({
-                id_pacientes: response.paciente.id_pacientes,
-                apellido_paterno_pacientes: response.paciente.apellido_paterno,
-                apellido_materno_pacientes: response.paciente.apellido_materno,
-                nombres_pacientes: response.paciente.nombres,
-                cedula_pacientes: response.paciente.cedula,
-                fecha_nacimiento_pacientes: fechaFormateada,
-                edad: response.paciente.edad,
-                direccion_pacientes: response.paciente.direccion,
-                email_pacientes: response.paciente.email,
-                estado_civil_pacientes: response.paciente.estado_civil,
-                genero_pacientes: response.paciente.genero,
-                telefono_pacientes: response.paciente.telefono,
-                emergencia_informar_pacientes: response.paciente.emergencia_informar,
-                contacto_emergencia_pacientes: response.paciente.contacto_emergencia,
-                seguro_pacientes: response.paciente.seguro,
-                fk_id_admisionista__username: response.paciente.admisionista,
-                acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Ver Detalles</a>
+              let fechaFormateada = moment(response.paciente.fecha_nacimiento)
+                .locale("es")
+                .format("DD [de] MMMM [de] YYYY");
+              table.row
+                .add({
+                  id_pacientes: response.paciente.id_pacientes,
+                  apellido_paterno_pacientes:
+                    response.paciente.apellido_paterno,
+                  apellido_materno_pacientes:
+                    response.paciente.apellido_materno,
+                  nombres_pacientes: response.paciente.nombres,
+                  cedula_pacientes: response.paciente.cedula,
+                  fecha_nacimiento_pacientes: fechaFormateada,
+                  edad: response.paciente.edad,
+                  direccion_pacientes: response.paciente.direccion,
+                  email_pacientes: response.paciente.email,
+                  estado_civil_pacientes: response.paciente.estado_civil,
+                  genero_pacientes: response.paciente.genero,
+                  telefono_pacientes: response.paciente.telefono,
+                  emergencia_informar_pacientes:
+                    response.paciente.emergencia_informar,
+                  contacto_emergencia_pacientes:
+                    response.paciente.contacto_emergencia,
+                  seguro_pacientes: response.paciente.seguro,
+                  fk_id_admisionista__username: response.paciente.admisionista,
+                  acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Ver Detalles</a>
                           <a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
-                          <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`
-              }).draw(false);
+                          <a href="#" class="btn btn-danger btn-delete" data-id="${response.paciente.id_pacientes}">Eliminar</a>`,
+                })
+                .draw(false);
 
               Toastify({
                 text: "Paciente guardado correctamente",
@@ -279,15 +360,20 @@ $(document).ready(function () {
               $("#addIngresoPacientesModal").modal("hide");
               $(".modal-backdrop").remove();
               $("body").removeClass("modal-open");
+            } else if (response.status === "cedula_exists") {
+              $("#cedula_pacientes").addClass("is-invalid");
+              $("#cedula_pacientes").after(
+                '<div class="invalid-feedback">Esta cédula ya está registrada en el sistema o no es ecuatoriana.</div>'
+              );
             } else {
               alert("Error al agregar el paciente");
             }
           },
           error: function () {
             alert("Error al procesar la solicitud");
-          }
+          },
         });
-      }
+      },
     });
   });
 
@@ -504,30 +590,49 @@ $(document).ready(function () {
   );
 
   //actualizar
-  $(document).ready(function () {
-    // Validación del formulario de editar paciente
+  $(document).ready(function () {        
     $("#formEditPaciente").validate({
       rules: {
         apellido_paterno_pacientes: {
           required: true,
-          maxlength: 50
+          maxlength: 50,
+          lettersOnly: true,
         },
         apellido_materno_pacientes: {
           required: true,
-          maxlength: 50
+          maxlength: 50,
+          lettersOnly: true,
         },
         nombres_pacientes: {
           required: true,
-          maxlength: 100
+          maxlength: 100,
+          lettersOnly: true
         },
         cedula_pacientes: {
           required: true,
           minlength: 10,
-          maxlength: 10
+          maxlength: 10,
+          numbersOnly: true,   
+          // remote: {
+          //   // Validación remota para la cédula
+          //   url: "/admisionistas/verificar_cedula/", // Cambia la ruta si es necesario
+          //   type: "post",
+          //   data: {
+          //     cedula_pacientes: function () {
+          //       return $("#cedula_pacientes").val(); // Obtiene el valor de la cédula
+          //     },
+          //     csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(),
+          //   },
+          //   dataFilter: function (response) {
+          //     const data = JSON.parse(response);
+          //     return !data.exists; // Retorna true si no existe
+          //   },
+          // },   
         },
         fecha_nacimiento_pacientes: {
           required: true,
-          date: true
+          date: true,
+          validDateRange: true,
         },
         direccion_pacientes: {
           required: true,
@@ -537,21 +642,24 @@ $(document).ready(function () {
           required: true,
           email: true
         },
-        estado_civil: {
+        estado_civil_pacientes: {
           required: true
         },
         telefono_pacientes: {
           required: true,
           minlength: 10,
-          maxlength: 15
+          maxlength: 15,
+          numbersOnly: true,
         },
         emergencia_informar_pacientes: {
           required: true,
-          maxlength: 100
+          maxlength: 100,
+          lettersOnly: true,
         },
         contacto_emergencia_pacientes: {
           required: true,
-          maxlength: 100
+          maxlength: 100,
+          numbersOnly: true,
         },
         genero_pacientes: {
           required: true
@@ -574,12 +682,15 @@ $(document).ready(function () {
         },
         nombres_pacientes: {
           required: "Por favor, ingrese los nombres.",
-          maxlength: "El nombre no puede exceder los 100 caracteres."
+          maxlength: "El nombre no puede exceder los 100 caracteres.",
+          lettersOnly: "Por favor, ingrese solo letras."
         },
         cedula_pacientes: {
           required: "Por favor, ingrese la cédula.",
           minlength: "La cédula debe tener al menos 10 caracteres.",
-          maxlength: "La cédula no puede exceder los 10 caracteres."
+          maxlength: "La cédula no puede exceder los 10 caracteres.",
+          remote:
+            "Esta cédula ya está registrada en el sistema o no es ecuatoriana.",
         },
         fecha_nacimiento_pacientes: {
           required: "Por favor, ingrese la fecha de nacimiento.",
@@ -623,7 +734,7 @@ $(document).ready(function () {
       validClass: "valid",
       errorPlacement: function (error, element) {
         error.addClass("invalid-feedback");
-        element.closest('.mb-3').append(error);
+        element.after(error); // Colocar el mensaje de error después del campo
       },
       highlight: function (element) {
         $(element).addClass("is-invalid").removeClass("is-valid");
@@ -647,11 +758,16 @@ $(document).ready(function () {
                 gravity: "bottom",
                 position: "right",
                 backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
-              }).showToast();
+              }).showToast();              
 
               $("#editIngresoPacientesModal").modal("hide");
               $(".modal-backdrop").remove();
               $("body").removeClass("modal-open");
+              // Recargar la página
+              // location.reload();
+            } else if (response.status === "cedula_exists") {
+              $("#edit_cedula_pacientes").addClass("is-invalid");
+              $("#edit_cedula_pacientes").after('<div class="invalid-feedback">Esta cédula ya está registrada en el sistema o no es ecuatoriana.</div>');
             } else {
               Toastify({
                 text: "Cédula duplicada, imposible actualizar.",

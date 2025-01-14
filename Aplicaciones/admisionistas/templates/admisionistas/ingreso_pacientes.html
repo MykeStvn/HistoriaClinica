@@ -7,53 +7,64 @@ GESTIÓN PACIENTES
 {% block content %}
     <h1 class="text text-center">Gestión de Pacientes</h1>
     <br>
-    <div class="text-end">
-        <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addIngresoPacientesModal"><i class="bi bi-person-plus-fill"></i>  Nuevo Paciente</a>
-    </div>    
-    
-
-    <div class="container mt-5">        
-        <!--BUSQUEDA DE PACIENTES MEDIANTE CEDULA CON LA VIEW: "BUSCAR PACIENTES"-->
+    <div class="container mt-5">
+        <!-- Sección para el botón de nuevo paciente -->
+        <div class="d-flex justify-content-end mb-4">
+            <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addIngresoPacientesModal">
+                <i class="bi bi-person-plus-fill"></i>  Nuevo Paciente
+            </a>
+        </div>
+        
+        <!-- BUSQUEDA DE PACIENTES MEDIANTE CÉDULA -->
         <form method="get" action="{% url 'admisionistas:buscar_pacientes' %}" class="mb-4">
             <div class="input-group">
-                <input type="number" name="cedula_pacientes" class="form-control" placeholder="Buscar por cédula" aria-label="Buscar por cédula" required>
+                <input type="number" name="cedula_pacientes" class="form-control" placeholder="Buscar paciente por número cédula" aria-label="Buscar por cédula" required>
                 <button class="btn btn-primary" type="submit">Buscar</button>
             </div>
         </form>
-
-        <!--DIV DONDE SE CARGA LOS PACIENTES AL BUSCAR UN PACIENTE-->
-        <div class="list-group" id="patientList">
-            {% if pacientes %}
-                {% for pacienteTemporal in pacientes %}
-                <div class="list-group-item py-2 px-3 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-1">{{ pacienteTemporal.nombres_pacientes }} {{ pacienteTemporal.apellido_paterno_pacientes }} {{ pacienteTemporal.apellido_materno_pacientes }}</h6>
-                        <small class="text-muted">
-                            <strong>Cédula:</strong> {{ pacienteTemporal.cedula_pacientes }} |
-                            <strong>Edad:</strong> {{ pacienteTemporal.edad }} |
-                            <strong>Teléfono:</strong> {{ pacienteTemporal.telefono_pacientes }}
-                        </small>
-                        <br>
-                        <small class="text-muted">
-                            <strong>Seguro Médico:</strong> {{ pacienteTemporal.seguro_pacientes }} |
-                            <strong>Dirección:</strong> {{ pacienteTemporal.direccion_pacientes }}
-                        </small>
-                    </div>
-                    <div>
-                        <a href="#" class="btn btn-sm btn-primary view-btn" data-bs-toggle="modal" data-bs-target="#viewPacienteModal" data-id="{{ pacienteTemporal.id_pacientes }}">Ver Detalles</a>                        
-                        <a href="#" class="btn btn-sm btn-warning me-1 edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoPacientesModal" data-id="{{ pacienteTemporal.id_pacientes }}">Editar</a>
-                        <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="{{ pacienteTemporal.id_pacientes }}">Eliminar</a>
-                    </div>
+        
+        <!-- RESULTADOS DE LA BÚSQUEDA -->
+        {% if pacientes is not None %}
+            <div class="list-group" id="patientList">
+                {% if pacientes %}
+                <!-- Alerta de paciente encontrado -->
+                <div class="alert alert-success" role="alert">
+                    Paciente encontrado!
                 </div>
-                <br>
-                {% endfor %}
-            {% else %}
-                {% if request.GET.cedula_pacientes %}
-                    <p class="text-muted" style="color: red;">No se encontraron resultados para "{{ request.GET.cedula_pacientes }}".</p>
+                    {% for pacienteTemporal in pacientes %}
+                        <div class="list-group-item py-3 px-4 d-flex justify-content-between align-items-center shadow-sm mb-3">
+                            <!-- Información del paciente -->
+                            <div>
+                                <h6 class="mb-1">{{ pacienteTemporal.nombres_pacientes }} {{ pacienteTemporal.apellido_paterno_pacientes }} {{ pacienteTemporal.apellido_materno_pacientes }}</h6>
+                                <small class="text-muted">
+                                    <strong>Cédula:</strong> {{ pacienteTemporal.cedula_pacientes }} |
+                                    <strong>Edad:</strong> {{ pacienteTemporal.edad }} |
+                                    <strong>Teléfono:</strong> {{ pacienteTemporal.telefono_pacientes }}
+                                </small>
+                                <br>
+                                <small class="text-muted">
+                                    <strong>Seguro Médico:</strong> {{ pacienteTemporal.seguro_pacientes }} |
+                                    <strong>Dirección:</strong> {{ pacienteTemporal.direccion_pacientes }}
+                                </small>
+                            </div>
+                            <!-- Botones de acción -->
+                            <div class="d-flex gap-2">
+                                <a href="#" class="btn btn-sm btn-primary view-btn" data-bs-toggle="modal" data-bs-target="#viewPacienteModal" title="Ver paciente" data-id="{{ pacienteTemporal.id_pacientes }}"> <i class="bi bi-eye-fill"></i></a>                        
+                                <a href="#" class="btn btn-sm btn-warning me-1 edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoPacientesModal" title="Editar paciente" data-id="{{ pacienteTemporal.id_pacientes }}"> <i class="bi bi-pencil-fill"></i></a>
+                                <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="{{ pacienteTemporal.id_pacientes }}" title="Eliminar paciente"> <i class="bi bi-trash-fill"></i></a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-warning" role="alert">
+                        No se encontraron resultados para "{{ request.GET.cedula_pacientes }}".
+                    </div>
                 {% endif %}
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     </div>
+    
+    
 
 
 
@@ -183,7 +194,7 @@ GESTIÓN PACIENTES
                             <input type="text" class="form-control" id="edit_cedula_pacientes" name="cedula_pacientes" placeholder="Escriba la cédula del paciente (10 dígitos) (Ej.: 1750928127)" required>
     
                             <b><label for="edit_fecha_nacimiento_pacientes" class="form-label">Fecha de Nacimiento</label></b>
-                            <input type="date" class="form-control" id="edit_fecha_nacimiento_pacientes" name="fecha_nacimiento_pacientes" required>
+                            <input type="date" class="form-control" id="edit_fecha_nacimiento_pacientes" name="fecha_nacimiento_pacientes" required >
     
                             <b><label for="edit_direccion_pacientes" class="form-label">Dirección</label></b>
                             <textarea class="form-control" id="edit_direccion_pacientes" name="direccion_pacientes" required rows="3" placeholder="Escriba la dirección de domicilio del paciente (Ej.: Guamaní)" style="resize: none;"></textarea>
@@ -332,7 +343,7 @@ GESTIÓN PACIENTES
                 </div>
                 <!-- Campo "Otro" para Seguro Médico -->
                 <div id="view_seguro_otro_div" class="mb-3" style="display: none;">
-                    b><label class="form-label">Especifique otro seguro</label></b>
+                    <b><label class="form-label">Especifique otro seguro</label></b>
                     <input type="text" id="view_seguro_otro" class="form-control" readonly>
                 </div>
                 <div class="mb-3">
