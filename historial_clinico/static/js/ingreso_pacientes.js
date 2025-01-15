@@ -197,9 +197,6 @@ $(document).ready(function () {
           required: true,
           email: true,
         },
-        estado_civil_pacientes: {
-          required: true,
-        },
         telefono_pacientes: {
           required: true,
           minlength: 10,
@@ -221,6 +218,30 @@ $(document).ready(function () {
         },
         seguro_pacientes: {
           required: true,
+        },
+        estado_civil_pacientes: {
+          required: true,
+        },
+        lugar_nacimiento_pacientes:{
+          required:true,
+        },
+        nacionalidad_pacientes:{
+          required:true,
+        },
+        grupo_cultural_pacientes:{
+          required:true,
+        },
+        instruccion_academica_pacientes:{
+          required:true,
+        },
+        ocupacion_pacientes: {
+          required:true,
+        },
+        empresa_trabaja_pacientes: {
+          required:true,
+        },
+        parentesco_pacientes: {
+          required:true,
         },
         fk_id_admisionista: {
           required: true,
@@ -263,9 +284,6 @@ $(document).ready(function () {
           required: "Por favor, ingrese el correo electrónico.",
           email: "Por favor, ingrese un correo electrónico válido.",
         },
-        estado_civil_pacientes: {
-          required: "Por favor, selecciona el estado civíl",
-        },
         telefono_pacientes: {
           required: "Por favor, ingrese el teléfono.",
           minlength: "El teléfono debe tener al menos 10 caracteres.",
@@ -290,6 +308,30 @@ $(document).ready(function () {
         },
         seguro_pacientes: {
           required: "Por favor, seleccione el seguro médico.",
+        },
+        estado_civil_pacientes: {
+          required: "Por favor, selecciona el estado civíl",
+        },
+        lugar_nacimiento_pacientes: {
+          required: "Por favor, ingrese el lugar de nacimiento.",
+        },
+        nacionalidad_pacientes: {
+          required: "Por favor, ingrese la nacionalidad.",
+        },
+        grupo_cultural_pacientes: {
+          required: "Por favor, ingrese el grupo cultural.",
+        },
+        instruccion_academica_pacientes: {
+          required: "Por favor, ingrese la instrucción académica.",
+        },
+        ocupacion_pacientes: {
+          required: "Por favor, ingrese la ocupación.",
+        },
+        empresa_trabaja_pacientes: {
+          required: "Por favor, ingrese la empresa donde trabaja.",
+        },
+        parentesco_pacientes: {
+          required: "Por favor, ingrese el parentesco o afinidad.",
         },
         fk_id_admisionista: {
           required: "Este campo es obligatorio.",
@@ -330,16 +372,23 @@ $(document).ready(function () {
                   cedula_pacientes: response.paciente.cedula,
                   fecha_nacimiento_pacientes: fechaFormateada,
                   edad: response.paciente.edad,
+                  lugar_nacimiento_pacientes: response.paciente.lugar_nacimiento,
+                  nacionalidad_pacientes: response.paciente.nacionalidad,
+                  grupo_cultural_pacientes: response.paciente.grupo_cultural,
                   direccion_pacientes: response.paciente.direccion,
                   email_pacientes: response.paciente.email,
+                  telefono_pacientes: response.paciente.telefono,
                   estado_civil_pacientes: response.paciente.estado_civil,
                   genero_pacientes: response.paciente.genero,
-                  telefono_pacientes: response.paciente.telefono,
-                  emergencia_informar_pacientes:
-                    response.paciente.emergencia_informar,
-                  contacto_emergencia_pacientes:
-                    response.paciente.contacto_emergencia,
+                  instruccion_academica_pacientes: response.paciente.instruccion_academica,
+                  ocupacion_pacientes: response.paciente.ocupacion,
+                  empresa_trabaja_pacientes: response.empresa_trabaja,
                   seguro_pacientes: response.paciente.seguro,
+                  emergencia_informar_pacientes:
+                  response.paciente.emergencia_informar,
+                  parentesco_pacientes: response.parentesco,
+                  contacto_emergencia_pacientes:
+                  response.paciente.contacto_emergencia,
                   fk_id_admisionista__username: response.paciente.admisionista,
                   acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Ver Detalles</a>
                           <a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
@@ -404,13 +453,20 @@ $(document).ready(function () {
         $("#view_fecha_nacimiento_pacientes").val(
           data.paciente.fecha_nacimiento
         );
+        $("#view_lugar_nacimiento_pacientes").val(data.paciente.lugar_nacimiento);
+        $("#view_nacionalidad_pacientes").val(data.paciente.nacionalidad);
+        $("#view_grupo_cultural_pacientes").val(data.paciente.grupo_cultural);
         $("#view_direccion_pacientes").val(data.paciente.direccion);
         $("#view_email_pacientes").val(data.paciente.email);
-        $("#view_estado_civil_pacientes").val(data.paciente.estado_civil);
         $("#view_telefono_pacientes").val(data.paciente.telefono);
+        $("#view_estado_civil_pacientes").val(data.paciente.estado_civil);
+        $("#view_instruccion_academica_pacientes").val(data.paciente.instruccion_academica);
+        $("#view_ocupacion_pacientes").val(data.paciente.ocupacion);
+        $("#view_empresa_trabaja_pacientes").val(data.paciente.empresa_trabaja);
         $("#view_emergencia_informar_pacientes").val(
           data.paciente.emergencia_informar
         );
+        $("#view_parentesco_pacientes").val(data.paciente.parentesco);
         $("#view_contacto_emergencia_pacientes").val(
           data.paciente.contacto_emergencia
         );
@@ -418,8 +474,8 @@ $(document).ready(function () {
 
         // Género
         if (
-          data.paciente.genero !== "Masculino" &&
-          data.paciente.genero !== "Femenino"
+          data.paciente.genero !== "MASCULINO" &&
+          data.paciente.genero !== "FEMENINO"
         ) {
           $("#view_genero_otro_div").show();
           $("#view_genero_otro").val(data.paciente.genero);
@@ -432,6 +488,7 @@ $(document).ready(function () {
 
         // Seguro
         if (
+          data.paciente.seguro !== "NINGUNO" &&
           data.paciente.seguro !== "IESS" &&
           data.paciente.seguro !== "ISSPOL" &&
           data.paciente.seguro !== "ISSFA"
@@ -482,13 +539,20 @@ $(document).ready(function () {
         $("#edit_fecha_nacimiento_pacientes").val(
           data.paciente.fecha_nacimiento
         );
+        $("#edit_lugar_nacimiento_pacientes").val(data.paciente.lugar_nacimiento);
+        $("#edit_nacionalidad_pacientes").val(data.paciente.nacionalidad);
+        $("#edit_grupo_cultural_pacientes").val(data.paciente.grupo_cultural);
         $("#edit_direccion_pacientes").val(data.paciente.direccion);
         $("#edit_email_pacientes").val(data.paciente.email);
-        $("#edit_estado_civil_pacientes").val(data.paciente.estado_civil);
         $("#edit_telefono_pacientes").val(data.paciente.telefono);
+        $("#edit_estado_civil_pacientes").val(data.paciente.estado_civil);
+        $("#edit_instruccion_academica_pacientes_select").val(data.paciente.instruccion_academica);
+        $("#edit_ocupacion_pacientes").val(data.paciente.ocupacion);
+        $("#edit_empresa_trabaja_pacientes").val(data.paciente.empresa_trabaja);
         $("#edit_emergencia_informar_pacientes").val(
           data.paciente.emergencia_informar
         );
+        $("#edit_parentesco_pacientes").val(data.paciente.parentesco);
         $("#edit_contacto_emergencia_pacientes").val(
           data.paciente.contacto_emergencia
         );
@@ -496,8 +560,8 @@ $(document).ready(function () {
 
         // Género
         if (
-          data.paciente.genero !== "Masculino" &&
-          data.paciente.genero !== "Femenino"
+          data.paciente.genero !== "MASCULINO" &&
+          data.paciente.genero !== "FEMENINO"
         ) {
           $("#edit_genero_otro_div").show();
           $("#edit_genero_otro").val(data.paciente.genero);
@@ -510,6 +574,7 @@ $(document).ready(function () {
 
         // Seguro
         if (
+          data.paciente.seguro !== "NINGUNO" &&
           data.paciente.seguro !== "IESS" &&
           data.paciente.seguro !== "ISSPOL" &&
           data.paciente.seguro !== "ISSFA"

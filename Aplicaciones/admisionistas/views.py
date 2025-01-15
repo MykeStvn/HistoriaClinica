@@ -51,19 +51,26 @@ def agregar_paciente(request):
         nombres_pacientes = request.POST.get('nombres_pacientes')
         cedula_pacientes = request.POST.get('cedula_pacientes')
         fecha_nacimiento_pacientes = request.POST.get('fecha_nacimiento_pacientes')
+        lugar_nacimiento_pacientes = request.POST.get('lugar_nacimiento_pacientes')
+        nacionalidad_pacientes = request.POST.get('nacionalidad_pacientes')
+        grupo_cultural_pacientes = request.POST.get('grupo_cultural_pacientes')
         direccion_pacientes = request.POST.get('direccion_pacientes')
         email_pacientes = request.POST.get('email_pacientes')
+        telefono_pacientes = request.POST.get('telefono_pacientes')
         estado_civil_pacientes = request.POST.get('estado_civil_pacientes')
         genero_pacientes = request.POST.get('genero_pacientes')
         # Si el género es "Otro", usa el valor ingresado por el usuario
         if genero_pacientes == 'Otro':
             genero_pacientes = request.POST.get('genero_otro')
-        telefono_pacientes = request.POST.get('telefono_pacientes')
-        emergencia_informar_pacientes = request.POST.get('emergencia_informar_pacientes')
-        contacto_emergencia_pacientes = request.POST.get('contacto_emergencia_pacientes')
+        instruccion_academica_pacientes = request.POST.get('instruccion_academica_pacientes')
+        ocupacion_pacientes = request.POST.get('ocupacion_pacientes')
+        empresa_trabaja_pacientes = request.POST.get('empresa_trabaja_pacientes')
         seguro_pacientes = request.POST.get('seguro_pacientes')
         if seguro_pacientes == 'Otro':
             seguro_pacientes = request.POST.get('seguro_otro')
+        emergencia_informar_pacientes = request.POST.get('emergencia_informar_pacientes')
+        parentesco_pacientes = request.POST.get('parentesco_pacientes')
+        contacto_emergencia_pacientes = request.POST.get('contacto_emergencia_pacientes')
         # Cálculo de la edad
         fecha_nacimiento = datetime.strptime(fecha_nacimiento_pacientes, "%Y-%m-%d").date()
         edad_paciente = calculate_age(fecha_nacimiento)
@@ -78,14 +85,21 @@ def agregar_paciente(request):
             nombres_pacientes=nombres_pacientes,
             cedula_pacientes=cedula_pacientes,
             fecha_nacimiento_pacientes=fecha_nacimiento_pacientes,
+            lugar_nacimiento_pacientes = lugar_nacimiento_pacientes,
+            nacionalidad_pacientes = nacionalidad_pacientes,
+            grupo_cultural_pacientes = grupo_cultural_pacientes,
             direccion_pacientes=direccion_pacientes,
             email_pacientes=email_pacientes,
+            telefono_pacientes=telefono_pacientes,
             estado_civil_pacientes = estado_civil_pacientes,
             genero_pacientes=genero_pacientes,
-            telefono_pacientes=telefono_pacientes,
-            emergencia_informar_pacientes=emergencia_informar_pacientes,
-            contacto_emergencia_pacientes=contacto_emergencia_pacientes,
+            instruccion_academica_pacientes = instruccion_academica_pacientes,
+            ocupacion_pacientes = ocupacion_pacientes,
+            empresa_trabaja_pacientes = empresa_trabaja_pacientes,
             seguro_pacientes=seguro_pacientes,
+            emergencia_informar_pacientes=emergencia_informar_pacientes,
+            parentesco_pacientes = parentesco_pacientes,
+            contacto_emergencia_pacientes=contacto_emergencia_pacientes,
             fk_id_admisionista=admisionista  # Asignar el usuario autenticado como admisionista
         )
 
@@ -98,14 +112,21 @@ def agregar_paciente(request):
             'cedula': paciente.cedula_pacientes,
             'fecha_nacimiento': paciente.fecha_nacimiento_pacientes,
             'edad': edad_paciente,
+            'lugar_nacimiento': paciente.lugar_nacimiento_pacientes,
+            'nacionalidad': paciente.nacionalidad_pacientes,
+            'grupo_cultural': paciente.grupo_cultural_pacientes,
             'direccion': paciente.direccion_pacientes,
             'email': paciente.email_pacientes,
+            'telefono': paciente.telefono_pacientes,
             'estado_civil': paciente.estado_civil_pacientes,
             'genero': paciente.genero_pacientes,
-            'telefono': paciente.telefono_pacientes,
-            'emergencia_informar': paciente.emergencia_informar_pacientes,
-            'contacto_emergencia': paciente.contacto_emergencia_pacientes,
+            'instruccion_academica': paciente.instruccion_academica_pacientes,
+            'ocupacion': paciente.ocupacion_pacientes,
+            'empresa_trabaja': paciente.empresa_trabaja_pacientes,
             'seguro': paciente.seguro_pacientes,
+            'emergencia_informar': paciente.emergencia_informar_pacientes,
+            'parentesco': paciente.parentesco_pacientes,
+            'contacto_emergencia': paciente.contacto_emergencia_pacientes,
             'admisionista': paciente.fk_id_admisionista.username,  # Mostrar el nombre del admisionista
         }})
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
@@ -125,14 +146,21 @@ def obtener_paciente(request, paciente_id):
                 'nombres': paciente.nombres_pacientes,
                 'cedula': paciente.cedula_pacientes,
                 'fecha_nacimiento': paciente.fecha_nacimiento_pacientes,
+                'lugar_nacimiento': paciente.lugar_nacimiento_pacientes,
+                'nacionalidad': paciente.lugar_nacimiento_pacientes,
+                'grupo_cultural': paciente.grupo_cultural_pacientes,
                 'direccion': paciente.direccion_pacientes,
                 'email': paciente.email_pacientes,
+                'telefono': paciente.telefono_pacientes,
                 'estado_civil': paciente.estado_civil_pacientes,
                 'genero': paciente.genero_pacientes,
-                'telefono': paciente.telefono_pacientes,
-                'emergencia_informar': paciente.emergencia_informar_pacientes,
-                'contacto_emergencia': paciente.contacto_emergencia_pacientes,
+                'instruccion_academica': paciente.instruccion_academica_pacientes,
+                'ocupacion':paciente.ocupacion_pacientes,
+                'empresa_trabaja':paciente.empresa_trabaja_pacientes,
                 'seguro': paciente.seguro_pacientes,
+                'emergencia_informar': paciente.emergencia_informar_pacientes,
+                'parentesco': paciente.parentesco_pacientes,
+                'contacto_emergencia': paciente.contacto_emergencia_pacientes,
                 'genero_otro': paciente.genero_otro if paciente.genero_pacientes == 'Otro' else None,
                 'seguro_otro': paciente.seguro_otro if paciente.seguro_pacientes == 'Otro' else None,
                 'admisionista': paciente.fk_id_admisionista.username if paciente.fk_id_admisionista else None,
@@ -157,6 +185,13 @@ def actualizar_paciente(request):
             paciente.direccion_pacientes = request.POST.get('direccion_pacientes')
             paciente.email_pacientes = request.POST.get('email_pacientes')
             paciente.estado_civil_pacientes = request.POST.get('estado_civil_pacientes')
+            paciente.lugar_nacimiento_pacientes = request.POST.get('lugar_nacimiento_pacientes')
+            paciente.nacionalidad_pacientes = request.POST.get('nacionalidad_pacientes')
+            paciente.grupo_cultural_pacientes = request.POST.get('grupo_cultural_pacientes')
+            paciente.instruccion_academica_pacientes = request.POST.get('instruccion_academica_pacientes')
+            paciente.ocupacion_pacientes = request.POST.get('ocupacion_pacientes')
+            paciente.empresa_trabaja_pacientes = request.POST.get('empresa_trabaja_pacientes')
+            paciente.parentesco_pacientes = request.POST.get('parentesco_pacientes')
 
             # Manejo del género
             genero = request.POST.get('genero_pacientes')
@@ -184,6 +219,8 @@ def actualizar_paciente(request):
             else:
                 paciente.fecha_nacimiento_pacientes = None  # Maneja el caso de fecha vacía
 
+            
+
             paciente.save()  # Guarda el paciente *después* de procesar la fecha
 
             # Calcular la edad *solo si hay fecha de nacimiento*
@@ -201,14 +238,21 @@ def actualizar_paciente(request):
                     'cedula': paciente.cedula_pacientes,
                     'fecha_nacimiento': paciente.fecha_nacimiento_pacientes.strftime('%Y-%m-%d') if paciente.fecha_nacimiento_pacientes else None,  # Formato para JavaScript
                     'edad': edad,
+                    'lugar_nacimiento': paciente.lugar_nacimiento_pacientes,
+                    'nacionalidad': paciente.nacionalidad_pacientes,
+                    'grupo_cultural': paciente.grupo_cultural_pacientes,
                     'direccion': paciente.direccion_pacientes,
                     'email': paciente.email_pacientes,
+                    'telefono': paciente.telefono_pacientes,
                     'estado_civil': paciente.estado_civil_pacientes,
                     'genero': paciente.genero_pacientes,
-                    'telefono': paciente.telefono_pacientes,
-                    'emergencia_informar': paciente.emergencia_informar_pacientes,
-                    'contacto_emergencia': paciente.contacto_emergencia_pacientes,
+                    'instruccion_academica': paciente.instruccion_academica_pacientes,
+                    'ocupacion': paciente.ocupacion_pacientes,
+                    'empresa_trabaja': paciente.empresa_trabaja_pacientes,
                     'seguro': paciente.seguro_pacientes,
+                    'emergencia_informar': paciente.emergencia_informar_pacientes,
+                    'parentesco': paciente.parentesco_pacientes,
+                    'contacto_emergencia': paciente.contacto_emergencia_pacientes,
                     'admisionista': paciente.fk_id_admisionista.username,
                 }
             }
