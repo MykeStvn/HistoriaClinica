@@ -224,24 +224,30 @@ $(document).ready(function () {
         },
         lugar_nacimiento_pacientes:{
           required:true,
+          lettersOnly:true,
         },
         nacionalidad_pacientes:{
           required:true,
+          lettersOnly:true,
         },
         grupo_cultural_pacientes:{
           required:true,
+          lettersOnly:true,
         },
         instruccion_academica_pacientes:{
           required:true,
         },
         ocupacion_pacientes: {
           required:true,
+          lettersOnly:true,
         },
         empresa_trabaja_pacientes: {
           required:true,
+          lettersOnly:true,
         },
         parentesco_pacientes: {
           required:true,
+          lettersOnly:true,
         },
         fk_id_admisionista: {
           required: true,
@@ -314,24 +320,30 @@ $(document).ready(function () {
         },
         lugar_nacimiento_pacientes: {
           required: "Por favor, ingrese el lugar de nacimiento.",
+          lettersOnly: "Por favor, ingrese solo letras.",
         },
         nacionalidad_pacientes: {
           required: "Por favor, ingrese la nacionalidad.",
+          lettersOnly: "Por favor, ingrese solo letras.",
         },
         grupo_cultural_pacientes: {
           required: "Por favor, ingrese el grupo cultural.",
+          lettersOnly: "Por favor, ingrese solo letras.",
         },
         instruccion_academica_pacientes: {
           required: "Por favor, ingrese la instrucción académica.",
         },
         ocupacion_pacientes: {
           required: "Por favor, ingrese la ocupación.",
+          lettersOnly: "Por favor, ingrese solo letras.",
         },
         empresa_trabaja_pacientes: {
           required: "Por favor, ingrese la empresa donde trabaja.",
+          lettersOnly: "Por favor, ingrese solo letras.",
         },
         parentesco_pacientes: {
           required: "Por favor, ingrese el parentesco o afinidad.",
+          lettersOnly: "Por favor, ingrese solo letras.",
         },
         fk_id_admisionista: {
           required: "Este campo es obligatorio.",
@@ -400,7 +412,7 @@ $(document).ready(function () {
                 text: "Paciente guardado correctamente",
                 duration: 5000,
                 close: true,
-                gravity: "bottom",
+                gravity: "top",
                 position: "right",
                 backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
               }).showToast();
@@ -763,7 +775,8 @@ $(document).ready(function () {
         },
         direccion_pacientes: {
           required: "Por favor, ingrese la dirección.",
-          maxlength: "La dirección no puede exceder los 200 caracteres."
+          maxlength: "La dirección no puede exceder los 200 caracteres.",
+          lettersOnly: true,
         },
         email_pacientes: {
           required: "Por favor, ingrese el correo electrónico.",

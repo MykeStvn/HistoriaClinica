@@ -5,59 +5,145 @@ GESTIÓN USUARIOS
 {% endblock %}
 {% block content %}
     <h1 class="text text-center">Gestión de Usuarios</h1>
-    <div class="text-end">
-        <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addIngresoUsuariosModal"><i class="bi bi-person-plus-fill"></i> Nuevo Usuario</a>
-    </div>
+    
+    <style>
+        #tabla_usuarios {
+            margin: 0 auto;
+            width: 100% !important;
+        }
+    
+        .card {
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-    <!--TABLA DE USUARIOS-->
+        /* Contenedor Flex */
+        .switch-container {
+            display: flex;
+            gap: 40px; /* Espacio entre switches */
+            align-items: center; /* Alineación vertical */
+            justify-content: flex-start; /* Alineación horizontal */
+        }
 
-    <div class="table-responsive">
-        <table id="tabla_usuarios" class="table table-striped">
-            <thead>
-                <tr>
-                    <th style="display: none;">ID (oculto)</th> <!-- Columna oculta -->
-                    <th>Nombre</th>
-                    <th>Apellido</th>                    
-                    <th>SuperUser</th>
-                    <th>Nombre de Usuario</th>
-                    <th>Tipo de Usuario</th>                    
-                    <th>Especialidad</th>
-                    <th>Fecha de Creación</th>
-                    <th>Último Acceso</th>                                   
-                    <th>IS_STAFF</th>
-                    <th>Estado</th>                    
-                    <th>Email</th>                    
-                    <th style="display:none;">Contraseña</th>                         
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for usuarioTemporal in usuarios %}
-                <!-- Aquí van los datos de la tabla, ya sea de la base de datos o en forma estática -->
-                <tr>
-                    <td style="display:none;">{{ usuarioTemporal.id}}</td> <!-- Aquí se incluye el id oculto -->
-                    <td>{{ usuarioTemporal.first_name}}</td>
-                    <td>{{ usuarioTemporal.last_name }}</td>                    
-                    <td>{{ usuarioTemporal.is_superuser}}</td>
-                    <td>{{ usuarioTemporal.username}}</td>
-                    <td>{{ usuarioTemporal.tipo_usuario}}</td>
-                    <td>{{ usuarioTemporal.especialidad}}</td>
-                    <td>{{ usuarioTemporal.date_joined}}</td>
-                    <td>{{ usuarioTemporal.last_login}}</td>                                        
-                    <td>{{ usuarioTemporal.is_staff}}</td>
-                    <td>{{ usuarioTemporal.is_active}}</td>                    
-                    <td>{{ usuarioTemporal.email}}</td>
-                    <td style="display:none;">{{ usuarioTemporal.password}}</td>                                                           
-                    <td>
-                        <a href="#" class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoUsuariosModal" data-id="{{ usuarioTemporal.id }}">Editar</a>
-                        <a href="#" class="btn btn-danger btn-delete" data-id="{{ usuarioTemporal.id }}">Eliminar</a>                    
-                    </td>
-                </tr>
-                {% endfor %}
-                <!-- Más filas aquí... -->
-            </tbody>
-        </table>
+        /* Ajustes para que cada switch ocupe menos espacio */
+        .form-check {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-width: 100px; /* Tamaño mínimo de cada switch */
+        }                                           
+
+        /* Ajuste del texto */
+        .form-check .form-label {
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .badge-activo {
+        background-color: #28a745;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        }                                                   
+
+        .badge-inactivo {
+        background-color: #dc3545;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        }
+
+        
+
+    </style>
+    <!-- Contenedor para centrar la tabla -->
+    <div style="margin-left: 2%;" class="container-fluid">        
+        <div class="rowjustify-content-center">
+            <div class="col-md-11">
+                <div class="text-end mb-3">
+                    <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addIngresoUsuariosModal"><i class="bi bi-person-plus-fill"></i> Nuevo Usuario</a>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive" style="color: #FB5293;">
+                            <table id="tabla_usuarios" class="table table-striped mx-auto">
+                                <thead>
+                                    <tr>
+                                        <th style="display: none;">ID (oculto)</th> <!-- Columna oculta -->
+                                        <th>Imagen</th>
+                                        <th>Nombre</th>
+                                        <th>Apellido</th>                    
+                                        <th style="display: none;">SuperUser</th>
+                                        <th>Nombre de Usuario</th>
+                                        <th>Tipo de Usuario</th>                    
+                                        <th style="display:none;">Especialidad</th>
+                                        <th style="display:none;">Fecha de Creación</th>
+                                        <th style="display:none;">Último Acceso</th>                                   
+                                        <th style="display: none;">IS_STAFF</th>
+                                        <th>Estado</th>                    
+                                        <th style="display: none;">Email</th>                    
+                                        <th style="display:none;">Contraseña</th>                                                                 
+                                        <th style="display: none;" >Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for usuarioTemporal in usuarios %}
+                                    <!-- Aquí van los datos de la tabla, ya sea de la base de datos o en forma estática -->
+                                    <tr>
+                                        <td style="display:none;">{{ usuarioTemporal.id}}</td> <!-- Aquí se incluye el id oculto -->
+                                        <td>
+                                            {% if usuarioTemporal.image %}
+                                            <img src="{{ usuarioTemporal.image.url }}" alt="Imagen de perfil"
+                                                style="width: 50px; height: 50px; border-radius: 50%;">
+                                            {% else %}
+                                            <img src="{% static 'images/default-avatar.png' %}" alt="Imagen de perfil predeterminada"
+                                                style="width: 50px; height: 50px; border-radius: 50%;">
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ usuarioTemporal.first_name}}</td>
+                                        <td>{{ usuarioTemporal.last_name }}</td>                    
+                                        <td style="display:none;">{{ usuarioTemporal.is_superuser}}</td>
+                                        <td>{{ usuarioTemporal.username}}</td>
+                                        <td>{{ usuarioTemporal.tipo_usuario}}</td>
+                                        <td style="display:none;">{{ usuarioTemporal.especialidad}}</td>
+                                        <td style="display:none;">{{ usuarioTemporal.date_joined}}</td>
+                                        <td style="display:none;">{{ usuarioTemporal.last_login}}</td>                                        
+                                        <td style="display:none;">{{ usuarioTemporal.is_staff}}</td>
+                                        <td>
+                                            <span class="badge {% if usuarioTemporal.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                                {% if usuarioTemporal.is_active %}Activo{% else %}Inactivo{% endif %}
+                                            </span>
+                                        </td>               
+                                        <td style="display:none;">{{ usuarioTemporal.email}}</td>
+                                        <td style="display:none;">{{ usuarioTemporal.password}}</td>    
+                                        <!-- Columna de imagen -->
+                                        
+                                        <td>
+                                            <div class="d-flex">
+                                                <a href="#" style="margin-right: 10px;" class="btn btn-primary btn-sm view-btn" data-id="{{ usuarioTemporal.id }}" data-bs-toggle="modal" data-bs-target="#verUsuarioModal">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="#" style="margin-right: 10px;" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoUsuariosModal" data-id="{{ usuarioTemporal.id }}"><i class="bi bi-pencil-fill"></i></a>                                
+                                                <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="{{ usuarioTemporal.id }}"><i class="bi bi-trash-fill"></i></a>
+                                            </div>
+                                        </td>
+                                        
+                                    </tr>
+                                    {% endfor %}
+                                    <!-- Más filas aquí... -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
     </div>
+    
 
     <!-- Modal para agregar un nuevo usuario -->
     <div class="modal fade" id="addIngresoUsuariosModal" tabindex="-1" aria-labelledby="addIngresoUsuariosLabel" aria-hidden="true">
@@ -68,22 +154,19 @@ GESTIÓN USUARIOS
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Formulario para agregar un paciente -->
+                    <!-- Formulario para agregar un usuario -->
                     <form id="formAddUsuario" method="POST" action="{% url 'administradores:agregar_usuario' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="mb-3">
                             <!-- Nombre -->
                             <b><label for="first_name" class="form-label">Nombre: </label></b>
-                            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Escriba el nombre del usuario (Ej.: Juan)" required>
-                            
+                            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Escriba el nombre del usuario (Ej.: Juan)" required>                            
                             <!-- Apellido -->
                             <b><label for="last_name" class="form-label">Apellido: </label></b>                            
-                            <input type="text" class="form-control" id="last_name" name="last_name"placeholder="Escriba el apellido del usuario (Ej.: Ramirez)" required>
-                            
+                            <input type="text" class="form-control" id="last_name" name="last_name"placeholder="Escriba el apellido del usuario (Ej.: Ramirez)" required>                            
                             <!-- Nombre de Usuario -->
                             <b><label for="username" class="form-label">Nombre de usuario: </label></b>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Escriba el nickname usuario (Ej.: juanram3)"required>                                                                                 
-                                
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Escriba el nickname usuario (Ej.: juanram3)"required>                                                                                                                 
                             <!-- Tipo de Usuario -->
                             <div class="mb-3">
                                 <b><label for="tipo_usuario" class="form-label">Tipo de Usuario:</label></b>
@@ -93,70 +176,141 @@ GESTIÓN USUARIOS
                                     <option value="doctor">Doctor</option>
                                     <option value="administrador">Administrador</option>
                                 </select>
-                            </div>
-                        
+                            </div>                        
                             <!-- Especialidad -->
                             <div class="mb-3">
                                 <b><label for="especialidad" class="form-label">Especialidad:</label></b>
                                 <select class="form-select" id="especialidad" name="especialidad" required>
                                     <option value="" disabled selected>Seleccione una especialidad</option>
-                                    <option value="medico_general">Médico General</option>
                                     <option value="admisionista">Admisionista</option>
+                                    <option value="medico_general">Médico General</option>                                    
                                     <option value="administrador">Administrador</option>
                                 </select>
                             </div>
-
-                            <!-- SuperUser -->
-                            <b><label for="is_superuser" class="form-label">SuperUsuario:</label></b>
-                            <input type="hidden" name="is_superuser" value="false"> <!-- Campo oculto -->
-                            <input type="checkbox" class="form-check-input" id="is_superuser" name="is_superuser" value="True">
-
-                            <br>
-                            <!-- Staff -->
-                            <b><label for="is_staff" class="form-label">Staff:</label></b>
-                            <input type="hidden" name="is_staff" value="false"> <!-- Campo oculto -->
-                            <input type="checkbox" class="form-check-input" id="is_staff" name="is_staff" value="True">
-                            
-                            <br>
-                            <!-- Estado -->
-                            <b><label for="is_active" class="form-label">Activo:</label></b>
-                            <input type="hidden" name="is_active" value="false"> <!-- Campo oculto -->
-                            <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="True">
-                            <br>
-
+                            <div class="switch-container">
+                                <!-- SuperUsuario -->
+                                <div class="form-check form-switch">
+                                    <b><label for="is_superuser" class="form-label">SuperUsuario</label></b>
+                                    <input type="hidden" name="is_superuser" value="false"> <!-- Campo oculto -->
+                                    <input type="checkbox" class="form-check-input custom-checkbox" id="is_superuser" name="is_superuser" value="True">
+                                </div>
+                                <!-- Staff -->
+                                <div class="form-check form-switch">
+                                    <b><label for="is_staff" class="form-label">Staff</label></b>
+                                    <input type="hidden" name="is_staff" value="false"> <!-- Campo oculto -->
+                                    <input type="checkbox" class="form-check-input" id="is_staff" name="is_staff" value="True">
+                                </div>
+                                <!-- Estado -->
+                                
+                            </div>
+                            <br>                                                                                                                                                                                              
                             <!-- Email -->
                             <b><label for="email" class="form-label">Email: </label></b>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Escriba el email del usuario (Ej.: juanram3@gmail.com)"required>                                                        
-                            
-                        
-                            <!-- Contraseña -->
-                             <!-- Password -->
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Escriba el email del usuario (Ej.: juanram3@gmail.com)"required>                                                                                                    
+                            <!-- Contraseña -->                             
                             <b><label for="password" class="form-label">Contraseña: </label></b>
                             <div class="input-group mb-3">
                                 <input type="password" class="form-control" id="password" name="password"
                                     placeholder="Escriba una contraseña segura" required>
                                 <button class="btn btn-outline-secondary" type="button" id="togglePassword">Mostrar</button>
                             </div>
-
-                            <!-- Confirm Password
-                            <label for="confirm_password" class="form-label">Confirmar Password: </label>
-                            <div class="input-group mb-3">
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password"
-                                    placeholder="Confirme la contraseña" required>
-                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">Mostrar</button>
-                            </div> -->
-
-                            
-                        </div>
-                        
-
+                            <!-- Imagen -->
+                            <b><label for="image" class="form-label">Imagen de Perfil:</label></b>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">                                                        
+                        </div>                        
                         <button type="submit" class="btn btn-primary">Guardar Usuario</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal para ver detalles del usuario -->
+<div class="modal fade" id="verUsuarioModal" tabindex="-1" aria-labelledby="verUsuarioModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="verUsuarioModalLabel">Detalles del Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img id="ver_imagen" src="" alt="Imagen de perfil" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                </div>
+
+                <div class="container">
+                    <div class="row text-center">
+                        <div class="col-sm">
+                            <label class="form-label"><strong>Nombre:</strong></label>
+                            <p id="ver_first_name"></p>
+                        </div>
+                        <div class="col-sm">
+                            <label class="form-label"><strong>Apellido:</strong></label>
+                            <p id="ver_last_name"></p>
+                        </div>
+                        <div class="col-sm">
+                            <label class="form-label"><strong>Usuario:</strong></label>
+                            <p id="ver_username"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="row text-center">
+                        <div class="col-sm">
+                            <label class="form-label"><strong>Tipo de Usuario:</strong></label>
+                            <p id="ver_tipo_usuario"></p>
+                        </div>
+                        <div class="col-sm">
+                            <label class="form-label"><strong>Especialidad :</strong></label>
+                            <p id="ver_especialidad"></p>
+                        </div>
+                        <div class="col-sm">
+                            <label class="form-label"><strong>Estado:</strong></label>
+                            <br>
+                            <span id="ver_is_active" class="badge"></span>
+                        </div>
+                    </div>
+                </div>                                                                                                
+                
+                <div class="container">
+                    <div class="row text-center">
+                        <div class="col-sm">
+                            <label class="form-label"><strong>Fecha y hora de Registro:</strong></label>
+                            <p id="ver_date_joined"></p>
+                        </div>
+                        <div class="col sm">
+                            <label class="form-label"><strong>Último Logueo:</strong></label>
+                            <p id="ver_last_login"></p>
+                        </div>
+                    </div>
+                </div>   
+
+                <div class="container">
+                    <div class="row text-center">
+                        <div class="col-sm">
+                            <label class="form-label"><strong>Email:</strong></label>
+                            <p id="ver_email"></p>
+                        </div>
+                        <div class="col-sm">
+                            <label class="form-label"><strong>Super Usuario:</strong></label>
+                            <p id="ver_is_superuser"></p>
+                        </div>
+                        <div class="col-sm">
+                            <label class="form-label"><strong>Staff:</strong></label>
+                            <p id="ver_is_staff"></p>
+                        </div>                    
+                    </div>
+                </div>  
+
+            </div>
+        </div>
+    </div>
+</div>
+    
+
     <br><br><br><br><br>
 
+    
         
 {% endblock %}

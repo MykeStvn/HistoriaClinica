@@ -130,8 +130,8 @@
                                             <p class="mb-0 text-sm text-gray-600">{{ user.tipo_usuario }}</p>
                                         </div>
                                         <div class="user-img d-flex align-items-center">
-                                            <div class="avatar avatar-md">
-                                                <img src="{% static 'plantilla/mazer/dist/assets/images/faces/1.jpg' %}">
+                                            <div class="avatar avatar-md">                                                
+                                                <img src="{{ user.image.url }}" alt="Imagen de perfil" style="width: 40px; height: 40px; border-radius: 40%;">
                                             </div>
                                         </div>
                                     </div>
@@ -216,8 +216,6 @@
     <!-- Scripts -->
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'js/no_ir_atras.js' %}"></script>
-
-    
 
 </body>
 

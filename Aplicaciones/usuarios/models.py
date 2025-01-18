@@ -27,6 +27,13 @@ class Usuarios(AbstractUser):
         null=True,
         verbose_name="Especialidad",
     )
+    #DEFAULT ACTIVO CADA VEZ QUE SE CREA UN USUARIO
+    is_active = models.BooleanField(
+        default=True,
+    )
+
+    # ADICION DE Campo para la imagen de perfil
+    image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
 
     class Meta:
         db_table = 'usuarios'
