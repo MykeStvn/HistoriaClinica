@@ -137,6 +137,7 @@ def obtener_paciente(request, paciente_id):
     try:
         print(f"Buscando paciente con id: {paciente_id}") 
         paciente = Pacientes.objects.get(id_pacientes=paciente_id)
+        edad = calculate_age(paciente.fecha_nacimiento_pacientes)
         # Si existe el paciente, enviar los datos en formato JSON
         return JsonResponse({
             'paciente': {
@@ -146,6 +147,7 @@ def obtener_paciente(request, paciente_id):
                 'nombres': paciente.nombres_pacientes,
                 'cedula': paciente.cedula_pacientes,
                 'fecha_nacimiento': paciente.fecha_nacimiento_pacientes,
+                'edad': edad,
                 'lugar_nacimiento': paciente.lugar_nacimiento_pacientes,
                 'nacionalidad': paciente.lugar_nacimiento_pacientes,
                 'grupo_cultural': paciente.grupo_cultural_pacientes,
@@ -169,7 +171,7 @@ def obtener_paciente(request, paciente_id):
     except Pacientes.DoesNotExist:
         return JsonResponse({'error': 'Paciente no encontrado'}, status=404)
     
-#Vista para actualizar un paciente
+# Vista para actualizar un paciente
 @login_required
 def actualizar_paciente(request):
     if request.method == 'POST':
@@ -177,53 +179,50 @@ def actualizar_paciente(request):
         try:
             paciente = Pacientes.objects.get(id_pacientes=paciente_id)
 
-            # Actualizar los campos (excepto la fecha por ahora)
-            paciente.apellido_paterno_pacientes = request.POST.get('apellido_paterno_pacientes')
-            paciente.apellido_materno_pacientes = request.POST.get('apellido_materno_pacientes')
-            paciente.nombres_pacientes = request.POST.get('nombres_pacientes')
-            paciente.cedula_pacientes = request.POST.get('cedula_pacientes')
-            paciente.direccion_pacientes = request.POST.get('direccion_pacientes')
-            paciente.email_pacientes = request.POST.get('email_pacientes')
-            paciente.estado_civil_pacientes = request.POST.get('estado_civil_pacientes')
-            paciente.lugar_nacimiento_pacientes = request.POST.get('lugar_nacimiento_pacientes')
-            paciente.nacionalidad_pacientes = request.POST.get('nacionalidad_pacientes')
-            paciente.grupo_cultural_pacientes = request.POST.get('grupo_cultural_pacientes')
-            paciente.instruccion_academica_pacientes = request.POST.get('instruccion_academica_pacientes')
-            paciente.ocupacion_pacientes = request.POST.get('ocupacion_pacientes')
-            paciente.empresa_trabaja_pacientes = request.POST.get('empresa_trabaja_pacientes')
-            paciente.parentesco_pacientes = request.POST.get('parentesco_pacientes')
+            # Actualizar los campos con validaciones
+            paciente.apellido_paterno_pacientes = request.POST.get('apellido_paterno_pacientes', paciente.apellido_paterno_pacientes)
+            paciente.apellido_materno_pacientes = request.POST.get('apellido_materno_pacientes', paciente.apellido_materno_pacientes)
+            paciente.nombres_pacientes = request.POST.get('nombres_pacientes', paciente.nombres_pacientes)
+            paciente.cedula_pacientes = request.POST.get('cedula_pacientes', paciente.cedula_pacientes)
+            paciente.direccion_pacientes = request.POST.get('direccion_pacientes', paciente.direccion_pacientes)
+            paciente.email_pacientes = request.POST.get('email_pacientes', paciente.email_pacientes)
+            paciente.estado_civil_pacientes = request.POST.get('estado_civil_pacientes', paciente.estado_civil_pacientes)
+            paciente.lugar_nacimiento_pacientes = request.POST.get('lugar_nacimiento_pacientes', paciente.lugar_nacimiento_pacientes)
+            paciente.nacionalidad_pacientes = request.POST.get('nacionalidad_pacientes', paciente.nacionalidad_pacientes)
+            paciente.grupo_cultural_pacientes = request.POST.get('grupo_cultural_pacientes', paciente.grupo_cultural_pacientes)
+            paciente.instruccion_academica_pacientes = request.POST.get('instruccion_academica_pacientes', paciente.instruccion_academica_pacientes)
+            paciente.ocupacion_pacientes = request.POST.get('ocupacion_pacientes', paciente.ocupacion_pacientes)
+            paciente.empresa_trabaja_pacientes = request.POST.get('empresa_trabaja_pacientes', paciente.empresa_trabaja_pacientes)
+            paciente.parentesco_pacientes = request.POST.get('parentesco_pacientes', paciente.parentesco_pacientes)
 
             # Manejo del género
             genero = request.POST.get('genero_pacientes')
             paciente.genero_pacientes = request.POST.get('genero_otro') if genero == 'Otro' else genero
 
-            paciente.telefono_pacientes = request.POST.get('telefono_pacientes')
-            paciente.emergencia_informar_pacientes = request.POST.get('emergencia_informar_pacientes')
-            paciente.contacto_emergencia_pacientes = request.POST.get('contacto_emergencia_pacientes')
+            paciente.telefono_pacientes = request.POST.get('telefono_pacientes', paciente.telefono_pacientes)
+            paciente.emergencia_informar_pacientes = request.POST.get('emergencia_informar_pacientes', paciente.emergencia_informar_pacientes)
+            paciente.contacto_emergencia_pacientes = request.POST.get('contacto_emergencia_pacientes', paciente.contacto_emergencia_pacientes)
 
             # Manejo del seguro
             seguro = request.POST.get('seguro_pacientes')
             paciente.seguro_pacientes = request.POST.get('seguro_otro') if seguro == 'Otro' else seguro
 
-
-            #MANEJO DE LA FECHA DE NACIMIENTO IMPORTANTE
+            # Manejo de la fecha de nacimiento
             fecha_nacimiento_str = request.POST.get('fecha_nacimiento_pacientes')
-            if fecha_nacimiento_str:  # Verifica que la cadena no esté vacía
+            if fecha_nacimiento_str:  
                 try:
                     paciente.fecha_nacimiento_pacientes = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d').date()
-                except ValueError:  # Intenta otro formato si falla el primero
+                except ValueError:
                     try:
                         paciente.fecha_nacimiento_pacientes = datetime.strptime(fecha_nacimiento_str, '%d/%m/%Y').date()
                     except ValueError:
                         return JsonResponse({'status': 'error', 'message': 'Formato de fecha inválido. Use AAAA-MM-DD o DD/MM/AAAA'})
             else:
-                paciente.fecha_nacimiento_pacientes = None  # Maneja el caso de fecha vacía
+                paciente.fecha_nacimiento_pacientes = None  
 
-            
+            paciente.save()
 
-            paciente.save()  # Guarda el paciente *después* de procesar la fecha
-
-            # Calcular la edad *solo si hay fecha de nacimiento*
+            # Calcular la edad si hay fecha de nacimiento
             edad = calculate_age(paciente.fecha_nacimiento_pacientes) if paciente.fecha_nacimiento_pacientes else None
 
             # Construir la respuesta JSON
@@ -236,7 +235,7 @@ def actualizar_paciente(request):
                     'apellido_materno': paciente.apellido_materno_pacientes,
                     'nombres': paciente.nombres_pacientes,
                     'cedula': paciente.cedula_pacientes,
-                    'fecha_nacimiento': paciente.fecha_nacimiento_pacientes.strftime('%Y-%m-%d') if paciente.fecha_nacimiento_pacientes else None,  # Formato para JavaScript
+                    'fecha_nacimiento': paciente.fecha_nacimiento_pacientes.strftime('%Y-%m-%d') if paciente.fecha_nacimiento_pacientes else None,
                     'edad': edad,
                     'lugar_nacimiento': paciente.lugar_nacimiento_pacientes,
                     'nacionalidad': paciente.nacionalidad_pacientes,
@@ -261,9 +260,9 @@ def actualizar_paciente(request):
         except Pacientes.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Paciente no encontrado'})
         except Exception as e:
-            import traceback #Para ver el error completo
+            import traceback
             traceback.print_exc()
-            return JsonResponse({'status': 'error', 'message': f'Error al actualizar: {str(e)}'}) #Devuelve el error
+            return JsonResponse({'status': 'error', 'message': f'Error al actualizar: {str(e)}'})
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
 
 #Vista para Eliminar un paciente
@@ -331,27 +330,22 @@ def verificar_cedula(request):
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
 #verifico cedula ACTUALIZAR
 @login_required
-def verificar_cedula_actualizar(request):
-    if request.method == "POST":
-        paciente_id = request.POST.get('id_pacientes')  # Usar 'id_pacientes' en lugar de 'paciente_id'
-        cedula = request.POST.get('cedula_pacientes')  # Usar 'cedula_pacientes' en lugar de 'cedula'
+def verificar_cedula_actualizar(request, paciente_id):
+    if request.method == 'POST':
+        cedula = request.POST.get('cedula_pacientes')  # Campo esperado del formulario
+        # Validación de la cédula ecuatoriana
+        if not validar_cedula(cedula):
+            return JsonResponse({'exists': True, 'valid': False, 'message': 'Cédula inválida'})
+        
+        # Verificar si la cédula existe en la base de datos, pero no contar la cédula del paciente que estamos actualizando
+        exists = Pacientes.objects.filter(cedula_pacientes=cedula).exclude(id_pacientes=paciente_id).exists()
+        
+        # Devuelvo la respuesta indicando si existe o no la cédula
+        return JsonResponse({'exists': exists})
+    
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
 
-        # Validar que paciente_id y cedula no estén vacíos
-        if not paciente_id or not cedula:
-            return JsonResponse({'status': 'error', 'message': 'Faltan datos importantes.'}, status=400)
 
-        try:
-            paciente_id = int(paciente_id)  # Convertir el id del paciente a entero
-        except ValueError:
-            return JsonResponse({'status': 'error', 'message': 'ID de paciente no válido.'}, status=400)
-
-        # Verificar si ya existe otro paciente con la misma cédula pero con un id diferente
-        existe = Pacientes.objects.filter(cedula_pacientes=cedula).exclude(id_pacientes=paciente_id).exists()
-
-        if existe:
-            return JsonResponse({'status': 'error', 'message': 'Ya existe un paciente con esta cédula.'}, status=400)
-
-        return JsonResponse({'status': 'success', 'message': 'Cédula disponible.'})
 
 
 # Función para calcular la edad

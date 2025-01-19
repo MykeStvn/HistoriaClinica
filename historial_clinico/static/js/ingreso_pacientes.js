@@ -49,7 +49,6 @@ $(document).ready(function () {
     },
   });
 
-
   // CALCULAR FECHA ACTUAL PARA CONFIGURACION DEL CALENDARIO
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -144,7 +143,7 @@ $(document).ready(function () {
       },
       "Por favor, seleccione una fecha válida dentro del rango permitido."
     );
-  
+
 
     $("#formAddPaciente").validate({
       rules: {
@@ -234,8 +233,8 @@ $(document).ready(function () {
           required:true,
           lettersOnly:true,
         },
-        instruccion_academica_pacientes:{
-          required:true,
+        instruccion_academica_pacientes: {
+          required: true,
         },
         ocupacion_pacientes: {
           required:true,
@@ -272,7 +271,7 @@ $(document).ready(function () {
           numbersOnly: "Por favor, ingrese solo números.",
           minlength: "La cédula debe tener al menos 10 caracteres.",
           maxlength: "La cédula no puede exceder los 10 caracteres.",
-          
+
           remote:
             "Esta cédula ya está registrada en el sistema o no es ecuatoriana.",
         },
@@ -397,10 +396,10 @@ $(document).ready(function () {
                   empresa_trabaja_pacientes: response.empresa_trabaja,
                   seguro_pacientes: response.paciente.seguro,
                   emergencia_informar_pacientes:
-                  response.paciente.emergencia_informar,
+                    response.paciente.emergencia_informar,
                   parentesco_pacientes: response.parentesco,
                   contacto_emergencia_pacientes:
-                  response.paciente.contacto_emergencia,
+                    response.paciente.contacto_emergencia,
                   fk_id_admisionista__username: response.paciente.admisionista,
                   acciones: `<a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Ver Detalles</a>
                           <a href="#" class="btn btn-warning edit-btn" data-id="${response.paciente.id_pacientes}">Editar</a>
@@ -416,7 +415,6 @@ $(document).ready(function () {
                 position: "right",
                 backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
               }).showToast();
-
               $("#formAddPaciente")[0].reset();
               $("#addIngresoPacientesModal").modal("hide");
               $(".modal-backdrop").remove();
@@ -465,6 +463,7 @@ $(document).ready(function () {
         $("#view_fecha_nacimiento_pacientes").val(
           data.paciente.fecha_nacimiento
         );
+        $("#view_edad_paciente").val(data.paciente.edad);
         $("#view_lugar_nacimiento_pacientes").val(data.paciente.lugar_nacimiento);
         $("#view_nacionalidad_pacientes").val(data.paciente.nacionalidad);
         $("#view_grupo_cultural_pacientes").val(data.paciente.grupo_cultural);
@@ -521,7 +520,7 @@ $(document).ready(function () {
       },
     });
   }
-  
+
 
   // FUNCION PARA MOSTRAR MODAL CON DATOS AL DAR CLICK EN EL BOTON DE EDITAR
 
@@ -667,7 +666,7 @@ $(document).ready(function () {
   );
 
   //actualizar
-  $(document).ready(function () {        
+  $(document).ready(function () {
     $("#formEditPaciente").validate({
       rules: {
         apellido_paterno_pacientes: {
@@ -689,7 +688,7 @@ $(document).ready(function () {
           required: true,
           minlength: 10,
           maxlength: 10,
-          numbersOnly: true,   
+          numbersOnly: true,
           // remote: {
           //   // Validación remota para la cédula
           //   url: "/admisionistas/verificar_cedula/", // Cambia la ruta si es necesario
@@ -782,7 +781,7 @@ $(document).ready(function () {
           required: "Por favor, ingrese el correo electrónico.",
           email: "Por favor, ingrese un correo electrónico válido."
         },
-        estado_civil:{
+        estado_civil: {
           required: "Por favor, selecciona el estado civíl."
         },
         telefono_pacientes: {
@@ -836,13 +835,27 @@ $(document).ready(function () {
                 gravity: "bottom",
                 position: "right",
                 backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
-              }).showToast();              
+              }).showToast();
 
               $("#editIngresoPacientesModal").modal("hide");
               $(".modal-backdrop").remove();
               $("body").removeClass("modal-open");
               // Recargar la página
               // location.reload();
+              // Actualizar la lista de pacientes sin recargar la página
+              var updatedPaciente = response.paciente; // Asegúrate de enviar el paciente actualizado desde el servidor
+              // Encuentra el item correspondiente en la lista y actualízalo
+              var pacienteItem = $("#patientList").find(".list-group-item[data-id='" + updatedPaciente.id_pacientes + "']");
+              if (updatedPaciente && updatedPaciente.nombres) {
+                pacienteItem.find(".paciente-nombre").html(updatedPaciente.nombres + " " + updatedPaciente.apellido_paterno + " " + updatedPaciente.apellido_materno);
+                pacienteItem.find(".paciente-edad").html("Edad: " + updatedPaciente.edad);
+                pacienteItem.find(".paciente-cedula").html("Cédula: " + updatedPaciente.cedula);
+                pacienteItem.find(".paciente-seguro").html("Seguro Médico: " + updatedPaciente.seguro);  // Si "seguro" es el nombre correcto del campo
+                pacienteItem.find(".paciente-emergencia").html("En caso de emergencia informar a: " + updatedPaciente.emergencia_informar);
+                pacienteItem.find(".paciente-contacto").html("Teléfono: " + updatedPaciente.contacto_emergencia);
+              } else {
+                console.log("Datos del paciente no disponibles", updatedPaciente);
+              }
             } else if (response.status === "cedula_exists") {
               $("#edit_cedula_pacientes").addClass("is-invalid");
               $("#edit_cedula_pacientes").after('<div class="invalid-feedback">Esta cédula ya está registrada en el sistema o no es ecuatoriana.</div>');
