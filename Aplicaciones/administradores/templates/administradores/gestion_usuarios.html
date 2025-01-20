@@ -71,20 +71,13 @@ GESTIÓN USUARIOS
                             <table id="tabla_usuarios" class="table table-striped mx-auto">
                                 <thead>
                                     <tr>
-                                        <th style="display: none;">ID (oculto)</th> <!-- Columna oculta -->
+                                        
                                         <th>Imagen</th>
                                         <th>Nombre</th>
-                                        <th>Apellido</th>                    
-                                        <th style="display: none;">SuperUser</th>
+                                        <th>Apellido</th>                                                            
                                         <th>Nombre de Usuario</th>
-                                        <th>Tipo de Usuario</th>                    
-                                        <th style="display:none;">Especialidad</th>
-                                        <th style="display:none;">Fecha de Creación</th>
-                                        <th style="display:none;">Último Acceso</th>                                   
-                                        <th style="display: none;">IS_STAFF</th>
-                                        <th>Estado</th>                    
-                                        <th style="display: none;">Email</th>                    
-                                        <th style="display:none;">Contraseña</th>                                                                 
+                                        <th>Tipo de Usuario</th>                                                                                                                                            
+                                        <th>Estado</th>                                                                                                                                                         
                                         <th style="display: none;" >Acciones</th>
                                     </tr>
                                 </thead>
@@ -92,7 +85,7 @@ GESTIÓN USUARIOS
                                     {% for usuarioTemporal in usuarios %}
                                     <!-- Aquí van los datos de la tabla, ya sea de la base de datos o en forma estática -->
                                     <tr>
-                                        <td style="display:none;">{{ usuarioTemporal.id}}</td> <!-- Aquí se incluye el id oculto -->
+                                        
                                         <td>
                                             {% if usuarioTemporal.image %}
                                             <img src="{{ usuarioTemporal.image.url }}" alt="Imagen de perfil"
@@ -103,21 +96,15 @@ GESTIÓN USUARIOS
                                             {% endif %}
                                         </td>
                                         <td>{{ usuarioTemporal.first_name}}</td>
-                                        <td>{{ usuarioTemporal.last_name }}</td>                    
-                                        <td style="display:none;">{{ usuarioTemporal.is_superuser}}</td>
+                                        <td>{{ usuarioTemporal.last_name }}</td>                                                            
                                         <td>{{ usuarioTemporal.username}}</td>
-                                        <td>{{ usuarioTemporal.tipo_usuario}}</td>
-                                        <td style="display:none;">{{ usuarioTemporal.especialidad}}</td>
-                                        <td style="display:none;">{{ usuarioTemporal.date_joined}}</td>
-                                        <td style="display:none;">{{ usuarioTemporal.last_login}}</td>                                        
-                                        <td style="display:none;">{{ usuarioTemporal.is_staff}}</td>
+                                        <td>{{ usuarioTemporal.tipo_usuario}}</td>                                                                                                                                                                                                        
                                         <td>
                                             <span class="badge {% if usuarioTemporal.is_active %}bg-success{% else %}bg-danger{% endif %}">
                                                 {% if usuarioTemporal.is_active %}Activo{% else %}Inactivo{% endif %}
                                             </span>
-                                        </td>               
-                                        <td style="display:none;">{{ usuarioTemporal.email}}</td>
-                                        <td style="display:none;">{{ usuarioTemporal.password}}</td>    
+                                        </td>                                                       
+                                            
                                         <!-- Columna de imagen -->
                                         
                                         <td>

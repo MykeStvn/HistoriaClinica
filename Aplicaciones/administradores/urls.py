@@ -1,6 +1,6 @@
-from django.urls import path
+from django.urls import include, path
 from . import views
-# from Aplicaciones.administradores import views
+
 app_name = 'administradores'
 
 urlpatterns = [    
@@ -10,4 +10,5 @@ urlpatterns = [
     path('agregar_usuario/', views.agregar_usuario, name='agregar_usuario'),
     path('eliminar_usuario/<int:usuario_id>/', views.eliminar_usuario, name='eliminar_usuario'),
     path('obtener_usuario/<int:usuario_id>/', views.obtener_usuario, name='obtener_usuario'),
+    path('admisionistas/', include('Aplicaciones.admisionistas.urls')),
 ]

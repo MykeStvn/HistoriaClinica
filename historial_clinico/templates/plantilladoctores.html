@@ -41,33 +41,31 @@
                 </div>
                 <div class="sidebar-menu">
                     <ul class="menu">
-                        <li class="sidebar-title">Menú Principal Doctores</li>
+                        <li class="sidebar-title">Menú Principal</li>
                                     
                         <li class="sidebar-item  ">
-                            <a href="{% url 'gestion_pacientes:inicio_doctor' %}" class='sidebar-link'>
+                            <a href="{% url 'administradores:inicio_administrador' %}" class='sidebar-link'>
                                 <i class="bi bi-house-fill" style="font-size: 20px;"></i>
                                 <span>Inicio</span>
                             </a>
                         </li>                                      
                         <li class="sidebar-item  has-sub">
-                            <a href="#" class='sidebar-link'>
-                                <!-- <i class="fas fa-book-medical"></i> -->
+                            <a href="#" class='sidebar-link'>                                
                                 <i class="bi bi-journal-medical" style="font-size: 20px;"></i>
-                                <span>Gestión de Historias Clínicas</span>
+                                <span>Gestión General</span>
                             </a>
-                            <ul class="submenu active">
-                                <li class="submenu-item ">
-                                    <a href="#" style="display: inline-flex; align-items: center; text-decoration: none;">
-                                        <i class="bi bi-person" style="font-size: 1.2rem; margin-right: 8px;"></i> Pacientes
-                                    </a>                                                                        
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" style="display: inline-flex; align-items: center; text-decoration: none;">
-                                        <i class="bi bi-file-medical-fill" style="font-size: 1rem; margin-right: 8px;"></i>Historias Clínicas
-                                    </a>                                    
-                                </li>                    
-                                            
-                            </ul>
+                            <a href="{% url 'admisionistas:buscar_pacientes' %}" class='sidebar-link'>                                
+                                <i class="bi bi-person" style="font-size: 20px;"></i>
+                                <span>Pacientes</span>
+                            </a>
+                            <a href="#" class='sidebar-link'>                                
+                                <i class="bi bi-journal-medical" style="font-size: 20px;"></i>
+                                <span>Historias Clínicas</span>
+                            </a>
+                            <a href="{% url 'administradores:gestion_usuarios' %}" class='sidebar-link'>                                
+                                <i class="bi bi-person-badge-fill" style="font-size: 20px;"></i>
+                                <span>Usuarios</span>
+                            </a>                            
                         </li>                                                             
                     </ul>
                 </div>

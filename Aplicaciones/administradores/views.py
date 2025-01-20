@@ -60,11 +60,9 @@ def eliminar_usuario(request, usuario_id):
 @login_required
 def agregar_usuario(request):
     if request.method == 'POST':
-        # Obtener los valores de los checkboxes, si están seleccionados será True, si no False
-        is_superuser = request.POST.get('is_superuser') == 'True'  # True si está seleccionado
-        is_staff = request.POST.get('is_staff') == 'True'  # True si está seleccionado        
+        is_superuser = request.POST.get('is_superuser') == 'True'
+        is_staff = request.POST.get('is_staff') == 'True'
 
-        # Recoger los datos del usuario
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         username = request.POST.get('username')
@@ -72,41 +70,41 @@ def agregar_usuario(request):
         especialidad = request.POST.get('especialidad')
         email = request.POST.get('email')
         password = request.POST.get('password')
+        image = request.FILES.get('image')
 
-        # Recoger la imagen de perfil (si se envió una)
-        image = request.FILES.get('image')  # Obtener el archivo de imagen
-
-        # Crear el usuario
-        usuario = Usuarios.objects.create(
+        usuario = Usuarios(
             first_name=first_name,
             last_name=last_name,
             username=username,
             tipo_usuario=tipo_usuario,
             especialidad=especialidad,
             email=email,
-            password=password,  # Asegúrate de encriptar la contraseña
             is_superuser=is_superuser,
-            is_staff=is_staff,        
-            image=image  # Asignar la imagen de perfil al usuario
+            is_staff=is_staff,
+            image=image,
         )
+        usuario.set_password(password)  # Encriptar contraseña
+        usuario.save()
 
-        # Enviar la respuesta con los datos del usuario
-        return JsonResponse({'status': 'success', 'message': 'Usuario agregado correctamente', 'usuario': {
-            'id': usuario.id,
-            'first_name': usuario.first_name,
-            'last_name': usuario.last_name,
-            'username': usuario.username,
-            'tipo_usuario': usuario.tipo_usuario,
-            'especialidad': usuario.especialidad,
-            'date_joined': usuario.date_joined,
-            'last_login': usuario.last_login,
-            'is_superuser': usuario.is_superuser,
-            'is_staff': usuario.is_staff,            
-            'email': usuario.email,
-            'image': usuario.image.url if usuario.image else None,  # Incluir la URL de la imagen si existe
-        }})
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Usuario agregado correctamente',
+            'usuario': {
+                'id': usuario.id,
+                'first_name': usuario.first_name,
+                'last_name': usuario.last_name,
+                'username': usuario.username,
+                'tipo_usuario': usuario.tipo_usuario,
+                'especialidad': usuario.especialidad,
+                'email': usuario.email,
+                'is_superuser': usuario.is_superuser,
+                'is_staff': usuario.is_staff,
+                'image': usuario.image.url if usuario.image else None,
+                'date_joined': usuario.date_joined.strftime('%Y-%m-%d %H:%M:%S'),
+                'last_login': usuario.last_login.strftime('%Y-%m-%d %H:%M:%S') if usuario.last_login else None,
+            },
+        })
 
-    return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
 
 #VISTA PARA CARGAR DATOS EN EL MODAL DE VER MÁS DETALLES
 @login_required

@@ -1,22 +1,17 @@
 $(document).ready(function () {
   var table = $("#tabla_usuarios").DataTable({
-    columnDefs: [],
+    columnDefs: [
+      
+    ],
     columns: [
-      { data: "id" }, // Columna ID oculta 0
-      { data: "password" }, //  1
-      { data: "last_login" }, //  2
-      { data: "is_superuser" }, // 3
-      { data: "username" }, //  4
-      { data: "first_name" }, // 5
-      { data: "last_name" }, //  6
-      { data: "email" }, //  7
-      { data: "is_staff" }, //  8
-      { data: "is_active" }, //  9
-      { data: "date_joined" }, //  10
-      { data: "tipo_usuario" }, // 11
-      { data: "especialidad" }, // 12
+       // Columna ID oculta 0                  
       { data: "image" }, // 13
-      { data: "acciones" }, // Acciones
+      { data: "first_name" }, // 5
+      { data: "last_name" }, //  6            
+      { data: "username" }, //  4         
+      { data: "tipo_usuario" }, // 11   
+      { data: "is_active" }, //  9            
+      { data: "acciones" }, // Acciones                         
     ],
     language: {
       decimal: "",
@@ -51,9 +46,9 @@ $(document).ready(function () {
     var fila = $(this).closest("tr"); // Almacena la fila donde se encuentra el botón
 
     // Obtener el nombre y apellido del paciente desde la fila
-    var nombre = fila.find("td").eq(2).text(); // Apellido Paterno
-    var apellido = fila.find("td").eq(3).text(); // Apellido Materno
-    var usuario = fila.find("td").eq(5).text(); // Apellido Materno
+    var nombre = fila.find("td").eq(1).text(); // Nombre
+    var apellido = fila.find("td").eq(2).text(); // Apellido
+    var usuario = fila.find("td").eq(3).text(); // Usuario
 
     // Preguntar al usuario si está seguro de eliminar
     Swal.fire({
@@ -128,7 +123,7 @@ $(document).ready(function () {
             .removeClass("badge-activo badge-inactivo")
             .addClass(
               usuario.is_active === "Activo" ? "badge-activo" : "badge-inactivo"
-            );                                  
+            );
           $("#ver_date_joined").text(usuario.date_joined);
           $("#ver_last_login").text(usuario.last_login);
           $("#ver_is_staff").text(usuario.is_staff);
@@ -159,157 +154,69 @@ $(document).ready(function () {
 
   // AGREGAR USUARIO
   $(document).ready(function () {
-    // Validación del formulario de agregar usuario
-    $("#formAddUsuario").validate({
-      rules: {
-        first_name: {
-          required: true,
-          maxlength: 50,
-        },
-        last_name: {
-          required: true,
-          maxlength: 50,
-        },
-        username: {
-          required: true,
-          maxlength: 30,
-        },
-        email: {
-          required: true,
-          email: true,
-        },
-        password: {
-          required: true,
-          minlength: 8,
-        },
-        tipo_usuario: {
-          required: true,
-        },
-        especialidad: {
-          required: true,
-        },
-        // is_superuser: {
-        //     required: true
-        // },
-        // is_staff: {
-        //     required: true
-        // },
-        // is_active: {
-        //     required: true
-        // }
-      },
-      messages: {
-        first_name: {
-          required: "Por favor, ingrese el nombre.",
-          maxlength: "El nombre no puede exceder los 50 caracteres.",
-        },
-        last_name: {
-          required: "Por favor, ingrese el apellido.",
-          maxlength: "El apellido no puede exceder los 50 caracteres.",
-        },
-        username: {
-          required: "Por favor, ingrese el nombre de usuario.",
-          maxlength: "El nombre de usuario no puede exceder los 30 caracteres.",
-        },
-        email: {
-          required: "Por favor, ingrese el correo electrónico.",
-          email: "Por favor, ingrese un correo electrónico válido.",
-        },
-        password: {
-          required: "Por favor, ingrese la contraseña.",
-          minlength: "La contraseña debe tener al menos 8 caracteres.",
-        },
-        tipo_usuario: {
-          required: "Por favor, seleccione el tipo de usuario.",
-        },
-        especialidad: {
-          required: "Por favor, ingrese la especialidad.",
-        },
-        // is_superuser: {
-        //     required: "Por favor, indique si es superusuario."
-        // },
-        // is_staff: {
-        //     required: "Por favor, indique si es personal administrativo."
-        // },
-        // is_active: {
-        //     required: "Por favor, indique si el usuario está activo."
-        // }
-      },
-      errorClass: "invalid",
-      validClass: "valid",
-      errorPlacement: function (error, element) {
-        error.addClass("invalid-feedback");
-        element.closest(".mb-3").append(error);
-      },
-      highlight: function (element, errorClass, validClass) {
-        $(element).addClass("is-invalid").removeClass("is-valid");
-      },
-      unhighlight: function (element, errorClass, validClass) {
-        $(element).addClass("is-valid").removeClass("is-invalid");
-      },
-      submitHandler: function (form, event) {
-        event.preventDefault();
-        // Enviar el formulario por AJAX si la validación es exitosa
+    $("#formAddUsuario").submit(function (event) {
+        event.preventDefault(); // Evitar comportamiento predeterminado del formulario
 
         $.ajax({
-          url: $(form).attr("action"),
-          method: "POST",
-          data: $(form).serialize(),
-          success: function (response) {
-            if (response.status === "success") {
-              var table = $("#tabla_usuarios").DataTable();
-              let fechaCreacion = moment(response.usuario.date_joined)
-                .locale("es")
-                .format("YYYY [de] MMMM [de] DD");
-              let ultimoLogin = response.usuario.last_login
-                ? moment(response.usuario.last_login)
-                    .locale("es")
-                    .format("YYYY [de] MMMM [de] DD")
-                : "Nunca ha iniciado sesión";
+            url: $(this).attr("action"),
+            method: "POST",
+            data: new FormData(this), // FormData para soportar archivos
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.status === "success") {
+                    // Agregar datos a DataTables
+                    var table = $("#tabla_usuarios").DataTable();
+                    table.row
+                      .add({
+                        image: `<img src="${response.usuario.image}" alt="Imagen de usuario" style="width: 50px; height: 50px; border-radius: 50%;">`, // Mostrar la imagen
+                        first_name: response.usuario.first_name,
+                        last_name: response.usuario.last_name,
+                        username: response.usuario.username,
+                        tipo_usuario: response.usuario.tipo_usuario,
+                        is_active: `
+                        <span class="badge bg-success">
+                          Activo
+                        </span>
+                        `,
+                        acciones: `                                                      
+                            <a href="#" style="margin-right: 2px;" class="btn btn-primary btn-sm view-btn" data-id="${response.usuario.id}" data-bs-toggle="modal" data-bs-target="#verUsuarioModal"><i class="fas fa-eye"></i></a>
+                            <a href="#" style="margin-right: 2px;" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoUsuariosModal" data-id="${response.usuario.id}"><i class="bi bi-pencil-fill"></i></a>                                
+                            <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="${response.usuario.id}"><i class="bi bi-trash-fill"></i></a>
+                        `,
+                      })
+                      .draw(false);
 
-              table.row
-                .add({
-                  id: response.usuario.id,
-                  first_name: response.usuario.first_name,
-                  last_name: response.usuario.last_name,
-                  username: response.usuario.username,
-                  tipo_usuario: response.usuario.tipo_usuario,
-                  especialidad: response.usuario.especialidad,
-                  date_joined: fechaCreacion,
-                  last_login: ultimoLogin,
-                  is_superuser: response.usuario.is_superuser ? "Sí" : "No",
-                  is_staff: response.usuario.is_staff ? "Sí" : "No",                  
-                  email: response.usuario.email,
-                  image: response.usuario.image,
-                  acciones: `
-                              <a href="#" class="btn btn-warning edit-btn" data-id="${response.usuario.id}">Editar</a>
-                              <a href="#" class="btn btn-danger btn-delete" data-id="${response.usuario.id}">Eliminar</a>
-                          `,
-                })
-                .draw(false);
+                    // Mostrar mensaje de éxito
+                    Toastify({
+                        text: "Usuario guardado correctamente",
+                        duration: 5000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
+                    }).showToast();
 
-              Toastify({
-                text: "Usuario guardado correctamente",
-                duration: 5000,
-                close: true,
-                gravity: "bottom",
-                position: "right",
-                backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
-              }).showToast();
-
-              $("#formAddUsuario")[0].reset();
-              $("#addIngresoUsuariosModal").modal("hide");
-              $(".modal-backdrop").remove();
-              $("body").removeClass("modal-open");
-            } else {
-              alert(response.message || "Error al agregar el usuario");
-            }
-          },
-          error: function () {
-            alert("Error al procesar la solicitud");
-          },
+                    // Resetear formulario y cerrar el modal
+                    $("#formAddUsuario")[0].reset();
+                    $("#addIngresoUsuariosModal").modal("hide");
+                    $(".modal-backdrop").remove();
+                    $("body").removeClass("modal-open");
+                    // Asegura que el scroll se restaure en el HTML
+                    $('html').css('overflow', 'auto');
+                } else {
+                    alert(response.message || "Error al agregar el usuario");
+                }
+            },
+            error: function () {
+                alert("Error al procesar la solicitud");
+            },
         });
-      },
+
+        return false; // Prevenir comportamiento predeterminado del formulario
     });
-  });
+});
+
+
+
 });

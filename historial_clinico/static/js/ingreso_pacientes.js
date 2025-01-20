@@ -110,6 +110,8 @@ $(document).ready(function () {
     });
 
   });
+
+  
   //ingresar paciente
   $(document).ready(function () {
     // Validación del formulario de agregar paciente
