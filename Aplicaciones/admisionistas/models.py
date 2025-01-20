@@ -34,12 +34,16 @@ class Pacientes(models.Model):
     emergencia_informar_pacientes = models.CharField(max_length=255)
     parentesco_pacientes = models.TextField(max_length=254,null=True,blank=True)
     contacto_emergencia_pacientes = models.CharField(max_length=15)
+    #DEFAULT ACTIVO CADA VEZ QUE SE CREA UN USUARIO
+    is_active = models.BooleanField(
+        default=True,
+    )
 
     class Meta:
         db_table = 'pacientes'
 
     def __str__(self):
-        return f"{self.nombres_pacientes} {self.apellido_paterno_pacientes} {self.apellido_materno_pacientes}"
+        return f"{self.nombres_pacientes} {self.apellido_paterno_pacientes} {self.apellido_materno_pacientes} {self.is_active}"
     
     def save(self, *args, **kwargs):
         self.apellido_paterno_pacientes = self.apellido_paterno_pacientes.upper()

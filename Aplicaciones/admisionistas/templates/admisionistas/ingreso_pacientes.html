@@ -5,6 +5,22 @@ GESTIÓN PACIENTES
 {% endblock %}
 
 {% block content %}
+    <style>
+        .badge-success {
+        background-color: #28a745;
+        color: white;
+        padding: 0.2em 0.6em;
+        border-radius: 0.2em;
+        }
+
+        .badge-danger {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.2em 0.6em;
+            border-radius: 0.2em;
+        }
+    </style>
+
     <h1 class="text text-center">Gestión de Pacientes</h1>
     <br>
     <div class="container mt-5">
@@ -35,7 +51,7 @@ GESTIÓN PACIENTES
                     <div class="list-group-item py-3 px-4 d-flex justify-content-between align-items-center shadow-sm mb-3"
                         data-id="{{ pacienteTemporal.id_pacientes }}">
                         <!-- Información del paciente -->
-                        <div>
+                        <div>                            
                             <h6 class="mb-1 paciente-nombre">{{ pacienteTemporal.nombres_pacientes }} {{ pacienteTemporal.apellido_paterno_pacientes }} {{ pacienteTemporal.apellido_materno_pacientes }}</h6>
                             <small class="text-muted paciente-cedula">
                                 <strong>Cédula:</strong> {{ pacienteTemporal.cedula_pacientes }}
@@ -334,6 +350,15 @@ GESTIÓN PACIENTES
                                 <b><label for="edit_fk_id_admisionista" class="form-label">Admisionista</label></b>
                                 <input type="text" class="form-control" id="edit_fk_id_admisionista" name="fk_id_admisionista" readonly>
                             </div>
+
+                            <div class="mb-3">
+                                <b><label for="edit_is_active_pacientes_select" class="form-label">Estado</label></b>
+                                <select class="form-select" id="edit_is_active_pacientes_select" name="is_active" required>
+                                    <option value="" disabled>Seleccione una opción</option>
+                                    <option value="true" {% if paciente.is_active %}selected{% endif %}>ACTIVO</option>
+                                    <option value="false" {% if not paciente.is_active %}selected{% endif %}>INACTIVO</option>
+                                </select>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Actualizar</button>
                     </form>
@@ -349,14 +374,19 @@ GESTIÓN PACIENTES
         <div class="modal-content">
             <div class="modal-header">
             <h5 class="modal-title" id="viewPacienteLabel">Detalles del Paciente</h5>
+            <div style="margin-left: 40%;">     
+                <h6>Estado</h6>               
+                <span id="view_is_active" class="badge"></span>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
             <form id="formPaciente" method="POST" >
-                {% csrf_token %}
+                {% csrf_token %}                
                 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                 <input type="hidden" name="id_pacientes" id="view_pacienteId"> <!-- Campo oculto para ID -->
                 <!-- Campos del paciente que serán llenados para ver o editar -->
+                                
                 <div class="mb-3">
                 <b><label class="form-label">Apellido Paterno</label></b>
                 <input type="text" id="view_apellido_paterno_pacientes" class="form-control" name="apellido_paterno_pacientes" readonly>
