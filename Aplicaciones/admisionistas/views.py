@@ -71,6 +71,7 @@ def agregar_paciente(request):
         emergencia_informar_pacientes = request.POST.get('emergencia_informar_pacientes')
         parentesco_pacientes = request.POST.get('parentesco_pacientes')
         contacto_emergencia_pacientes = request.POST.get('contacto_emergencia_pacientes')
+        is_active = request.POST.get('is_active', 'true').lower() == 'true'  # Activo por defecto
         # Cálculo de la edad
         fecha_nacimiento = datetime.strptime(fecha_nacimiento_pacientes, "%Y-%m-%d").date()
         edad_paciente = calculate_age(fecha_nacimiento)
@@ -100,7 +101,8 @@ def agregar_paciente(request):
             emergencia_informar_pacientes=emergencia_informar_pacientes,
             parentesco_pacientes = parentesco_pacientes,
             contacto_emergencia_pacientes=contacto_emergencia_pacientes,
-            fk_id_admisionista=admisionista  # Asignar el usuario autenticado como admisionista
+            fk_id_admisionista=admisionista, # Asignar el usuario autenticado como admisionista,
+            is_active=is_active
         )
 
         # Enviar la respuesta con los datos del paciente y la edad calculada
@@ -128,6 +130,7 @@ def agregar_paciente(request):
             'parentesco': paciente.parentesco_pacientes,
             'contacto_emergencia': paciente.contacto_emergencia_pacientes,
             'admisionista': paciente.fk_id_admisionista.username,  # Mostrar el nombre del admisionista
+            'is_active': paciente.is_active
         }})
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
 
@@ -166,6 +169,7 @@ def obtener_paciente(request, paciente_id):
                 'genero_otro': paciente.genero_otro if paciente.genero_pacientes == 'Otro' else None,
                 'seguro_otro': paciente.seguro_otro if paciente.seguro_pacientes == 'Otro' else None,
                 'admisionista': paciente.fk_id_admisionista.username if paciente.fk_id_admisionista else None,
+                'is_active' : paciente.is_active 
             }
         })
     except Pacientes.DoesNotExist:
@@ -219,9 +223,20 @@ def actualizar_paciente(request):
                         return JsonResponse({'status': 'error', 'message': 'Formato de fecha inválido. Use AAAA-MM-DD o DD/MM/AAAA'})
             else:
                 paciente.fecha_nacimiento_pacientes = None  
+            # Manejo del estado activo/inactivo
+            is_active_value = request.POST.get('is_active')
+            print(f"Valor recibido de is_active: {is_active_value}")  # Verifica si el valor está llegando correctamente
 
+            if is_active_value == 'true':
+                paciente.is_active = True
+            elif is_active_value == 'false':
+                paciente.is_active = False
+            else:   
+                # Si el valor no es válido, podrías devolver un error
+                return JsonResponse({'status': 'error', 'message': 'Valor inválido para el estado activo/inactivo'})
+            
             paciente.save()
-
+        
             # Calcular la edad si hay fecha de nacimiento
             edad = calculate_age(paciente.fecha_nacimiento_pacientes) if paciente.fecha_nacimiento_pacientes else None
 
@@ -253,6 +268,7 @@ def actualizar_paciente(request):
                     'parentesco': paciente.parentesco_pacientes,
                     'contacto_emergencia': paciente.contacto_emergencia_pacientes,
                     'admisionista': paciente.fk_id_admisionista.username,
+                    'is_active': paciente.is_active
                 }
             }
             return JsonResponse(response_data)

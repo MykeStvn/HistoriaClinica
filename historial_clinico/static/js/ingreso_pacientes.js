@@ -62,7 +62,7 @@ $(document).ready(function () {
 
     // Establecer un rango
     inputFecha.setAttribute("max", `${anio}-${mes}-${dia}`); // No permite fechas futuras
-    inputFecha.setAttribute("min", "1900-01-01"); // Fecha mínima fija
+    inputFecha.setAttribute("min", "1925-01-01"); // Fecha mínima fija
   });
 
 
@@ -136,7 +136,7 @@ $(document).ready(function () {
       function (value, element) {
         const fechaSeleccionada = new Date(value);
         const hoy = new Date();
-        const fechaMinima = new Date("1900-01-01");
+        const fechaMinima = new Date("1925-01-01");
 
         return (
           this.optional(element) ||
@@ -496,7 +496,7 @@ $(document).ready(function () {
         } else {
           $("#view_genero_otro_div").hide();
           $("#view_genero_otro").val("");
-          $("#view_genero_pacientes").val(data.paciente.genero);
+          $("#view_genero_pacientes").val(data.paciente.genero);          
         }
 
         // Seguro
@@ -514,7 +514,14 @@ $(document).ready(function () {
           $("#view_seguro_otro").val("");
           $("#view_seguro_pacientes").val(data.paciente.seguro);
         }
+        //ESTADO
+        const isActive = data.paciente.is_active;
+        const badge = $("#view_is_active");
 
+        // Actualizar texto y clases del badge
+        badge.text(isActive ? "Activo" : "Inactivo");
+        badge.removeClass("badge-success badge-danger"); // Limpiar clases previas
+        badge.addClass(isActive ? "badge-success" : "badge-danger"); // Añadir clases según el estado
         $("#viewIngresoPacientesModal").modal("show");
       },
       error: function () {
@@ -570,6 +577,8 @@ $(document).ready(function () {
           data.paciente.contacto_emergencia
         );
         $("#edit_fk_id_admisionista").val(data.paciente.admisionista);
+        $("#edit_is_active_pacientes_select").val(data.paciente.is_active ? 'true' : 'false');
+
 
         // Género
         if (
@@ -600,6 +609,7 @@ $(document).ready(function () {
           $("#edit_seguro_otro").val("");
           $("#edit_seguro_pacientes_select").val(data.paciente.seguro);
         }
+        
 
         $("#editIngresoPacientesModal").modal("show");
       },
