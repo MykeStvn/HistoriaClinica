@@ -328,24 +328,32 @@ def verificar_cedula(request):
         exists = Pacientes.objects.filter(cedula_pacientes=cedula).exists()
         return JsonResponse({'exists': exists})
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
+
 #verifico cedula ACTUALIZAR
 @login_required
-def verificar_cedula_actualizar(request, paciente_id):
-    if request.method == 'POST':
-        cedula = request.POST.get('cedula_pacientes')  # Campo esperado del formulario
-        # Validación de la cédula ecuatoriana
+def verificar_cedula_actualizar(request):
+        cedula = request.POST.get('cedula_pacientes')
+        paciente_id = request.POST.get('paciente_id')  # Obtener el ID del paciente (si estamos editando)
+
+        # Primero, validamos que la cédula sea ecuatoriana utilizando la función validar_cedula
         if not validar_cedula(cedula):
-            return JsonResponse({'exists': True, 'valid': False, 'message': 'Cédula inválida'})
+            return JsonResponse({'exists': True, 'message': 'La cédula debe ser ecuatoriana válida (10 dígitos).'})
         
-        # Verificar si la cédula existe en la base de datos, pero no contar la cédula del paciente que estamos actualizando
-        exists = Pacientes.objects.filter(cedula_pacientes=cedula).exclude(id_pacientes=paciente_id).exists()
-        
-        # Devuelvo la respuesta indicando si existe o no la cédula
-        return JsonResponse({'exists': exists})
-    
-    return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
+        # Verificar si la cédula ya está registrada en otro paciente, excluyendo el paciente actual si está editando
+        try:
+            if paciente_id:
+                # Si se está editando, excluimos el paciente con ese ID
+                paciente = Pacientes.objects.exclude(id_pacientes=paciente_id).filter(cedula_pacientes=cedula).exists()
+            else:
+                # Si no se está editando, verificamos en toda la base de datos
+                paciente = Pacientes.objects.filter(cedula_pacientes=cedula).exists()
 
-
+            if paciente:
+                return JsonResponse({'exists': True, 'message': 'Esta cédula ya está registrada en el sistema o no es ecuatoriana.'})
+            else:
+                return JsonResponse({'exists': False})
+        except Exception as e:
+            return JsonResponse({'exists': False, 'message': str(e)})
 
 
 # Función para calcular la edad

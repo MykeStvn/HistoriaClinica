@@ -12,6 +12,6 @@ urlpatterns = [
     path('actualizar_paciente/', views.actualizar_paciente, name='actualizar_paciente'),  # Nueva ruta para actualizar
     path('eliminar_paciente/<int:paciente_id>/', views.eliminar_paciente, name='eliminar_paciente'),
     path('verificar_cedula/', views.verificar_cedula, name='verificar_cedula'),
-    path('verificar_cedula_actualizar/<int:paciente_id>/', views.verificar_cedula_actualizar, name='verificar_cedula_actualizar'),
+    path('verificar_cedula_actualizar/', views.verificar_cedula_actualizar, name='verificar_cedula_actualizar'),
     path('buscar_pacientes/', views.buscar_pacientes, name='buscar_pacientes')
 ]

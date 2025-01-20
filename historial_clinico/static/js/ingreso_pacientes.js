@@ -691,21 +691,23 @@ $(document).ready(function () {
           minlength: 10,
           maxlength: 10,
           numbersOnly: true,
-          // remote: {
-          //   // Validación remota para la cédula
-          //   url: "/admisionistas/verificar_cedula/", // Cambia la ruta si es necesario
-          //   type: "post",
-          //   data: {
-          //     cedula_pacientes: function () {
-          //       return $("#cedula_pacientes").val(); // Obtiene el valor de la cédula
-          //     },
-          //     csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(),
-          //   },
-          //   dataFilter: function (response) {
-          //     const data = JSON.parse(response);
-          //     return !data.exists; // Retorna true si no existe
-          //   },
-          // },   
+          remote: {
+            url: "/admisionistas/verificar_cedula_actualizar/", // Ruta para la verificación de la cédula
+            type: "POST",
+            data: {
+              cedula_pacientes: function () {
+                return $("#edit_cedula_pacientes").val(); // Obtiene el valor de la cédula
+              },
+              paciente_id: function () {
+                return $("#edit_pacienteId").val(); // Obtiene el ID del paciente que está siendo editado
+              },
+              csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(), // Asegúrate de incluir el token CSRF
+            },
+            dataFilter: function (response) {
+              const data = JSON.parse(response);
+              return !data.exists; // Retorna true si no existe (la cédula es válida)
+            },
+          },
         },
         fecha_nacimiento_pacientes: {
           required: true,
