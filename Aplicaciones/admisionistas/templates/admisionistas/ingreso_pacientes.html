@@ -80,8 +80,11 @@ GESTIÓN PACIENTES
                             <a href="#" class="btn btn-sm btn-warning me-1 edit-btn" data-bs-toggle="modal"
                                 data-bs-target="#editIngresoPacientesModal" title="Editar paciente"
                                 data-id="{{ pacienteTemporal.id_pacientes }}"> <i class="bi bi-pencil-fill"></i></a>
+                            {% if user.is_authenticated and user.is_staff %}
+                                <!-- Solo se muestra si el usuario es autenticado y es un administrador (is_staff) -->
                             <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="{{ pacienteTemporal.id_pacientes }}"
-                                title="Eliminar paciente"> <i class="bi bi-trash-fill"></i></a>
+                                   title="Eliminar paciente"> <i class="bi bi-trash-fill"></i></a>
+                            {% endif %}
                         </div>
                     </div>
                     {% endfor %}
@@ -353,7 +356,7 @@ GESTIÓN PACIENTES
 
                             <div class="mb-3">
                                 <b><label for="edit_is_active_pacientes_select" class="form-label">Estado</label></b>
-                                <select class="form-select" id="edit_is_active_pacientes_select" name="is_active" required>
+                                <select class="form-select" id="edit_is_active_pacientes_select" name="is_active" disabled>
                                     <option value="" disabled>Seleccione una opción</option>
                                     <option value="true" {% if paciente.is_active %}selected{% endif %}>ACTIVO</option>
                                     <option value="false" {% if not paciente.is_active %}selected{% endif %}>INACTIVO</option>
