@@ -32,28 +32,42 @@ GESTIÓN PACIENTES
                     Paciente encontrado!
                 </div>
                     {% for pacienteTemporal in pacientes %}
-                        <div class="list-group-item py-3 px-4 d-flex justify-content-between align-items-center shadow-sm mb-3">
-                            <!-- Información del paciente -->
-                            <div>
-                                <h6 class="mb-1">{{ pacienteTemporal.nombres_pacientes }} {{ pacienteTemporal.apellido_paterno_pacientes }} {{ pacienteTemporal.apellido_materno_pacientes }}</h6>
-                                <small class="text-muted">
-                                    <strong>Cédula:</strong> {{ pacienteTemporal.cedula_pacientes }} |
-                                    <strong>Edad:</strong> {{ pacienteTemporal.edad }} |
-                                    <strong>Teléfono:</strong> {{ pacienteTemporal.telefono_pacientes }}
-                                </small>
-                                <br>
-                                <small class="text-muted">
-                                    <strong>Seguro Médico:</strong> {{ pacienteTemporal.seguro_pacientes }} |
-                                    <strong>Dirección:</strong> {{ pacienteTemporal.direccion_pacientes }}
-                                </small>
-                            </div>
-                            <!-- Botones de acción -->
-                            <div class="d-flex gap-2">
-                                <a href="#" class="btn btn-sm btn-primary view-btn" data-bs-toggle="modal" data-bs-target="#viewPacienteModal" title="Ver paciente" data-id="{{ pacienteTemporal.id_pacientes }}"> <i class="bi bi-eye-fill"></i></a>                        
-                                <a href="#" class="btn btn-sm btn-warning me-1 edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoPacientesModal" title="Editar paciente" data-id="{{ pacienteTemporal.id_pacientes }}"> <i class="bi bi-pencil-fill"></i></a>
-                                <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="{{ pacienteTemporal.id_pacientes }}" title="Eliminar paciente"> <i class="bi bi-trash-fill"></i></a>
-                            </div>
+                    <div class="list-group-item py-3 px-4 d-flex justify-content-between align-items-center shadow-sm mb-3"
+                        data-id="{{ pacienteTemporal.id_pacientes }}">
+                        <!-- Información del paciente -->
+                        <div>
+                            <h6 class="mb-1 paciente-nombre">{{ pacienteTemporal.nombres_pacientes }} {{ pacienteTemporal.apellido_paterno_pacientes }} {{ pacienteTemporal.apellido_materno_pacientes }}</h6>
+                            <small class="text-muted paciente-cedula">
+                                <strong>Cédula:</strong> {{ pacienteTemporal.cedula_pacientes }}
+                            </small>
+                            <br>
+                            <small class="text-muted paciente-edad">
+                                <strong>Edad:</strong> {{ pacienteTemporal.edad}}
+                            </small>
+                            <br>
+                            <small class="text-muted paciente-seguro">
+                                <strong>Seguro Médico:</strong> {{ pacienteTemporal.seguro_pacientes }}
+                            </small>
+                            <br>
+                            <small class="text-muted paciente-emergencia">
+                                <strong>En caso de emergencia informar a:</strong> {{ pacienteTemporal.emergencia_informar_pacientes }}
+                            </small>
+                            <br>
+                            <small class="text-muted paciente-contacto">
+                                <strong>Teléfono:</strong> {{ pacienteTemporal.contacto_emergencia_pacientes }}
+                            </small>
                         </div>
+                        <!-- Botones de acción -->
+                        <div class="d-flex gap-2">
+                            <a href="#" class="btn btn-sm btn-primary view-btn" data-bs-toggle="modal" data-bs-target="#viewPacienteModal"
+                                title="Ver paciente" data-id="{{ pacienteTemporal.id_pacientes }}"> <i class="bi bi-eye-fill"></i></a>
+                            <a href="#" class="btn btn-sm btn-warning me-1 edit-btn" data-bs-toggle="modal"
+                                data-bs-target="#editIngresoPacientesModal" title="Editar paciente"
+                                data-id="{{ pacienteTemporal.id_pacientes }}"> <i class="bi bi-pencil-fill"></i></a>
+                            <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="{{ pacienteTemporal.id_pacientes }}"
+                                title="Eliminar paciente"> <i class="bi bi-trash-fill"></i></a>
+                        </div>
+                    </div>
                     {% endfor %}
                 {% else %}
                     <div class="alert alert-warning" role="alert">
@@ -366,6 +380,10 @@ GESTIÓN PACIENTES
                 <div class="mb-3">
                     <b><label class="form-label">Lugar de Nacimiento:</label></b>
                     <input type="text" class="form-control" id="view_lugar_nacimiento_pacientes" name="lugar_nacimiento_pacientes"  readonly>
+                </div>
+                <div class="mb-3">
+                    <b><label class="form-label">Edad:</label></b>
+                    <input type="text" class="form-control" id="view_edad_paciente" name="edad_paciente"  readonly>
                 </div>
                 <div class="mb-3">
                     <b><label for="view_nacionalidad_pacientes" class="form-label">Nacionalidad:</label></b>
