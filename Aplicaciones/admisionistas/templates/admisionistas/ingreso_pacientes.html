@@ -355,13 +355,19 @@ GESTIÓN PACIENTES
                             </div>
 
                             <div class="mb-3">
-                                <b><label for="edit_is_active_pacientes_select" class="form-label">Estado</label></b>
-                                <select class="form-select" id="edit_is_active_pacientes_select" name="is_active" disabled>
-                                    <option value="" disabled>Seleccione una opción</option>
-                                    <option value="true" {% if paciente.is_active %}selected{% endif %}>ACTIVO</option>
-                                    <option value="false" {% if not paciente.is_active %}selected{% endif %}>INACTIVO</option>
-                                </select>
-                            </div>
+                                {% if user.is_authenticated and user.is_staff %}
+                                    <b><label for="edit_is_active_pacientes_select" class="form-label">Estado</label></b>
+                                    <select class="form-select" id="edit_is_active_pacientes_select" name="is_active">
+                                        <option value="" disabled>Seleccione una opción</option>
+                                        <option value="true" {% if paciente.is_active %}selected{% endif %}>ACTIVO</option>
+                                        <option value="false" {% if not paciente.is_active %}selected{% endif %}>INACTIVO</option>
+                                    </select>
+                                {% else %}
+                                    <!-- Campo oculto que se envía siempre -->
+                                    <input type="hidden" name="is_active" value="{% if paciente.is_active %}true{% else %}false{% endif %}">
+                                {% endif %}
+                            </div>                                                          
+                            
                         </div>
                         <button type="submit" class="btn btn-primary">Actualizar</button>
                     </form>
