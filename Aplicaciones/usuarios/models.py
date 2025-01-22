@@ -42,6 +42,8 @@ class Usuarios(AbstractUser):
         return self.username
 
     def save(self, *args, **kwargs):
+        self.first_name = self.first_name.upper()
+        self.last_name = self.last_name.upper()        
         if self.password and not self.password.startswith('pbkdf2_sha256'):
             self.password = make_password(self.password)
         super().save(*args, **kwargs)

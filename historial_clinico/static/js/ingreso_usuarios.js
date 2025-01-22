@@ -122,7 +122,7 @@ $(document).ready(function () {
             .text(usuario.is_active)
             .removeClass("badge-activo badge-inactivo")
             .addClass(
-              usuario.is_active === "Activo" ? "badge-activo" : "badge-inactivo"
+              usuario.is_active === "ACTIVO" ? "badge-activo" : "badge-inactivo"
             );
           $("#ver_date_joined").text(usuario.date_joined);
           $("#ver_last_login").text(usuario.last_login);
@@ -304,7 +304,7 @@ $(document).ready(function () {
                   tipo_usuario: response.usuario.tipo_usuario,
                   is_active: `
                     <span class="badge bg-success">
-                      Activo
+                      ACTIVO
                     </span>
                   `,
                   acciones: `
@@ -533,10 +533,10 @@ $(document).ready(function () {
                   first_name: response.usuario.first_name,
                   last_name: response.usuario.last_name,
                   username: response.usuario.username,
-                  tipo_usuario: response.usuario.tipo_usuario,
+                  tipo_usuario: response.usuario.tipo_usuario.toUpperCase(), // Solo para visualización
                   is_active: response.usuario.is_active
-                    ? '<span class="badge bg-success">Activo</span>'
-                    : '<span class="badge bg-danger">Inactivo</span>',
+                    ? '<span class="badge bg-success">ACTIVO</span>'
+                    : '<span class="badge bg-danger">INACTIVO</span>',
                   acciones: `<div class="d-flex">
                                 <a href="#" style="margin-right: 10px;" class="btn btn-primary btn-sm view-btn"
                                   data-id="${response.usuario.id}" data-bs-toggle="modal" data-bs-target="#verUsuarioModal">
@@ -552,7 +552,7 @@ $(document).ready(function () {
                                 </a>
                             </div>`,
                 })
-                .draw();
+                .draw(false);
 
               Toastify({
                 text: "Usuario actualizado correctamente",

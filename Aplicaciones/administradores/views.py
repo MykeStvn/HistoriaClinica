@@ -141,7 +141,7 @@ def obtener_usuario(request, usuario_id):
                 'tipo_usuario': usuario.tipo_usuario,
                 'especialidad': usuario.especialidad,
                 'email': usuario.email,
-                'is_active': 'Activo' if usuario.is_active else 'Inactivo',
+                'is_active': 'ACTIVO' if usuario.is_active else 'INACTIVO',
                 'image_url': usuario.image.url if usuario.image else None,
                 'date_joined':date_joined,
                 'last_login': last_login,

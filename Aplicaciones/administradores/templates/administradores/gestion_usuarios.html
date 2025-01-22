@@ -15,35 +15,8 @@ GESTIÓN USUARIOS
     .card {
         margin-top: 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+    }    
 
-    /* Contenedor Flex */
-    .switch-container {
-        display: flex;
-        gap: 40px;
-        /* Espacio entre switches */
-        align-items: center;
-        /* Alineación vertical */
-        justify-content: flex-start;
-        /* Alineación horizontal */
-    }
-
-    /* Ajustes para que cada switch ocupe menos espacio */
-    .form-check {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        min-width: 100px;
-        /* Tamaño mínimo de cada switch */
-    }
-
-    /* Ajuste del texto */
-    .form-check .form-label {
-        margin-bottom: 5px;
-        font-size: 14px;
-        font-weight: bold;
-    }
 
     .badge-activo {
         background-color: #28a745;
@@ -67,9 +40,9 @@ GESTIÓN USUARIOS
                 <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addIngresoUsuariosModal"><i
                         class="bi bi-person-plus-fill"></i> Nuevo Usuario</a>
             </div>
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive" style="color: #FB5293;">
+            <div class="card" style="width: fit-content;">
+                <div class="card-body" style="width: auto;">
+                    <div class="table-responsive" style="color: #FB5293;"> <!--AQUI PUSE COLOR PARA EL TEXTO-->
                         <table id="tabla_usuarios" class="table table-striped mx-auto">
                             <thead>
                                 <tr>
@@ -100,11 +73,11 @@ GESTIÓN USUARIOS
                                     <td>{{ usuarioTemporal.first_name}}</td>
                                     <td>{{ usuarioTemporal.last_name }}</td>
                                     <td>{{ usuarioTemporal.username}}</td>
-                                    <td>{{ usuarioTemporal.tipo_usuario}}</td>
+                                    <td>{{ usuarioTemporal.tipo_usuario|upper }}</td>
                                     <td>
                                         <span
                                             class="badge {% if usuarioTemporal.is_active %}bg-success{% else %}bg-danger{% endif %}">
-                                            {% if usuarioTemporal.is_active %}Activo{% else %}Inactivo{% endif %}
+                                            {% if usuarioTemporal.is_active %}ACTIVO{% else %}INACTIVO{% endif %}
                                         </span>
                                     </td>
 
@@ -174,9 +147,9 @@ GESTIÓN USUARIOS
                             <b><label for="tipo_usuario" class="form-label">Tipo de Usuario:</label></b>
                             <select class="form-select" id="tipo_usuario" name="tipo_usuario" required>
                                 <option value="" disabled selected>Seleccione un tipo</option>
-                                <option value="admisionista">Admisionista</option>
-                                <option value="doctor">Doctor</option>
-                                <option value="administrador">Administrador</option>
+                                <option value="admisionista">ADMISIONISTA</option>
+                                <option value="doctor">DOCTOR</option>
+                                <option value="administrador">ADMINISTRADOR</option>
                             </select>
                         </div>
                         <!-- Especialidad -->
@@ -184,9 +157,9 @@ GESTIÓN USUARIOS
                             <b><label for="especialidad" class="form-label">Especialidad:</label></b>
                             <select class="form-select" id="especialidad" name="especialidad" required>
                                 <option value="" disabled selected>Seleccione una especialidad</option>
-                                <option value="admisionista">Admisionista</option>
-                                <option value="medico_general">Médico General</option>
-                                <option value="administrador">Administrador</option>
+                                <option value="admisionista">ADMISIONISTA</option>
+                                <option value="medico_general">MÉDICO GENERAL</option>
+                                <option value="administrador">ADMINISTRADOR</option>
                             </select>
                         </div>
                         <!-- Email -->
@@ -207,7 +180,7 @@ GESTIÓN USUARIOS
                             <input type="file" class="form-control" id="image_input" name="image" accept="image/*" required>                            
                         
                     </div>
-                    <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+                    <button type="submit" class="btn btn-success">Guardar Usuario</button>
                 </form>
             </div>
         </div>
@@ -281,15 +254,7 @@ GESTIÓN USUARIOS
                         <div class="col-sm">
                             <label class="form-label"><strong>Email:</strong></label>
                             <p id="ver_email"></p>
-                        </div>
-                        <div class="col-sm">
-                            <label class="form-label"><strong>Super Usuario:</strong></label>
-                            <p id="ver_is_superuser"></p>
-                        </div>
-                        <div class="col-sm">
-                            <label class="form-label"><strong>Staff:</strong></label>
-                            <p id="ver_is_staff"></p>
-                        </div>
+                        </div>                                                
                     </div>
                 </div>
 
@@ -333,9 +298,9 @@ GESTIÓN USUARIOS
                             <b><label for="edit_tipo_usuario" class="form-label">Tipo de Usuario:</label></b>
                             <select class="form-select" id="edit_tipo_usuario" name="tipo_usuario" required>
                                 <option value="" disabled selected>Seleccione un tipo</option>
-                                <option value="admisionista"{% if usuario.tipo_usuario == 'admisionista' %}selected{% endif %}>Admisionista</option>
-                                <option value="doctor"{% if usuario.tipo_usuario == 'doctor' %}selected{% endif %}>Doctor</option>
-                                <option value="administrador"{% if usuario.tipo_usuario == 'administrador' %}selected{% endif %}>Administrador</option>                                                                                                
+                                <option value="admisionista"{% if usuario.tipo_usuario == 'admisionista' %}selected{% endif %}>ADMISIONISTA</option>
+                                <option value="doctor"{% if usuario.tipo_usuario == 'doctor' %}selected{% endif %}>DOCTOR</option>
+                                <option value="administrador"{% if usuario.tipo_usuario == 'administrador' %}selected{% endif %}>ADMINISTRADOR</option>                                                                                                
                             </select>
                         </div>
                         <!-- Especialidad -->
@@ -343,9 +308,9 @@ GESTIÓN USUARIOS
                             <b><label for="edit_especialidad" class="form-label">Especialidad:</label></b>
                             <select class="form-select" id="edit_especialidad" name="especialidad" required>
                                 <option value="" disabled selected>Seleccione una especialidad</option>                                
-                                <option value="admisionista"{% if usuario.especialidad == 'admisionista' %}selected{% endif %}>Admisionista</option>
-                                <option value="medico_general"{% if usuario.especialidad == 'medico_general' %}selected{% endif %}>Médico General</option>
-                                <option value="administrador"{% if usuario.especialidad == 'administrador' %}selected{% endif %}>Administrador</option>                                                                
+                                <option value="admisionista"{% if usuario.especialidad == 'admisionista' %}selected{% endif %}>ADMISIONISTA</option>
+                                <option value="medico_general"{% if usuario.especialidad == 'medico_general' %}selected{% endif %}>MÉDICO GENERAL</option>
+                                <option value="administrador"{% if usuario.especialidad == 'administrador' %}selected{% endif %}>ADMINISTRADOR</option>                                                                
                             </select>
                         </div>
                         <div class="mb-3">                            
@@ -364,19 +329,20 @@ GESTIÓN USUARIOS
                         <b><label for="edit_password" class="form-label">Contraseña: </label></b>
                         <div class="input-group mb-3">
                             <input type="password" class="form-control" id="edit_password" name="password"
-                                placeholder="Escriba una nueva contraseña (dejar vacío si no desea cambiarla)">
-                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">Mostrar</button>
-                        </div>                        
-                        <div class="form-group">
-                            <b><label class="form-label">Imagen de Perfil Actual:</label></b>
-                            <img id="edit_image" class="form-control" style="width: 150px; height: 150px;" src="" alt="Imagen de perfil actual">
-                            
-                            <b><label for="edit_image_input" class="form-label mt-2">Cambiar imagen:</label></b>
+                                placeholder="Escriba una nueva contraseña (deja vacio si no la vas a cambiar)">                                                        
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">Mostrar</button>                            
+                        </div>
+                        <small class="text-muted">Deja este campo vacío si no deseas cambiar la contraseña</small>                        
+                        <br><br>
+                        <div>
+                            <b><label>Imagen de Perfil Actual:</label></b>
+                            <img id="edit_image" class="form-control" style="width: 150px; height: 150px;" src="" alt="Imagen de perfil actual">                            
+                            <b><label>Cambiar imagen:</label></b>
                             <input type="file" class="form-control" id="edit_image_input" name="image" accept="image/*">
                             <small class="text-muted">Deja este campo vacío si no deseas cambiar la imagen</small>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+                    <button type="submit" class="btn btn-success">Guardar Usuario</button>
                 </form>
             </div>
         </div>
