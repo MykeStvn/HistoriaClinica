@@ -63,3 +63,27 @@ class Pacientes(models.Model):
         self.parentesco_pacientes = self.parentesco_pacientes.upper()
 
         super(Pacientes, self).save(*args, **kwargs)
+
+
+class Citas(models.Model):
+    ESTADO_OPCIONES = [
+        ('PENDIENTE','PENDIENTE'),
+        ('CONFIRMADA','CONFIRMADA'),
+        ('CANCELADA','CANCELADA'),
+        ('COMPLETADA','COMPLETADA'),
+    ]
+
+    id_cita = models.AutoField(primary_key=True)
+    fecha_cita = models.DateField()
+    hora_cita = models.TimeField()
+    estado_cita = models.CharField(max_length=20, choices=ESTADO_OPCIONES, default='PENDIENTE')
+    fk_id_paciente = models.ForeignKey(Pacientes, on_delete = models.PROTECT, db_column  = 'fk_id_pacientes', related_name = 'citas')
+    #pongo en PROTECT para prevenir que se elimine por cualquier situación el paciente
+    class Meta: 
+        db_table = 'citas'
+        verbose_name = 'Cita'
+        verbose_name_plural = 'Citas'
+        ordering = ['-fecha_cita', '-hora_cita']
+
+    def __str__(self):
+        return f"Cita de {self.fk_id_paciente.id_pacientes} - {self.fk_id_paciente.nombres_pacientes} {self.fk_id_paciente.apellido_paterno_pacientes} el {self.fecha_cita} a las {self.hora_cita} ({self.estado_cita})"

@@ -21,6 +21,8 @@
     <!-- Cargar Bootstrap -->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
+    <!--Cargar CSS propio-->
+    <link rel="stylesheet" href="{% static 'css/ingreso_pacientes.css' %}">
     <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
     
 </head>
@@ -49,26 +51,24 @@
                                 <span>Dashboard</span>
                             </a>
                         </li>                                                
-                        <li class="sidebar-item active has-sub">
-                            <a href="#" class='sidebar-link'>
+                        <li class="sidebar-item">
+                            <a href="{% url 'admisionistas:ingreso_pacientes' %}" class='sidebar-link'>
                                 <i class="bi bi-person-circle"></i>
                                 <span>Gestión de Pacientes</span>
                             </a>
-                            <!-- <ul class="submenu active">
-                                <li class="submenu-item ">
-                                    <a href="layout-default.html">Default Layout</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="layout-vertical-1-column.html">1 Column</a>
-                                </li>
-                                <li class="submenu-item active">
-                                    <a href="layout-vertical-navbar.html">Vertical with Navbar</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="layout-horizontal.html">Horizontal Menu</a>
-                                </li>
-                            </ul> -->
-                        </li>                                                             
+                        </li>  
+                        <li class="sidebar-item">
+                            <a href="{% url 'admisionistas:registro_citas' %}" class='sidebar-link'>
+                                <i class="bi bi-person-circle"></i>
+                                <span>Citas de hoy</span>
+                            </a>
+                        </li>   
+                        <li class="sidebar-item">
+                            <a href="{% url 'admisionistas:historial_citas' %}" class='sidebar-link'>
+                                <i class="bi bi-person-circle"></i>
+                                <span>Historial de Citas</span>
+                            </a>
+                        </li>                                                         
                     </ul>
                 </div>
                 <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
@@ -195,6 +195,8 @@
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'js/datatables.min.js' %}"></script>
     <script src="{% static 'js/ingreso_pacientes.js' %}"></script>
+    <script src="{% static 'js/registro_citas.js' %}"></script>
+    <script src="{% static 'js/historial_citas.js' %}"></script>
     <script src="{% static 'js/moment.min.js' %}"></script>
     <script src="{% static 'js/es.js' %}"></script>
     <script src="{% static 'js/jquery.validate.min.js' %}"></script>

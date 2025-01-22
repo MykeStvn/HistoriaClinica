@@ -1,11 +1,15 @@
 from datetime import date, datetime
+from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from Aplicaciones.admisionistas.models import Pacientes
+from Aplicaciones.admisionistas.models import Pacientes, Citas
 from Aplicaciones.usuarios.models import Usuarios
 from django.views.decorators.csrf import csrf_exempt
-
+from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
+from datetime import date
+from django.utils import timezone  # Para obtener la fecha y hora actual del servidor
 
 
 
@@ -376,3 +380,129 @@ def verificar_cedula_actualizar(request):
 def calculate_age(birth_date):
     today = date.today()
     return today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+
+
+#ASIGNAR CITAS DIARIAS
+# Vista para ingresar a la pagina de registro_citas.html
+@login_required
+def registro_citas(request):
+    if request.user.tipo_usuario != 'admisionista':
+        return redirect('usuarios:login')  # Redirige a la página de login si el usuario no es admisionista
+    
+    admisionistas = Usuarios.objects.filter(tipo_usuario='admisionista')
+    fecha_maxima = date.today().strftime('%Y-%m-%d')  # Fecha actual en formato YYYY-MM-DD
+    return render(request, 'admisionistas/registro_citas.html', {'usuarios': admisionistas, 'fecha_maxima': fecha_maxima})
+
+#registro automatico de cita solo dando clic en el botón
+@login_required
+def registrar_cita(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Obtener los datos del formulario
+        estado_cita = request.POST.get("estado_cita", "PENDIENTE")  # Valor predeterminado
+        fk_id_paciente = request.POST.get("fk_id_paciente")
+
+        # Validar el ID del paciente
+        if not fk_id_paciente:
+            return JsonResponse({'error': 'El ID del paciente no puede estar vacío.'}, status=400)
+
+        try:
+            paciente_id = int(fk_id_paciente)
+            paciente = Pacientes.objects.get(id_pacientes=paciente_id)
+        except ValueError:
+            return JsonResponse({'error': 'ID de paciente inválido.'}, status=400)
+        except Pacientes.DoesNotExist:
+            return JsonResponse({'error': 'El paciente no existe.'}, status=404)
+
+        # Obtener la fecha y hora actual del sistema en la zona horaria configurada
+        fecha_cita = timezone.localtime(timezone.now()).date()  # Fecha actual
+        hora_cita = timezone.localtime(timezone.now()).strftime('%H:%M')  # Hora actual
+
+        try:
+            # Crear una nueva cita con la fecha y hora actuales
+            nueva_cita = Citas(
+                fecha_cita=fecha_cita,
+                hora_cita=hora_cita,
+                estado_cita=estado_cita,
+                fk_id_paciente=paciente
+            )
+            nueva_cita.save()
+
+            # Respuesta de éxito
+            return JsonResponse({'success': 'Cita registrada correctamente.'}, status=201)
+
+        except Exception as e:
+            # Capturar errores no esperados
+            return JsonResponse({'error': f'Ocurrió un error al registrar la cita: {str(e)}'}, status=500)
+
+    # Si no es una solicitud POST o AJAX
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
+# listar citas
+@login_required
+def cargar_citas(request):
+    """Carga las citas del día actual en formato JSON para DataTables."""
+    if request.method == "GET" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        fecha_actual = date.today()  # Obtener la fecha actual
+        citas = Citas.objects.select_related('fk_id_paciente').filter(fecha_cita=fecha_actual)  # Filtrar por fecha actual
+
+        data = []
+        for cita in citas:
+            data.append({
+                #'id_cita': cita.id_cita,
+                'apellido_paterno_pacientes': cita.fk_id_paciente.apellido_paterno_pacientes,
+                'apellido_materno_pacientes': cita.fk_id_paciente.apellido_materno_pacientes,
+                'nombres_pacientes': cita.fk_id_paciente.nombres_pacientes,
+                'cedula_pacientes': cita.fk_id_paciente.cedula_pacientes,
+                'fecha_cita': cita.fecha_cita.strftime('%Y-%m-%d'),
+                'hora_cita': cita.hora_cita.strftime('%H:%M'),
+                'estado_cita': cita.estado_cita,
+                'acciones': f'<button class="btn btn-danger btn-sm eliminar-cita" data-id="{cita.id_cita}"><i class="bi bi-trash-fill"></i></button>'
+            })
+        return JsonResponse({'data': data}, status=200)
+
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
+# eliminar citas
+@login_required
+@csrf_exempt
+def eliminar_cita(request, id_cita):
+    """Elimina una cita médica específica."""
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        try:
+            cita = Citas.objects.get(id_cita=id_cita)
+            cita.delete()
+            return JsonResponse({'success': 'Cita eliminada correctamente.'}, status=200)
+        except Citas.DoesNotExist:
+            return JsonResponse({'error': 'Cita no encontrada.'}, status=404)
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
+
+#Historial Citas
+#Vista para cargar historial_citas.html
+@login_required
+def historial_citas(request):
+    if request.user.tipo_usuario != 'admisionista':
+        return redirect('usuarios:login')  # Redirige a la página de login si el usuario no es admisionista
+    
+    admisionistas = Usuarios.objects.filter(tipo_usuario='admisionista')
+    fecha_maxima = date.today().strftime('%Y-%m-%d')  # Fecha actual en formato YYYY-MM-DD
+    return render(request, 'admisionistas/historial_citas.html', {'usuarios': admisionistas, 'fecha_maxima': fecha_maxima})
+
+# listar historial citas
+@login_required
+def cargar_historial_citas(request):
+    """Carga las citas en formato JSON para DataTables."""
+    if request.method == "GET" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        citas = Citas.objects.select_related('fk_id_paciente').all()  # Asegúrate de tener relaciones definidas correctamente
+        data = []
+        for cita in citas:
+            data.append({
+                'apellido_paterno_pacientes': cita.fk_id_paciente.apellido_paterno_pacientes,
+                'apellido_materno_pacientes': cita.fk_id_paciente.apellido_materno_pacientes,
+                'nombres_pacientes': cita.fk_id_paciente.nombres_pacientes,
+                'cedula_pacientes': cita.fk_id_paciente.cedula_pacientes,
+                'fecha_cita': cita.fecha_cita.strftime('%Y-%m-%d'),
+                'hora_cita': cita.hora_cita.strftime('%H:%M'),
+            })
+        return JsonResponse({'data': data}, status=200)
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
