@@ -17,16 +17,7 @@ GESTIÓN PACIENTES
         </tr>
     </thead>
     <tbody>
-        {% for cita in citas %}
-        <tr class="text-center">
-            <td>{{ cita.fk_id_paciente.apellido_paterno_pacientes }}</td>
-            <td>{{ cita.fk_id_paciente.apellido_materno_pacientes }}</td>
-            <td>{{ cita.fk_id_paciente.nombres_pacientes }}</td>
-            <td>{{ cita.fk_id_paciente.cedula_pacientes }}</td>
-            <td>{{ cita.fecha_cita }}</td>
-            <td>{{ cita.hora_cita }}</td>
-        </tr>
-        {% endfor %}
+        <!--aqui cargo con ajax-->
     </tbody>
 </table>
 {% endblock %}

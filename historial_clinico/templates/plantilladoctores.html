@@ -49,23 +49,24 @@
                                 <span>Inicio</span>
                             </a>
                         </li>                                      
-                        <li class="sidebar-item  has-sub">
-                            <a href="#" class='sidebar-link'>                                
-                                <i class="bi bi-journal-medical" style="font-size: 20px;"></i>
-                                <span>Gestión General</span>
-                            </a>
-                            <a href="" class='sidebar-link' onclick="mostrarAlerta()">                                
-                                <i class="bi bi-person" style="font-size: 20px;"></i>
-                                <span>Pacientes</span>
-                            </a>
+                        <li class="sidebar-item ">
                             <a href="{% url 'gestion_pacientes:citas' %}" class='sidebar-link'>                                
                                 <i class="bi bi-journal-medical" style="font-size: 20px;"></i>
-                                <span>Historias Clínicas</span>
+                                <span>Citas de hoy</span>
                             </a>
+                        </li>
+                        <li class='sidebar-item' >
+                            <a href="#" class='sidebar-link'>                                
+                                <i class="bi bi-journal-medical" style="font-size: 20px;"></i>
+                                <span>Historial de citas</span>
+                            </a>
+                        </li>
+                            <!--
                             <a href="#" class="sidebar-link" onclick="mostrarAlerta()">                                 
                                 <i class="bi bi-person-badge-fill" style="font-size: 20px;"></i>
-                                <span>Usuarios</span>
-                            </a>                            
+                                <span>Historial </span>
+                            </a>
+                            -->                            
                         </li>                                                             
                     </ul>
                 </div>

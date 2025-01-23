@@ -37,7 +37,7 @@
                             <a href="{% if request.user.tipo_usuario == 'administrador' %}
                                          {% url 'administradores:inicio_administrador' %}
                                       {% elif request.user.tipo_usuario == 'admisionista' %}
-                                         {% url 'admisionistas:inicio_admisionista' %}
+                                         {% url 'admisionistas:ingreso_pacientes' %}
                                       {% else %}
                                          #{% endif %}">
                                 <img src="{% static 'plantilla/mazer/dist/assets/images/logo/logo.png' %}" alt="Logo" srcset="">

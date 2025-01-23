@@ -1,5 +1,23 @@
 $(document).ready(function () {
     $('#tabla_citas').DataTable({
+        ajax: {
+            url: "/gestion_pacientes/cargar_citas/",
+            type: "GET",
+            dataSrc: "data", // Ruta donde están los datos en el JSON
+        },
+        //columnDefs: [ NO BORRAR
+          //  { targets: 0, visible: false }, // Ocultar la primera columna (ID)
+        //],
+        columns: [
+            { data: "apellido_paterno_pacientes" }, // Apellido Paterno
+            { data: "apellido_materno_pacientes" }, // Apellido Materno
+            { data: "nombres_pacientes" }, // Apellido Materno
+            { data: "cedula_pacientes" }, // Cédula
+            { data: "fecha_cita" }, // Fecha Cita
+            { data: "hora_cita" }, // Hora Cita
+            { data: "estado_cita" }, // Hora Cita
+            { data: "acciones" } // Acciones (botón eliminar)
+        ],
         //AQUI CARGO LA TABLA CON LO DE LA FUNCIÓN DEL VIEW
         pageLength: 5,
         lengthMenu: [5, 10, 25, 50, 100],

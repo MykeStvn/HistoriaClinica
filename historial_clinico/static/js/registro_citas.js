@@ -6,9 +6,6 @@ $(document).ready(function () {
             type: "GET",
             dataSrc: "data", // Ruta donde están los datos en el JSON
         },
-        columnDefs: [
-            { targets: 0, visible: false }, // Ocultar la primera columna (ID)
-        ],
         columns: [
             { data: "apellido_paterno_pacientes" }, // Apellido Paterno
             { data: "apellido_materno_pacientes" }, // Apellido Materno
