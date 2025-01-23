@@ -145,8 +145,6 @@ $(document).ready(function () {
       },
       "Por favor, seleccione una fecha válida dentro del rango permitido."
     );
-
-
     $("#formAddPaciente").validate({
       rules: {
         apellido_paterno_pacientes: {
@@ -862,11 +860,11 @@ $(document).ready(function () {
               var pacienteItem = $("#patientList").find(".list-group-item[data-id='" + updatedPaciente.id_pacientes + "']");
               if (updatedPaciente && updatedPaciente.nombres) {
                 pacienteItem.find(".paciente-nombre").html(updatedPaciente.nombres + " " + updatedPaciente.apellido_paterno + " " + updatedPaciente.apellido_materno);
-                pacienteItem.find(".paciente-edad").html("Edad: " + updatedPaciente.edad);
-                pacienteItem.find(".paciente-cedula").html("Cédula: " + updatedPaciente.cedula);
-                pacienteItem.find(".paciente-seguro").html("Seguro Médico: " + updatedPaciente.seguro);  // Si "seguro" es el nombre correcto del campo
-                pacienteItem.find(".paciente-emergencia").html("En caso de emergencia informar a: " + updatedPaciente.emergencia_informar);
-                pacienteItem.find(".paciente-contacto").html("Teléfono: " + updatedPaciente.contacto_emergencia);
+                pacienteItem.find(".paciente-edad").html("<b>Edad: </b>" + updatedPaciente.edad);
+                pacienteItem.find(".paciente-cedula").html("<b>Cédula: </b>" + updatedPaciente.cedula);
+                pacienteItem.find(".paciente-seguro").html("<b>Seguro Médico: </b>" + updatedPaciente.seguro);  // Si "seguro" es el nombre correcto del campo
+                pacienteItem.find(".paciente-emergencia").html("<b>En caso de emergencia llamar a: </b>" + updatedPaciente.emergencia_informar);
+                pacienteItem.find(".paciente-contacto").html("<b>Teléfono: </b>" + updatedPaciente.contacto_emergencia);
               } else {
                 console.log("Datos del paciente no disponibles", updatedPaciente);
               }

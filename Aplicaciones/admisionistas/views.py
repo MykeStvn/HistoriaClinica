@@ -228,7 +228,7 @@ def actualizar_paciente(request):
             else:
                 paciente.fecha_nacimiento_pacientes = None  
             # Manejo del estado activo/inactivo
-            is_active_value = request.POST.get('is_active')
+            is_active_value = request.POST.get('is_active',None)
             print(f"Valor recibido de is_active: {is_active_value}")  # Verifica si el valor está llegando correctamente
 
             if is_active_value == 'true':
@@ -237,7 +237,7 @@ def actualizar_paciente(request):
                 paciente.is_active = False
             else:   
                 # Si el valor no es válido, podrías devolver un error
-                return JsonResponse({'status': 'error', 'message': 'Valor inválido para el estado activo/inactivo'})
+                paciente.is_active = paciente.is_active
             
             paciente.save()
         

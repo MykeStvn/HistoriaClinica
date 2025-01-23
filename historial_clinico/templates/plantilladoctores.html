@@ -44,7 +44,7 @@
                         <li class="sidebar-title">Menú Principal</li>
                                     
                         <li class="sidebar-item  ">
-                            <a href="{% url 'administradores:inicio_administrador' %}" class='sidebar-link'>
+                            <a href="" class='sidebar-link'>
                                 <i class="bi bi-house-fill" style="font-size: 20px;"></i>
                                 <span>Inicio</span>
                             </a>
@@ -54,7 +54,7 @@
                                 <i class="bi bi-journal-medical" style="font-size: 20px;"></i>
                                 <span>Gestión General</span>
                             </a>
-                            <a href="" class='sidebar-link'>                                
+                            <a href="" class='sidebar-link' onclick="mostrarAlerta()">                                
                                 <i class="bi bi-person" style="font-size: 20px;"></i>
                                 <span>Pacientes</span>
                             </a>
@@ -62,7 +62,7 @@
                                 <i class="bi bi-journal-medical" style="font-size: 20px;"></i>
                                 <span>Historias Clínicas</span>
                             </a>
-                            <a href="{% url 'administradores:gestion_usuarios' %}" class='sidebar-link'>                                
+                            <a href="#" class="sidebar-link" onclick="mostrarAlerta()">                                 
                                 <i class="bi bi-person-badge-fill" style="font-size: 20px;"></i>
                                 <span>Usuarios</span>
                             </a>                            
@@ -208,7 +208,11 @@
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'js/no_ir_atras.js' %}"></script>
 
-    
+    <script>
+        function mostrarAlerta() {
+            alert('¡No estás autorizado para acceder a esta sección!');
+        }
+    </script>
 
 </body>
 

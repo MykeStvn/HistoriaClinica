@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -60,8 +61,16 @@ def eliminar_usuario(request, usuario_id):
 @login_required
 def agregar_usuario(request):
     if request.method == 'POST':
-        is_superuser = request.POST.get('is_superuser') == 'True'
-        is_staff = request.POST.get('is_staff') == 'True'
+        tipo_usuario = request.POST.get('tipo_usuario', '').lower()  # Comparación insensible a mayúsculas/minúsculas
+
+        # Configurar is_superuser e is_staff automáticamente
+        if tipo_usuario == 'administrador':
+            is_superuser = True
+            is_staff = True
+        else:
+            is_superuser = False
+            is_staff = False
+
 
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -71,6 +80,12 @@ def agregar_usuario(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         image = request.FILES.get('image')
+
+        if not password:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'La contraseña no puede estar vacía'
+            })
 
         usuario = Usuarios(
             first_name=first_name,
@@ -137,3 +152,119 @@ def obtener_usuario(request, usuario_id):
         return JsonResponse(data)
     except Usuarios.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Usuario no encontrado'})
+    
+#VALIDAR USERNAME INGRESAR
+def validar_username(request):
+    username = request.GET.get('username', '').strip()
+    if Usuarios.objects.filter(username=username).exists():
+        return JsonResponse(False, safe=False)  # Username ya existe
+    return JsonResponse(True, safe=False)  # Username disponible
+
+@login_required
+def validar_username_actualizar(request):
+    username = request.POST.get('username')
+    usuario_id = request.POST.get('usuario_id')
+
+    try:
+        if usuario_id:
+            # Si se está editando, excluimos el usuario actual
+            usuario = Usuarios.objects.exclude(id=usuario_id).filter(username=username).exists()
+        else:
+            # Si es nuevo usuario, verificamos en toda la base de datos
+            usuario = Usuarios.objects.filter(username=username).exists()
+
+        if usuario:
+            return JsonResponse({'exists': True, 'message': 'Este nombre de usuario ya está registrado en el sistema.'})
+        else:
+            return JsonResponse({'exists': False})
+    except Exception as e:
+        return JsonResponse({'exists': False, 'message': str(e)})
+#EDITAR USUARIO
+
+# Vista para obtener los datos del usuario (para el modal)
+@login_required
+def obtener_usuario_edit(request, usuario_id):
+    try:
+        print(f"Buscando usuario con id: {usuario_id}") 
+        usuario = Usuarios.objects.get(id=usuario_id)        
+        # Si existe el usuario, enviar los datos en formato JSON
+        return JsonResponse({
+            'usuario': {
+                'id': usuario.id,
+                'first_name': usuario.first_name,
+                'last_name': usuario.last_name,
+                'username': usuario.username,
+                'email': usuario.email,
+                'tipo_usuario': usuario.tipo_usuario,
+                'especialidad': usuario.especialidad,
+                'image': usuario.image.url if usuario.image else None,      
+                'is_active' : usuario.is_active           
+            }
+        })
+    except Usuarios.DoesNotExist:
+        return JsonResponse({'error': 'usuario no encontrado'}, status=404)
+    
+
+
+
+@login_required
+def actualizar_usuario(request):
+    if request.method == 'POST':
+        usuario_id = request.POST.get('id')
+        try:
+            usuario = Usuarios.objects.get(id=usuario_id)
+            
+            # Actualizar los campos básicos
+            usuario.first_name = request.POST.get('first_name', usuario.first_name)
+            usuario.last_name = request.POST.get('last_name', usuario.last_name)
+            usuario.username = request.POST.get('username', usuario.username)
+            usuario.tipo_usuario = request.POST.get('tipo_usuario', usuario.tipo_usuario)
+            usuario.especialidad = request.POST.get('especialidad', usuario.especialidad)
+            usuario.email = request.POST.get('email', usuario.email)
+            password = request.POST.get('password')  # Obtener la nueva contraseña
+            # Verifica si la contraseña fue proporcionada
+            if password:
+                password = make_password(password)  # Encripta la contraseña
+            if password:
+                usuario.password = password  # Si hay una nueva contraseña, actualízala
+            # Manejar la nueva imagen si se proporciona
+            if request.FILES.get('image'):
+                usuario.image = request.FILES['image']
+        
+            # Manejo del estado activo/inactivo
+            is_active_value = request.POST.get('is_active',None)
+            print(f"Valor recibido de is_active: {is_active_value}")  # Verifica si el valor está llegando correctamente
+
+            if is_active_value == 'true':
+                usuario.is_active = True
+            elif is_active_value == 'false':
+                usuario.is_active = False
+            else:   
+                # Si el valor no es válido, podrías devolver un error
+                usuario.is_active = usuario.is_active
+
+            usuario.save()
+
+            response_data = {
+                'status': 'success',
+                'message': 'Usuario actualizado correctamente',
+                'usuario': {
+                    'id': usuario.id,
+                    'first_name': usuario.first_name,
+                    'last_name': usuario.last_name,
+                    'username': usuario.username,
+                    'email': usuario.email,
+                    'tipo_usuario': usuario.tipo_usuario,
+                    'especialidad': usuario.especialidad,
+                    'image': usuario.image.url if usuario.image else None,
+                    'is_active': usuario.is_active
+                }
+            }
+            return JsonResponse(response_data)
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return JsonResponse({'status': 'error', 'message': f'Error al actualizar: {str(e)}'})
+            
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'})

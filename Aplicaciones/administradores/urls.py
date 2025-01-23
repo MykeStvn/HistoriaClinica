@@ -11,4 +11,8 @@ urlpatterns = [
     path('eliminar_usuario/<int:usuario_id>/', views.eliminar_usuario, name='eliminar_usuario'),
     path('obtener_usuario/<int:usuario_id>/', views.obtener_usuario, name='obtener_usuario'),
     path('admisionistas/', include('Aplicaciones.admisionistas.urls')),
+    path('validar_username/', views.validar_username, name='validar_username'),
+    path('validar_username_actualizar/', views.validar_username_actualizar, name='validar_username_actualizar'),
+    path('obtener_usuario_edit/<int:usuario_id>/', views.obtener_usuario_edit, name='obtener_usuario_edit'),
+    path('actualizar_usuario/', views.actualizar_usuario, name='actualizar_usuario'),
 ]

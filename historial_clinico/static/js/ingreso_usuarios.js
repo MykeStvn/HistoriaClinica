@@ -1,17 +1,15 @@
 $(document).ready(function () {
   var table = $("#tabla_usuarios").DataTable({
-    columnDefs: [
-      
-    ],
+    columnDefs: [],
     columns: [
-       // Columna ID oculta 0                  
+      // Columna ID oculta 0
       { data: "image" }, // 13
       { data: "first_name" }, // 5
-      { data: "last_name" }, //  6            
-      { data: "username" }, //  4         
-      { data: "tipo_usuario" }, // 11   
-      { data: "is_active" }, //  9            
-      { data: "acciones" }, // Acciones                         
+      { data: "last_name" }, //  6
+      { data: "username" }, //  4
+      { data: "tipo_usuario" }, // 11
+      { data: "is_active" }, //  9
+      { data: "acciones" }, // Acciones
     ],
     language: {
       decimal: "",
@@ -40,12 +38,13 @@ $(document).ready(function () {
     },
   });
 
+  //ELIMINAR USUARIO OK
   // Evento de clic en el botón de eliminar (delegación de eventos)  OK
   $(document).on("click", ".btn-delete", function () {
-    var usuarioId = $(this).data("id"); // Obtén el ID del paciente a eliminar
+    var usuarioId = $(this).data("id"); // Obtén el ID del usuario a eliminar
     var fila = $(this).closest("tr"); // Almacena la fila donde se encuentra el botón
 
-    // Obtener el nombre y apellido del paciente desde la fila
+    // Obtener el nombre y apellido del usuario desde la fila
     var nombre = fila.find("td").eq(1).text(); // Nombre
     var apellido = fila.find("td").eq(2).text(); // Apellido
     var usuario = fila.find("td").eq(3).text(); // Usuario
@@ -63,14 +62,15 @@ $(document).ready(function () {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Ejecutar la petición AJAX para eliminar al paciente
+        // Ejecutar la petición AJAX para eliminar al usuario
         $.ajax({
           url: "/administradores/eliminar_usuario/" + usuarioId + "/",
           method: "DELETE", // O el método adecuado según tu backend
           success: function (response) {
             if (response.status === "success") {
               var table = $("#tabla_usuarios").DataTable();
-              table.row(fila).remove().draw(); // Elimina la fila de la tabla
+              table.row(fila).remove().draw(false); // 'false' mantiene la página actual al redibujar
+
 
               // Mostrar Toastify al eliminar
               Toastify({
@@ -98,7 +98,7 @@ $(document).ready(function () {
     });
   });
 
-  //ver detalles del usuario
+  //MODAL VER DETALLES DEL USUARIO OK
 
   // Función para ver detalles del usuario
   $(document).on("click", ".view-btn", function () {
@@ -152,71 +152,434 @@ $(document).ready(function () {
     });
   });
 
-  // AGREGAR USUARIO
+  // AGREGAR NUEVO USUARIO OK
   $(document).ready(function () {
-    $("#formAddUsuario").submit(function (event) {
-        event.preventDefault(); // Evitar comportamiento predeterminado del formulario
-
+    $.validator.addMethod(
+      "lettersOnly",
+      function (value, element) {
+        return (
+          this.optional(element) || /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)
+        );
+      },
+      "Por favor, ingrese solo letras."
+    );
+    $.validator.addMethod(
+      "usernameDisponible",
+      function (value, element) {
+        let isValid = false;
         $.ajax({
-            url: $(this).attr("action"),
-            method: "POST",
-            data: new FormData(this), // FormData para soportar archivos
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                if (response.status === "success") {
-                    // Agregar datos a DataTables
-                    var table = $("#tabla_usuarios").DataTable();
-                    table.row
-                      .add({
-                        image: `<img src="${response.usuario.image}" alt="Imagen de usuario" style="width: 50px; height: 50px; border-radius: 50%;">`, // Mostrar la imagen
-                        first_name: response.usuario.first_name,
-                        last_name: response.usuario.last_name,
-                        username: response.usuario.username,
-                        tipo_usuario: response.usuario.tipo_usuario,
-                        is_active: `
-                        <span class="badge bg-success">
-                          Activo
-                        </span>
-                        `,
-                        acciones: `                                                      
-                            <a href="#" style="margin-right: 2px;" class="btn btn-primary btn-sm view-btn" data-id="${response.usuario.id}" data-bs-toggle="modal" data-bs-target="#verUsuarioModal"><i class="fas fa-eye"></i></a>
-                            <a href="#" style="margin-right: 2px;" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoUsuariosModal" data-id="${response.usuario.id}"><i class="bi bi-pencil-fill"></i></a>                                
-                            <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="${response.usuario.id}"><i class="bi bi-trash-fill"></i></a>
-                        `,
-                      })
-                      .draw(false);
-
-                    // Mostrar mensaje de éxito
-                    Toastify({
-                        text: "Usuario guardado correctamente",
-                        duration: 5000,
-                        close: true,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
-                    }).showToast();
-
-                    // Resetear formulario y cerrar el modal
-                    $("#formAddUsuario")[0].reset();
-                    $("#addIngresoUsuariosModal").modal("hide");
-                    $(".modal-backdrop").remove();
-                    $("body").removeClass("modal-open");
-                    // Asegura que el scroll se restaure en el HTML
-                    $('html').css('overflow', 'auto');
-                } else {
-                    alert(response.message || "Error al agregar el usuario");
-                }
-            },
-            error: function () {
-                alert("Error al procesar la solicitud");
-            },
+          url: "/administradores/validar_username_actualizar/",
+          type: "POST",
+          async: false,
+          data: {
+            username: value,
+            usuario_id: $("#edit_usuarioId").val(),
+            csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(), // Asegúrate de incluir el token CSRF
+          },
+          success: function (response) {
+            isValid = !response.exists;
+            if (response.exists) {
+              $.validator.messages.usernameDisponible = response.message;
+            }
+          },
         });
+        return isValid;
+      },
+      "Este nombre de usuario ya está registrado."
+    );
+    $("#formAddUsuario").validate({
+      rules: {
+        first_name: {
+          required: true,
+          lettersOnly: true,
+          maxlength: 50,
+          minlength: 3,
+        },
+        last_name: {
+          required: true,
+          lettersOnly: true,
+          maxlength: 50,
+          minlength: 3,
+        },
+        username: {
+          required: true,
+          maxlength: 50,
+          minlength: 5,
+          remote: {
+            url: "/administradores/validar_username/", // URL para validar en el servidor
+            type: "GET",
+            data: {
+              username: function () {
+                return $("#username").val().trim(); // Obtén el valor del campo
+              },
+            },
+          },
+        },
+        email: {
+          required: true,
+          email: true, // Validación específica para correos electrónicos
+          minlength: 10,
+        },
+        password: {
+          required: true,
+          maxlength: 200,
+        },
+        tipo_usuario: {
+          required: true,
+        },
+        especialidad: {
+          required: true,
+        },
+        image: {
+          required: true,
+        },
+      },
+      messages: {
+        first_name: {
+          required: "Por favor, ingrese el nombre del usuario.",
+          lettersOnly: "Por favor, ingrese solamente letras",
+          maxlength: "El nombre no puede exceder los 50 caracteres.",
+          minlength: "El nombre debe tener al menos 5 caracteres.",
+        },
+        last_name: {
+          required: "Por favor, ingrese el apellido del usuario.",
+          lettersOnly: "Por favor, ingrese solamente letras",
+          maxlength: "El apellido no puede exceder los 50 caracteres.",
+          minlength: "El apellido debe tener al menos 5 caracteres.",
+        },
+        username: {
+          required: "Por favor, ingrese el nombre de usuario.",
+          maxlength: "El nombre de usuario no puede exceder los 50 caracteres.",
+          minlength: "El nombre de usuario debe tener al menos 5 caracteres.",
+          remote: "El nombre de usuario ya existe. Por favor, elija otro.",
+        },
+        email: {
+          required: "Por favor, ingrese el correo electrónico.",
+          email: "Por favor, ingrese un correo válido.",
+          minlength: "El correo electrónico debe tener al menos 10 caracteres.",
+        },
+        password: {
+          required: "Por favor, ingrese una contraseña.",
+          maxlength: "La contraseña no puede exceder los 200 caracteres.",
+        },
+        tipo_usuario: {
+          required: "Por favor, seleccione un tipo de usuario.",
+        },
+        especialidad: {
+          required: "Por favor, seleccione una especialidad.",
+        },
+        image: {
+          required: "Por favor, suba la imagen de perfil del usuario.",
+        },
+      },
+      errorClass: "invalid",
+      validClass: "valid",
+      errorPlacement: function (error, element) {
+        error.addClass("invalid-feedback");
+        element.after(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-invalid").removeClass("is-valid");
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-valid").removeClass("is-invalid");
+      },
+      submitHandler: function (form) {
+        // Enviar el formulario por AJAX si la validación es exitosa
+        $.ajax({
+          url: $(form).attr("action"),
+          method: "POST",
+          data: new FormData(form),
+          processData: false,
+          contentType: false,
+          success: function (response) {
+            if (response.status === "success") {
+              var table = $("#tabla_usuarios").DataTable();
+              table.row
+                .add({
+                  image: `<img src="${response.usuario.image}" alt="Imagen de usuario" style="width: 50px; height: 50px; border-radius: 50%;">`,
+                  first_name: response.usuario.first_name,
+                  last_name: response.usuario.last_name,
+                  username: response.usuario.username,
+                  tipo_usuario: response.usuario.tipo_usuario,
+                  is_active: `
+                    <span class="badge bg-success">
+                      Activo
+                    </span>
+                  `,
+                  acciones: `
+                    <a href="#" style="margin-right: 1px;" class="btn btn-primary btn-sm view-btn" data-id="${response.usuario.id}" data-bs-toggle="modal" data-bs-target="#verUsuarioModal"><i class="fas fa-eye"></i></a>
+                    <a href="#" style="margin-right: 1px;" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoUsuariosModal" data-id="${response.usuario.id}"><i class="bi bi-pencil-fill"></i></a>
+                    <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="${response.usuario.id}"><i class="bi bi-trash-fill"></i></a>
+                  `,
+                })
+                .draw(false);
 
-        return false; // Prevenir comportamiento predeterminado del formulario
+              Toastify({
+                text: "Usuario guardado correctamente",
+                duration: 5000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
+              }).showToast();
+
+              $("#formAddUsuario")[0].reset();
+              $("#addIngresoUsuariosModal").modal("hide");
+              $(".modal-backdrop").remove();
+              $("body").removeClass("modal-open");
+              $("html").css("overflow", "auto");
+            } else {
+              alert(response.message || "Error al agregar el usuario.");
+            }
+          },
+          error: function () {
+            alert("Error al procesar la solicitud.");
+          },
+        });
+      },
     });
-});
+  });
 
+  // FUNCION PARA MOSTRAR MODAL CON DATOS AL DAR CLICK EN EL BOTON DE EDITAR OK
+  $(document).on("click", ".edit-btn", function () {
+    var usuarioId = $(this).data("id");
+    editarUsuario(usuarioId);
+  });
+
+  //FUNCION PARA EDITAR USUARIO MODAL
+  function editarUsuario(usuarioId) {
+    $("#editIngresoUsuariosModal").modal("hide");
+    $.ajax({
+      url: "/administradores/obtener_usuario_edit/" + usuarioId + "/",
+      method: "GET",
+      success: function (data) {
+        console.log("Datos recibidos:", data); // Para depuración
+        console.log("ID del usuario a editar:", data.usuario.id); // Para depurar
+        $("#edit_usuarioId").val(data.usuario.id);
+        $("#edit_first_name").val(data.usuario.first_name);
+        $("#edit_last_name").val(data.usuario.last_name);
+        $("#edit_username").val(data.usuario.username);
+        $("#edit_tipo_usuario").val(data.usuario.tipo_usuario);
+        $("#edit_especialidad").val(data.usuario.especialidad);
+        $("#edit_email").val(data.usuario.email);
+        $("#edit_image").attr("src", data.usuario.image);
+        $("#edit_is_active_usuarios_select").val(
+          data.usuario.is_active ? "true" : "false"
+        );
+        // Limpiar el input file
+        $("#edit_image_input").val("");
+
+        $("#editIngresousuariosModal").modal("show");
+      },
+      error: function () {
+        alert("Error al obtener los datos del usuario.");
+      },
+    });
+  }
+
+  // Agregar evento para previsualizar la nueva imagen OK
+  $("#edit_image_input").change(function () {
+    if (this.files && this.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $("#edit_image").attr("src", e.target.result);
+      };
+      reader.readAsDataURL(this.files[0]);
+    }
+  });
+
+  // Agregar evento para previsualizar la nueva imagen OK
+  $("#image_input").change(function () {
+    if (this.files && this.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $("#image").attr("src", e.target.result);
+      };
+      reader.readAsDataURL(this.files[0]);
+    }
+  });
+
+  // ACTUALIZAR USUARIO FUNCION
+  $(document).ready(function () {
+    $.validator.addMethod(
+      "lettersOnly",
+      function (value, element) {
+        return (
+          this.optional(element) || /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)
+        );
+      },
+      "Por favor, ingrese solo letras."
+    );
+    $("#formEditUsuario").validate({
+      rules: {
+        first_name: {
+          required: true,
+          lettersOnly: true,
+          maxlength: 50,
+          minlength: 3,
+        },
+        last_name: {
+          required: true,
+          lettersOnly: true,
+          maxlength: 50,
+          minlength: 3,
+        },
+        username: {
+          required: true,
+          maxlength: 50,
+          minlength: 5,
+          usernameDisponible: true,
+        },
+        email: {
+          required: true,
+          email: true, // Validación específica para correos electrónicos
+          minlength: 10,
+        },
+        password: {
+          maxlength: 200,
+        },
+        tipo_usuario: {
+          required: true,
+        },
+        especialidad: {
+          required: true,
+        },
+      },
+      messages: {
+        first_name: {
+          required: "Por favor, ingrese el nombre del usuario.",
+          lettersOnly: "Por favor, ingrese solamente letras",
+          maxlength: "El nombre no puede exceder los 50 caracteres.",
+          minlength: "El nombre debe tener al menos 5 caracteres.",
+        },
+        last_name: {
+          required: "Por favor, ingrese el apellido del usuario.",
+          lettersOnly: "Por favor, ingrese solamente letras",
+          maxlength: "El apellido no puede exceder los 50 caracteres.",
+          minlength: "El apellido debe tener al menos 5 caracteres.",
+        },
+        username: {
+          required: "Por favor, ingrese el nombre de usuario.",
+          maxlength: "El nombre de usuario no puede exceder los 50 caracteres.",
+          minlength: "El nombre de usuario debe tener al menos 5 caracteres.",
+        },
+        email: {
+          required: "Por favor, ingrese el correo electrónico.",
+          email: "Por favor, ingrese un correo válido.",
+          minlength: "El correo electrónico debe tener al menos 10 caracteres.",
+        },
+        password: {
+          maxlength: "La contraseña no puede exceder los 200 caracteres.",
+        },
+        tipo_usuario: {
+          required: "Por favor, seleccione un tipo de usuario.",
+        },
+        especialidad: {
+          required: "Por favor, seleccione una especialidad.",
+        },
+      },
+      errorClass: "invalid",
+      validClass: "valid",
+      errorPlacement: function (error, element) {
+        error.addClass("invalid-feedback");
+        element.after(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-invalid").removeClass("is-valid");
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-valid").removeClass("is-invalid");
+      },
+      submitHandler: function (form) {
+        console.log("Enviando formulario...");
+        console.log("ID de usuario:", $("#edit_usuarioId").val());
+        console.log("Username:", $("#edit_username").val());
+        // Enviar el formulario por AJAX si la validación es exitosa
+        $.ajax({
+          url: "/administradores/actualizar_usuario/", // URL de tu endpoint de actualización
+          method: "POST",
+          data: new FormData(form),
+          processData: false,
+          contentType: false,
+          success: function (response) {
+            console.log("Respuesta recibida:", response); // Verifica la respuesta del servidor
+            console.log(new FormData(form));
+
+            if (response.status === "success") {
+              console.log("Usuario actualizado:", response.usuario);
+              // Encuentra la fila afectada en el DataTable
+
+              // Encuentra la fila correspondiente en el DataTable usando el ID del usuario
+              
+              let row = table
+              .rows()
+              .nodes()
+              .to$()
+              .filter(function () {
+                return $(this).find(".edit-btn").data("id") === response.usuario.id;
+              }); 
+
+              console.log(
+                "Estado activo recibido:",
+                response.usuario.is_active
+              );
+
+              // Actualiza los datos en el DataTable
+              table
+                .row(row)
+                .data({
+                  image: `<img src="${response.usuario.image}" alt="Imagen de usuario" style="width: 50px; height: 50px; border-radius: 50%;">`,
+                  first_name: response.usuario.first_name,
+                  last_name: response.usuario.last_name,
+                  username: response.usuario.username,
+                  tipo_usuario: response.usuario.tipo_usuario,
+                  is_active: response.usuario.is_active
+                    ? '<span class="badge bg-success">Activo</span>'
+                    : '<span class="badge bg-danger">Inactivo</span>',
+                  acciones: `<div class="d-flex">
+                                <a href="#" style="margin-right: 10px;" class="btn btn-primary btn-sm view-btn"
+                                  data-id="${response.usuario.id}" data-bs-toggle="modal" data-bs-target="#verUsuarioModal">
+                                  <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" style="margin-right: 10px;" class="btn btn-sm btn-warning edit-btn"
+                                  data-bs-toggle="modal" data-bs-target="#editIngresoUsuariosModal"
+                                  data-id="${response.usuario.id}">
+                                  <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="${response.usuario.id}">
+                                  <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </div>`,
+                })
+                .draw();
+
+              Toastify({
+                text: "Usuario actualizado correctamente",
+                duration: 5000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #4CAF50, #8BC34A)",
+              }).showToast();
+
+              // Cerrar el modal y limpiar el fondo negro
+              $("#formEditUsuario")[0].reset();
+              $("#editIngresoUsuariosModal").modal("hide");
+              $(".modal-backdrop").remove(); // Elimina el fondo negro
+              $("body").removeClass("modal-open"); // Quita la clase 'modal-open' del body
+              $("html").css("overflow", "auto"); // Restaura el desbordamiento de la página
+            } else {
+              alert(response.message || "Error al actualizar el usuario.");
+            }
+          },
+          error: function () {
+            alert("Error al procesar la solicitud.");
+          },
+        });
+      },
+    });
+  });
 
 
 });
