@@ -5,5 +5,6 @@ app_name = 'gestion_pacientes'
 
 urlpatterns = [
     path('manejo_pacientes/', views.manejo_pacientes, name='manejo_pacientes'),
-    path('inicio_doctor/', views.inicio_doctor, name='inicio_doctor')
+    path('inicio_doctor/', views.inicio_doctor, name='inicio_doctor'),
+    path('citas/', views.citas, name='citas')
 ]

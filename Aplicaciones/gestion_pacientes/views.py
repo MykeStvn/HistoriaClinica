@@ -17,3 +17,12 @@ def inicio_doctor(request):
     
     doctores = Usuarios.objects.filter(tipo_usuario='doctor')
     return render(request, 'gestion_pacientes/inicio_doctor.html',{'usuarios': doctores})
+
+#VISTA PARA CITAS
+@login_required
+def citas(request):
+    if request.user.tipo_usuario != 'doctor':
+        return redirect('usuarios:login')  # Redirige a la página de login si el usuario no es doctor
+    
+    doctores = Usuarios.objects.filter(tipo_usuario='doctor')
+    return render(request, 'gestion_pacientes/citas.html',{'usuarios': doctores})
