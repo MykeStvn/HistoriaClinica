@@ -1,0 +1,24 @@
+{% extends "plantilladoctores.html" %}
+{% load static %}
+{% block title %}
+GESTIÓN PACIENTES
+{% endblock %}
+{% block content %}
+    <table id="tabla_citas" class="table table-striped">
+        <thead>
+            <tr class="text-center">
+                <th>APELLIDO PATERNO</th>
+                <th>APELLIDO MATERNO</th>
+                <th>NOMBRES</th>
+                <th>CÉDULA</th>
+                <th>FECHA CITA</th>
+                <th>HORA CITA</th>
+                <th>ESTADO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--aqui cargo dinamicamente desde el JS -->
+        </tbody>
+    </table>
+
+{% endblock %}
