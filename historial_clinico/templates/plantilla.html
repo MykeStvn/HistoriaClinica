@@ -34,7 +34,14 @@
                 <div class="sidebar-header">
                     <div class="d-flex justify-content-between">
                         <div class="logo">
-                            <a href="#"><img src="{% static 'plantilla/mazer/dist/assets/images/logo/logo.png' %}" alt="Logo" srcset=""></a>
+                            <a href="{% if request.user.tipo_usuario == 'administrador' %}
+                                         {% url 'administradores:inicio_administrador' %}
+                                      {% elif request.user.tipo_usuario == 'admisionista' %}
+                                         {% url 'admisionistas:inicio_admisionista' %}
+                                      {% else %}
+                                         #{% endif %}">
+                                <img src="{% static 'plantilla/mazer/dist/assets/images/logo/logo.png' %}" alt="Logo" srcset="">
+                            </a>
                         </div>
                         <div class="toggler">
                             <a style="color: white; !important" href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>

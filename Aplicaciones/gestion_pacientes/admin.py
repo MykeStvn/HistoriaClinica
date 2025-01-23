@@ -1,3 +1,5 @@
 from django.contrib import admin
+from Aplicaciones.gestion_pacientes.models import HistorialClinico
 
-# Register your models here.
+
+admin.site.register(HistorialClinico)

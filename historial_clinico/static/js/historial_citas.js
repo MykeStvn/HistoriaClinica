@@ -14,6 +14,7 @@ $(document).ready(function () {
             { data: "fecha_cita" }, // Fecha Cita
             { data: "hora_cita" }, // Hora Cita
         ],
+        order: [[4, "desc"]], // Ordenar por la columna de fecha_cita (índice 4) de manera ascendente
         pageLength: 5,
         lengthMenu: [5, 10, 25, 50, 100],
         language: {

@@ -40,6 +40,9 @@ class Usuarios(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+    def __str__(self):
+        return f"USUARIO: {self.username} TIPO DE USUARIO: {self.tipo_usuario}"
 
     def save(self, *args, **kwargs):
         self.first_name = self.first_name.upper()

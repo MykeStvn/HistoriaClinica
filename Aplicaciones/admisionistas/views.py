@@ -14,6 +14,7 @@ from django.utils import timezone  # Para obtener la fecha y hora actual del ser
 
 
 # Vista para buscar pacientes por cédula OK
+@login_required
 def buscar_pacientes(request):
     fecha_maxima = date.today()  # Fecha máxima actual (o ajusta según tus necesidades) 
     pacientes = None  # Inicializa como None para distinguir el estado inicial
@@ -30,7 +31,7 @@ def buscar_pacientes(request):
 # Vista para ingresar a la pagina de pacientes OK
 @login_required
 def ingreso_pacientes(request):
-    if request.user.tipo_usuario != 'admisionista':
+    if request.user.tipo_usuario not in ['admisionista', 'administrador']:
         return redirect('usuarios:login')  # Redirige a la página de login si el usuario no es admisionista
     
     #LINEAS COMENTADAS YA QUE AL RENDERIZAR LA PAGINA NO NECESITAMOS QUE CARGUE TODOS LOS OBJETOS DE PACIENTES
@@ -383,16 +384,15 @@ def calculate_age(birth_date):
 
 
 #ASIGNAR CITAS DIARIAS
-# Vista para ingresar a la pagina de registro_citas.html
 @login_required
 def registro_citas(request):
-    if request.user.tipo_usuario != 'admisionista':
-        return redirect('usuarios:login')  # Redirige a la página de login si el usuario no es admisionista
+    # Permitir acceso solo a usuarios que sean admisionistas o administradores
+    if request.user.tipo_usuario not in ['admisionista', 'administrador']:
+        return redirect('usuarios:login')  # Redirige a la página de login si el usuario no tiene permisos
     
     admisionistas = Usuarios.objects.filter(tipo_usuario='admisionista')
     fecha_maxima = date.today().strftime('%Y-%m-%d')  # Fecha actual en formato YYYY-MM-DD
     return render(request, 'admisionistas/registro_citas.html', {'usuarios': admisionistas, 'fecha_maxima': fecha_maxima})
-
 #registro automatico de cita solo dando clic en el botón
 @login_required
 def registrar_cita(request):
@@ -481,7 +481,7 @@ def eliminar_cita(request, id_cita):
 #Vista para cargar historial_citas.html
 @login_required
 def historial_citas(request):
-    if request.user.tipo_usuario != 'admisionista':
+    if request.user.tipo_usuario not in ['admisionista', 'administrador']:
         return redirect('usuarios:login')  # Redirige a la página de login si el usuario no es admisionista
     
     admisionistas = Usuarios.objects.filter(tipo_usuario='admisionista')
