@@ -56,7 +56,7 @@
                             </a>
                         </li>
                         <li class='sidebar-item' >
-                            <a href="#" class='sidebar-link'>                                
+                            <a href="{% url 'gestion_pacientes:historias_clinicas' %}"  class='sidebar-link'>                                
                                 <i class="bi bi-journal-medical" style="font-size: 20px;"></i>
                                 <span>Historial de citas</span>
                             </a>
@@ -160,6 +160,7 @@
                         <!-- Aquí irá el contenido específico de cada página -->
                         {% endblock %}
                     </div>
+                    <!--
                         <div class="card">
                             <div class="card-header">
                                 <h4 class="card-title">Example Content</h4>
@@ -173,6 +174,9 @@
                             </div>
                             <i class="bi-arrow-up-short">asdas</i>
                         </div>
+                        -->
+                        <br><br>
+
                     </section>
                 </div>
 
@@ -209,6 +213,8 @@
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'js/no_ir_atras.js' %}"></script>
     <script src="{% static 'js/citas.js' %}"></script>
+    <script src="{% static 'js/cancelar_cita.js' %}"></script>
+
 
 
     <script>
