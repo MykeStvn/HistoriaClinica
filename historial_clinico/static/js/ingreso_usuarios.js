@@ -547,9 +547,7 @@ $(document).ready(function () {
                                   data-id="${response.usuario.id}">
                                   <i class="bi bi-pencil-fill"></i>
                                 </a>
-                                <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="${response.usuario.id}">
-                                  <i class="bi bi-trash-fill"></i>
-                                </a>
+                                
                             </div>`,
                 })
                 .draw(false);
