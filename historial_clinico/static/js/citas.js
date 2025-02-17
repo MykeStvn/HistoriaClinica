@@ -16,7 +16,7 @@ $(document).ready(function () {
             { data: "fecha_cita" }, // Fecha Cita
             { data: "hora_cita" }, // Hora Cita
             { data: "estado_cita" }, // Hora Cita
-            { data: "acciones" } // Acciones (botón eliminar)
+            { data: "acciones", className : "text-center" } // Acciones (botón eliminar)
         ],
         //AQUI CARGO LA TABLA CON LO DE LA FUNCIÓN DEL VIEW
         pageLength: 5,

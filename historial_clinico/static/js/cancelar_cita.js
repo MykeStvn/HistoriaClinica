@@ -1,47 +1,58 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Escucha los clics en los botones de cancelar cita
-    $(document).on('click', '.cancelar-cita', function (event) {
-        const button = $(this); // El botón que fue clickeado
-        const citaId = button.data('id'); // Obtener el id de la cita del atributo data-id
+$(document).ready(function() {
+    // Evento para manejar el clic en el botón de cancelar
+    $(document).on('click', '.cancelar-cita', function() {
+        var idCita = $(this).data('id');
+        var btnCancelar = $(this);
 
-        if (confirm('¿Estás seguro de que deseas cancelar esta cita?')) {
-            // Realiza la petición AJAX para cancelar la cita
-            $.ajax({
-                url: `/gestion_pacientes/cancelar_cita/${citaId}/`, // URL del endpoint
-                type: 'POST', // Método HTTP
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest', // Indica que es una solicitud AJAX
-                    'X-CSRFToken': getCookie('csrftoken'), // Token CSRF
-                },
-                success: function (data) {
-                    if (data.message) {
-                        alert(data.message); // Muestra mensaje de éxito
-                        location.reload(); // Recarga la página o actualiza la tabla
-                    } else if (data.error) {
-                        alert(data.error); // Muestra mensaje de error
+        // Confirmación antes de cancelar la cita
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¿Quieres cancelar esta cita?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Sí, cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Enviar solicitud AJAX para cancelar la cita
+                $.ajax({
+                    url: '/gestion_pacientes/cancelar_cita/' + idCita + '/', // Reemplaza con la URL correcta de la vista de cancelación
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    data: {
+                        'csrfmiddlewaretoken': $('#csrf_token').val(), // Usamos el token CSRF desde el campo oculto
+                    },
+                    success: function(response) {
+                        // Si la cancelación es exitosa, muestra un SweetAlert de éxito
+                        Swal.fire(
+                            '¡Cancelada!',
+                            response.message,  // Puedes personalizar el mensaje que venga en la respuesta
+                            'success'
+                        ).then(() => {
+                            // Esperar 2 segundos antes de recargar la página
+                            setTimeout(function() {
+                                location.reload(); // Recarga la página
+                            }, 500);  // 2000 milisegundos = 2 segundos
+                        });
+
+                        btnCancelar.closest('tr').find('.estado-cita').text('CANCELADO'); // Actualiza el estado en la fila
+                        btnCancelar.prop('disabled', true); // Desactiva el botón de cancelar
+                        btnCancelar.closest('tr').find('.estado-cita').addClass('cancelado'); // Opcional: añade una clase para destacar la fila
+                    },
+                    error: function(response) {
+                        // En caso de error, muestra un SweetAlert de error
+                        Swal.fire(
+                            'Error',
+                            response.responseJSON.error,  // Puedes personalizar el mensaje que venga en la respuesta
+                            'error'
+                        );
                     }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error:', error);
-                    alert('Hubo un error al cancelar la cita. Por favor, inténtalo de nuevo.');
-                },
-            });
-        }
-    });
-
-    // Función para obtener el token CSRF
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.startsWith(name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
+                });
             }
-        }
-        return cookieValue;
-    }
+        });
+    });
 });

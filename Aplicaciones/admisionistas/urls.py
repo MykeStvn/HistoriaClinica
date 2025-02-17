@@ -23,6 +23,13 @@ urlpatterns = [
     #HISTORIAL CITAS
     path('historial_citas/', views.historial_citas, name='historial_citas'),
     path('cargar_historial_citas/', views.cargar_historial_citas, name='cargar_historial_citas'),
+    #VERIFICAR ESTADO DE LAS CITAS
+    path('verificar_estado_cita/<int:id_cita>/', views.verificar_estado_cita, name='verificar_estado_cita'),
+    #CANCELAR CITA
+    path('cancelar_cita/<int:id_cita>/', views.cancelar_cita, name='cancelar_cita'),
+    #DASHBOARD    
+    path('dashboard_citas/', views.dashboard_citas, name='dashboard_citas'),
+
 
 
 ]

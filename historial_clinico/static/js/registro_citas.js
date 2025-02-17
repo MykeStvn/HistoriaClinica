@@ -14,7 +14,7 @@ $(document).ready(function () {
             { data: "fecha_cita" }, // Fecha Cita
             { data: "hora_cita" }, // Hora Cita
             { data: "estado_cita" }, // Hora Cita
-            { data: "acciones" } // Acciones (botón eliminar)
+            { data: "acciones", className: "text-center"} // Acciones (botón eliminar)
         ],
         pageLength: 5,
         lengthMenu: [5, 10, 25, 50, 100],
@@ -41,29 +41,97 @@ $(document).ready(function () {
     // Manejar la eliminación de citas con AJAX
     $('#tabla_citas').on('click', '.eliminar-cita', function () {
         const idCita = $(this).data('id'); // Obtener el ID de la cita
-        const url = `/admisionistas/eliminar_cita/${idCita}/`; // Ruta para eliminar la cita
+    
+        // Verificar el estado de la cita antes de intentar eliminarla
+        $.ajax({
+            type: 'GET',
+            url: `/admisionistas/verificar_estado_cita/${idCita}/`,
+            dataType: 'json',
+            success: function(response) {
+                let estado = response.estado_cita.trim().toUpperCase(); // Normalizar el estado
+    
+                if (estado === 'COMPLETADO' || estado === 'CANCELADO') {
+                    // Mostrar alerta si la cita no se puede eliminar
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Acción no permitida',
+                        text: `No puedes eliminar esta cita porque está en estado ${estado}.`,
+                        confirmButtonColor: '#ff5f6d'
+                    });
+                } else {
+                    // Mostrar mensaje de confirmación antes de cancelar
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "¿Deseas cancelar esta cita? Debes proporcionar un motivo.",
+                        input: 'textarea',
+                        inputPlaceholder: 'Escribe el motivo de la cancelación...',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Sí, cancelar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const motivoCancelacion = result.value.trim();
 
-        if (confirm('¿Estás seguro de que deseas eliminar esta cita?')) {
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: {
-                    csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
-                },
-                success: function (response) {
-                    // Mostrar mensaje de éxito
-                    alert(response.success);
-                    // Recargar la tabla para reflejar los cambios
-                    table.ajax.reload();
-                },
-                error: function (xhr) {
-                    if (xhr.status === 404) {
-                        alert('Cita no encontrada.');
-                    } else {
-                        alert('Error al eliminar la cita.');
-                    }
-                },
-            });
-        }
+                            // Verificar si el motivo está vacío
+                            if (!motivoCancelacion) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Motivo vacío',
+                                    text: 'Debes proporcionar un motivo para la cancelación.',
+                                    confirmButtonColor: '#ff5f6d'
+                                });
+                                return;
+                            }
+
+                            // Enviar petición para cancelar la cita
+                            $.ajax({
+                                type: 'POST',
+                                url: `/admisionistas/cancelar_cita/${idCita}/`,
+                                data: {
+                                    motivo_cancelacion: motivoCancelacion,
+                                    csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                                },
+                                success: function (response) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Cita cancelada',
+                                        text: 'La cita ha sido cancelada correctamente.',
+                                        confirmButtonColor: '#28a745'
+                                    });
+                                    // Recargar la tabla para reflejar los cambios
+                                    table.ajax.reload();
+                                },
+                                error: function (xhr) {
+                                    let mensajeError = "Error al cancelar la cita.";
+                                    if (xhr.status === 403) {
+                                        mensajeError = "No puedes cancelar citas COMPLETADAS o CANCELADAS.";
+                                    } else if (xhr.status === 404) {
+                                        mensajeError = "Cita no encontrada.";
+                                    }
+
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: mensajeError,
+                                        confirmButtonColor: '#ff5f6d'
+                                    });
+                                },
+                            });
+                        }
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Imposible verificar el estado de la cita.',
+                    confirmButtonColor: '#ff5f6d'
+                });
+            }
+        });
     });
 });

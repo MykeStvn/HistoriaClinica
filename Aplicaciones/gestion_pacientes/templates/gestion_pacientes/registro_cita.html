@@ -7,7 +7,7 @@ GESTIÓN PACIENTES
 <div class="container mt-4">
     <h2 class="text-center">Registrar Historia Clínica</h2>
     <br>
-    <form method="POST">
+    <form id="form_historia_clinica" method="POST">
         {% csrf_token %}
         <div class="card">
             <div class="card-header" style="background-color: #FF3884;">
@@ -30,12 +30,12 @@ GESTIÓN PACIENTES
                 <div class="form-group">
                     <label for="fecha_atencion_historial">Fecha de Atención</label>
                     <input type="date" class="form-control" id="fecha_atencion_historial"
-                        name="fecha_atencion_historial" placeholder="Seleccione la fecha de atención" required>
+                        name="fecha_atencion_historial" placeholder="Seleccione la fecha de atención" value="{{ cita.fecha_cita|date:'Y-m-d' }}" readonly>
                 </div>
                 <div class="form-group">
                     <label for="hora_atencion_historial">Hora de Atención</label>
                     <input type="time" class="form-control" id="hora_atencion_historial" name="hora_atencion_historial"
-                        placeholder="Seleccione la hora de atención" required>
+                        placeholder="Seleccione la hora de atención" readonly>
                 </div>
             </div>
         </div>
@@ -53,7 +53,7 @@ GESTIÓN PACIENTES
                 <div class="form-group">
                     <label for="temperatura_historial">Temperatura (°C)</label>
                     <input type="number" class="form-control" id="temperatura_historial" name="temperatura_historial"
-                        placeholder="Ej. 36.5" required>
+                        placeholder="Ej. 36.5" step="0.1" required>
                 </div>
                 <div class="form-group">
                     <label for="saturacion_oxigeno_historial">Saturación de Oxígeno (%)</label>
@@ -169,7 +169,7 @@ GESTIÓN PACIENTES
                 <div class="form-group">
                     <label for="fecha_inicio_tratamiento_historial">Fecha de Inicio</label>
                     <input type="date" class="form-control" id="fecha_inicio_tratamiento_historial"
-                        name="fecha_inicio_tratamiento_historial" placeholder="Seleccione la fecha de inicio" required>
+                        name="fecha_inicio_tratamiento_historial" placeholder="Seleccione la fecha de inicio" value="{{ cita.fecha_cita|date:'Y-m-d' }}" readonly>
                 </div>
                 <div class="form-group">
                     <label for="fecha_fin_tratamiento_historial">Fecha de Fin</label>

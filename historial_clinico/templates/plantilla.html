@@ -51,13 +51,6 @@
                 <div class="sidebar-menu">
                     <ul class="menu">
                         <li class="sidebar-title">Menú Principal</li>
-
-                        <li class="sidebar-item  ">
-                            <a href="#" class='sidebar-link'>
-                                <i class="bi bi-grid-fill"></i>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>                                                
                         <li class="sidebar-item">
                             <a href="{% url 'admisionistas:ingreso_pacientes' %}" class='sidebar-link'>
                                 <i class="bi bi-person-circle"></i>
@@ -75,7 +68,13 @@
                                 <i class="bi bi-person-circle"></i>
                                 <span>Historial de Citas</span>
                             </a>
-                        </li>                                                         
+                        </li>    
+                        <li class="sidebar-item  ">
+                            <a href="{% url 'admisionistas:dashboard_citas' %}" class='sidebar-link'>
+                                <i class="bi bi-grid-fill"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>   
                     </ul>
                 </div>
                 <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
@@ -186,13 +185,7 @@
                     </section>
                 </div>
 
-                <footer>
-                    <div class="footer clearfix mb-0 text-muted">
-                        <div class="float-start">
-                            <p>2024 &copy; Centro Médico Renacer</p>
-                        </div>                        
-                    </div>
-                </footer>
+            
             </div>
         </div>
     </div>
@@ -214,6 +207,8 @@
     <script src="{% static 'js/es.js' %}"></script>
     <script src="{% static 'js/jquery.validate.min.js' %}"></script>
     <script src="{% static 'js/messages_es.js' %}"></script>
+    <script src="{% static 'js/chart.js.js' %}"></script>
+
 
 
     <!--<script src="{% static 'js/app.js' %}"></script>  Script personalizado -->

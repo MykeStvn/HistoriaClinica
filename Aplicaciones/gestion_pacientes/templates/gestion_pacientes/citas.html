@@ -4,6 +4,7 @@
 GESTIÓN PACIENTES
 {% endblock %}
 {% block content %}
+<input type="hidden" id="csrf_token" value="{{ csrf_token }}">
     <table id="tabla_citas" class="table table-striped">
         <thead>
             <tr class="text-center">

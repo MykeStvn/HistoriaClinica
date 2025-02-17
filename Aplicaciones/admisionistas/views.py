@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from django.contrib import messages
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from Aplicaciones.admisionistas.models import Pacientes, Citas
 from Aplicaciones.usuarios.models import Usuarios
@@ -9,6 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
+from django.db import connection
+#from django.db.models import Count
 from django.utils import timezone  # Para obtener la fecha y hora actual del servidor
 
 
@@ -462,19 +464,42 @@ def cargar_citas(request):
 
     return JsonResponse({'error': 'Método no permitido.'}, status=405)
 
-# eliminar citas
+# # eliminar citas
+# @login_required
+# @csrf_exempt
+# def eliminar_cita(request, id_cita):
+#     """Elimina una cita médica específica."""
+#     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+#         try:
+#             cita = Citas.objects.get(id_cita=id_cita)
+#             cita.delete()
+#             return JsonResponse({'success': 'Cita eliminada correctamente.'}, status=200)
+#         except Citas.DoesNotExist:
+#             return JsonResponse({'error': 'Cita no encontrada.'}, status=404)
+#     return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
+#ELIMINAR CITAS
 @login_required
 @csrf_exempt
 def eliminar_cita(request, id_cita):
-    """Elimina una cita médica específica."""
+    """Elimina una cita médica específica si su estado lo permite."""
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         try:
             cita = Citas.objects.get(id_cita=id_cita)
+
+            # Bloquear eliminación si el estado es CANCELADA o COMPLETADA
+            if cita.estado_cita.strip().upper() in ['CANCELADO', 'COMPLETADO']:
+                return JsonResponse({'error': 'No se puede eliminar una cita con estado CANCELADA o COMPLETADA.'}, status=403)
+
             cita.delete()
             return JsonResponse({'success': 'Cita eliminada correctamente.'}, status=200)
+
         except Citas.DoesNotExist:
             return JsonResponse({'error': 'Cita no encontrada.'}, status=404)
+
     return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
+
 
 
 #Historial Citas
@@ -506,3 +531,79 @@ def cargar_historial_citas(request):
             })
         return JsonResponse({'data': data}, status=200)
     return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
+#verificar el estado de las citas
+def verificar_estado_cita(request, id_cita):
+    try:
+        cita = Citas.objects.get(id_cita=id_cita)
+        return JsonResponse({'estado_cita': cita.estado_cita})
+    except Citas.DoesNotExist:
+        return JsonResponse({'error': 'Cita no encontrada'}, status=404)
+
+#cancelar citas
+@csrf_exempt
+def cancelar_cita(request, id_cita):
+    if request.method == 'POST':
+        motivo = request.POST.get('motivo_cancelacion', '').strip()  # Obtener el motivo desde el formulario
+        cita = get_object_or_404(Citas, id_cita=id_cita)
+
+        # Verificar si el estado de la cita es 'PENDIENTE'
+        if cita.estado_cita.upper() != "PENDIENTE":
+            return JsonResponse({"error": "Solo puedes cancelar citas en estado PENDIENTE."}, status=400)
+
+        # Actualizar el estado de la cita y agregar el motivo de cancelación
+        cita.estado_cita = "CANCELADO"
+        cita.motivo_cancelacion = motivo  # Guardar el motivo de cancelación
+        cita.save()
+
+        return JsonResponse({"success": "Cita cancelada exitosamente."})
+
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+
+#dashboard
+@login_required
+def dashboard_citas(request):
+    fecha_actual = date.today()
+
+    # Consulta SQL cruda para contar las citas por estado
+    query = """
+        SELECT estado_cita, COUNT(*) 
+        FROM citas 
+        WHERE fecha_cita = %s 
+        GROUP BY estado_cita;
+    """
+
+    # Ejecutar la consulta
+    with connection.cursor() as cursor:
+        cursor.execute(query, [fecha_actual])
+        conteo_citas = cursor.fetchall()  # Obtiene los resultados como una lista de tuplas
+
+    # Inicializar contadores en 0
+    citas_pendientes = 0
+    citas_canceladas = 0
+    citas_completadas = 0
+
+    # Procesar resultados
+    for estado, total in conteo_citas:
+        estado = estado.strip().lower()  # Convertimos a minúsculas y eliminamos espacios extra
+        if estado == 'pendiente':
+            citas_pendientes = total
+        elif estado == 'cancelado':
+            citas_canceladas = total
+        elif estado == 'completado':
+            citas_completadas = total
+
+    # Debugging para verificar valores
+    print(f"Pendientes: {citas_pendientes}")
+    print(f"Canceladas: {citas_canceladas}")
+    print(f"Completadas: {citas_completadas}")
+
+    context = {
+        'PENDIENTE': citas_pendientes,
+        'CANCELADA': citas_canceladas,
+        'COMPLETADA': citas_completadas
+    }
+
+    return render(request, 'admisionistas/dashboard.html', context)
