@@ -27,7 +27,7 @@ $(document).ready(function () {
             loadingRecords: "Cargando...",
             processing: "Procesando...",
             search: "Buscar:",
-            zeroRecords: "No se encontraron citas para hoy.",
+            zeroRecords: "No se encontraron atenciones para hoy.",
             paginate: {
                 first: "Primero",
                 last: "Último",

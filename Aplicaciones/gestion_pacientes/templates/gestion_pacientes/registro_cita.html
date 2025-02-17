@@ -11,14 +11,14 @@ GESTIÓN PACIENTES
         {% csrf_token %}
         <div class="card">
             <div class="card-header" style="background-color: #FF3884;">
-                <h5 style="color: white;">Información General de la Cita</h5>
+                <h5 style="color: white;">Información General de la Atención</h5>
             </div>
             <div class="card-body">
                 <p><strong>Paciente:</strong> {{ paciente.nombres_pacientes }} {{ paciente.apellido_paterno_pacientes }}
                     {{ paciente.apellido_materno_pacientes }}</p>
                 <p><strong>Cédula:</strong> {{ paciente.cedula_pacientes }}</p>
-                <p><strong>Fecha de la Cita:</strong> {{ cita.fecha_cita }}</p>
-                <p><strong>Hora de la Cita:</strong> {{ cita.hora_cita }}</p>
+                <p><strong>Fecha de la Atención:</strong> {{ cita.fecha_cita }}</p>
+                <p><strong>Hora de la Atención:</strong> {{ cita.hora_cita }}</p>
             </div>
         </div>
 

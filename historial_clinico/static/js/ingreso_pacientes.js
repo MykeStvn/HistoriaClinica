@@ -199,7 +199,7 @@ $(document).ready(function () {
         telefono_pacientes: {
           required: true,
           minlength: 10,
-          maxlength: 15,
+          maxlength: 10,
           numbersOnly: true,
         },
         emergencia_informar_pacientes: {
@@ -209,7 +209,8 @@ $(document).ready(function () {
         },
         contacto_emergencia_pacientes: {
           required: true,
-          maxlength: 100,
+          minlength: 10,
+          maxlength: 10,
           numbersOnly: true,
         },
         genero_pacientes: {
@@ -292,7 +293,7 @@ $(document).ready(function () {
         telefono_pacientes: {
           required: "Por favor, ingrese el teléfono.",
           minlength: "El teléfono debe tener al menos 10 caracteres.",
-          maxlength: "El teléfono no puede exceder los 15 caracteres.",
+          maxlength: "El teléfono no puede exceder los 10 caracteres.",
           numbersOnly: "Por favor, ingrese solo números.",
         },
         emergencia_informar_pacientes: {
@@ -306,7 +307,7 @@ $(document).ready(function () {
           required: "Por favor, ingrese el número de contacto de emergencia.",
           minlength: "El número de contacto debe tener al menos 10 caracteres.",
           maxlength:
-            "El contacto de emergencia no puede exceder los 100 caracteres.",
+            "El número de contacto de emergencia no puede exceder los 10 caracteres.",
         },
         genero_pacientes: {
           required: "Por favor, seleccione el género.",
@@ -933,7 +934,7 @@ $(document).ready(function () {
             success: function (response) {
                 // Mostrar mensaje de éxito
                 Toastify({
-                    text: "Cita registrada correctamente",
+                    text: "Atención asignada correctamente",
                     backgroundColor: "linear-gradient(to right, #56ab2f, #a8e063)",
                     duration: 5000,
                     close: true,

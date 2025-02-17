@@ -20,7 +20,7 @@ $(document).ready(function () {
         lengthMenu: [5, 10, 25, 50, 100],
         language: {
             decimal: "",
-            emptyTable: "No existen citas para el día de hoy",
+            emptyTable: "No existen atenciones para el día de hoy",
             info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
             infoEmpty: "Mostrando 0 a 0 de 0 entradas",
             infoFiltered: "(filtrado de _MAX_ entradas totales)",
@@ -55,14 +55,14 @@ $(document).ready(function () {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Acción no permitida',
-                        text: `No puedes eliminar esta cita porque está en estado ${estado}.`,
+                        text: `No puedes eliminar esta atención porque está en estado ${estado}.`,
                         confirmButtonColor: '#ff5f6d'
                     });
                 } else {
                     // Mostrar mensaje de confirmación antes de cancelar
                     Swal.fire({
                         title: '¿Estás seguro?',
-                        text: "¿Deseas cancelar esta cita? Debes proporcionar un motivo.",
+                        text: "¿Deseas cancelar esta atención? Debes proporcionar un motivo.",
                         input: 'textarea',
                         inputPlaceholder: 'Escribe el motivo de la cancelación...',
                         icon: 'warning',
@@ -97,19 +97,19 @@ $(document).ready(function () {
                                 success: function (response) {
                                     Swal.fire({
                                         icon: 'success',
-                                        title: 'Cita cancelada',
-                                        text: 'La cita ha sido cancelada correctamente.',
+                                        title: 'Atención cancelada',
+                                        text: 'La atención ha sido cancelada correctamente.',
                                         confirmButtonColor: '#28a745'
                                     });
                                     // Recargar la tabla para reflejar los cambios
                                     table.ajax.reload();
                                 },
                                 error: function (xhr) {
-                                    let mensajeError = "Error al cancelar la cita.";
+                                    let mensajeError = "Error al cancelar la atención.";
                                     if (xhr.status === 403) {
-                                        mensajeError = "No puedes cancelar citas COMPLETADAS o CANCELADAS.";
+                                        mensajeError = "No puedes cancelar atenciones COMPLETADAS o CANCELADAS.";
                                     } else if (xhr.status === 404) {
-                                        mensajeError = "Cita no encontrada.";
+                                        mensajeError = "Ateción no encontrada.";
                                     }
 
                                     Swal.fire({
@@ -128,7 +128,7 @@ $(document).ready(function () {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Imposible verificar el estado de la cita.',
+                    text: 'Imposible verificar el estado de la atención.',
                     confirmButtonColor: '#ff5f6d'
                 });
             }

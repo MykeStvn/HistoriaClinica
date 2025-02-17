@@ -309,8 +309,7 @@ $(document).ready(function () {
                   `,
                   acciones: `
                     <a href="#" style="margin-right: 1px;" class="btn btn-primary btn-sm view-btn" data-id="${response.usuario.id}" data-bs-toggle="modal" data-bs-target="#verUsuarioModal"><i class="fas fa-eye"></i></a>
-                    <a href="#" style="margin-right: 1px;" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoUsuariosModal" data-id="${response.usuario.id}"><i class="bi bi-pencil-fill"></i></a>
-                    <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="${response.usuario.id}"><i class="bi bi-trash-fill"></i></a>
+                    <a href="#" style="margin-right: 1px;" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editIngresoUsuariosModal" data-id="${response.usuario.id}"><i class="bi bi-pencil-fill"></i></a>                    
                   `,
                 })
                 .draw(false);

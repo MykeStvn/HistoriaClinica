@@ -7,7 +7,7 @@ $(document).ready(function() {
         // Confirmación antes de cancelar la cita
         Swal.fire({
             title: '¿Estás seguro?',
-            text: "¿Quieres cancelar esta cita?",
+            text: "¿Quieres cancelar esta atención?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
