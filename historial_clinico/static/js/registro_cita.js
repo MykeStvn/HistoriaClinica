@@ -1,5 +1,5 @@
- // Función para actualizar la hora
- function updateTime() {
+// Función para actualizar la hora
+function updateTime() {
     // Crear un objeto Date para obtener la hora actual
     var now = new Date();
 
@@ -7,7 +7,10 @@
     var hours = now.getHours();
     var minutes = now.getMinutes();
 
-    // Si los minutos tienen un solo dígito (por ejemplo 5 en vez de 05), lo agregamos manualmente
+    // Si las horas o minutos tienen un solo dígito, agregar un cero delante
+    if (hours < 10) {
+        hours = '0' + hours;
+    }
     if (minutes < 10) {
         minutes = '0' + minutes;
     }
