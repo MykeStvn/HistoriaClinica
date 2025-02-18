@@ -44,7 +44,7 @@ GESTIÓN PACIENTES
                 <td>{{ historia.hora_atencion_historial }}</td>
                 <td>
                     <div class="d-flex justify-content-center">
-                        <a href="{% url 'gestion_pacientes:ver_historial_clinico' id_paciente=historia.fk_id_cita.fk_id_paciente.id_pacientes %}" class="btn btn-primary btn-sm">
+                        <a href="{% url 'gestion_pacientes:ver_historial_clinico' id_paciente=historia.fk_id_cita.fk_id_paciente.id_pacientes %}" class="btn btn-primary btn-sm" title="Ver">
                             <i class="fas fa-eye"></i>
                         </a>
                     </div>

@@ -40,9 +40,9 @@ def cargar_citas(request):
         for cita in citas:
             acciones_html = (
                 f'<a href="{reverse("gestion_pacientes:registro_cita", kwargs={"id_cita": cita.id_cita})}" '
-                f'class="btn btn-success btn-sm registrar-cita">'
+                f'class="btn btn-success btn-sm registrar-cita" title="Registrar">'
                 f'<i class="bi bi-check-circle-fill"></i></a>'
-                f'<button class="btn btn-danger btn-sm cancelar-cita" data-id="{cita.id_cita}">'
+                f'<button class="btn btn-danger btn-sm cancelar-cita" data-id="{cita.id_cita}" title="Cancelar">'
                 f'<i class="bi bi-x-circle-fill"></i></button>'
             )
 

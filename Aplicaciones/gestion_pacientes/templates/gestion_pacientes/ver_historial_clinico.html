@@ -50,7 +50,7 @@ HISTORIAL CLÍNICO
                 </div>
                 <div class="form-group">
                     <label>Temperatura (°C)</label>
-                    <input type="number" class="form-control" value="{{ historial_clinico.temperatura_historial }}" readonly>
+                    <input type="text" class="form-control" value="{{ historial_clinico.temperatura_historial|default:'' }}" readonly>
                 </div>
                 <div class="form-group">
                     <label>Saturación de Oxígeno (%)</label>
@@ -62,11 +62,11 @@ HISTORIAL CLÍNICO
                 </div>
                 <div class="form-group">
                     <label>Peso (kg)</label>
-                    <input type="number" class="form-control" value="{{ historial_clinico.peso_historial }}" readonly>
+                    <input type="text" class="form-control" value="{{ historial_clinico.peso_historial }}" readonly>
                 </div>
                 <div class="form-group">
                     <label>Talla (cm)</label>
-                    <input type="number" class="form-control" value="{{ historial_clinico.talla_historial }}" readonly>
+                    <input type="text" class="form-control" value="{{ historial_clinico.talla_historial }}" readonly>
                 </div>
             </div>
         </div>
